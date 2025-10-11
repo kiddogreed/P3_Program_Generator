@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">Church Program Generator</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <nav th:fragment="navigation" class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a th:href="@{/}">Church Program Generator</a>
+            </div>
+            <div class="nav-menu">
+                <a th:href="@{/}" class="nav-link">Home</a>
+                <a th:href="@{/sacrament}" class="nav-link">Sacrament Program</a>
+                <a th:href="@{/ward-council}" class="nav-link">Ward Council</a>
+                <a th:href="@{/bishopric}" class="nav-link">Bishopric Meeting</a>
+            </div>
+        </div>
+    </nav>
+
+    <footer th:fragment="footer" class="footer">
+        <div class="footer-container">
+            <p>&copy; 2025 Church Program Generator. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

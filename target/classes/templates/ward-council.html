@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout :: head('Ward Council Meeting')">
+    <style>
+        .ward-council-form {
+            max-width: 900px;
+            margin: 20px auto;
+            background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(240,248,255,0.95) 100%);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .ward-council-form::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><radialGradient id="bg" cx="50%" cy="30%"><stop offset="0%" stop-color="%23ffffff" stop-opacity="0.8"/><stop offset="100%" stop-color="%23f0f8ff" stop-opacity="0.3"/></radialGradient></defs><rect width="100" height="100" fill="url(%23bg)"/></svg>') center/cover;
+            opacity: 0.7;
+            pointer-events: none;
+        }
+        
+        .ward-council-header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .ward-title {
+            color: #8b7355;
+            font-size: 28px;
+            font-weight: 300;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .council-title {
+            color: #5a8aaa;
+            font-size: 32px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 15px;
+        }
+        
+        .agenda-subtitle {
+            color: #d2691e;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .date-display {
+            color: #d2691e;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        
+        .ward-council-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .form-table-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group-full {
+            grid-column: 1 / -1;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            color: #8b7355;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e6ed;
+            border-radius: 8px;
+            font-size: 14px;
+            background: rgba(255, 255, 255, 0.9);
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #5a8aaa;
+            box-shadow: 0 0 0 3px rgba(90, 138, 170, 0.1);
+            background: rgba(255, 255, 255, 1);
+        }
+        
+        .table-section {
+            background: rgba(255, 255, 255, 0.8);
+            border: 2px solid #d2691e;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .table-section h3 {
+            color: #d2691e;
+            margin-bottom: 15px;
+            font-size: 16px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #5a8aaa 0%, #8b7355 100%);
+            color: white;
+            border: none;
+            padding: 15px 35px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 25px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(90, 138, 170, 0.3);
+        }
+        
+        @media (max-width: 768px) {
+            .form-table-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .ward-council-form {
+                padding: 20px;
+                margin: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav th:replace="layout :: navigation"></nav>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="ward-council-form">
+                <div class="ward-council-header">
+                    <div class="ward-title" th:text="${wardCouncilProgram.wardName}">Pasay 3rd</div>
+                    <div class="council-title">WARD COUNCIL</div>
+                    <div class="agenda-subtitle">Agenda</div>
+                </div>
+                
+                <form th:action="@{/ward-council/preview}" method="post" th:object="${wardCouncilProgram}" class="ward-council-content">
+                    <div class="form-table-layout">
+                        <div class="form-group">
+                            <label for="wardName">Ward Name:</label>
+                            <input type="text" id="wardName" th:field="*{wardName}" placeholder="Ward Name">
+                        </div>
+                        <div class="form-group">
+                            <label for="meetingDate">Meeting Date:</label>
+                            <input type="date" id="meetingDate" th:field="*{meetingDate}" required>
+                        </div>
+                    </div>
+                    
+                    <div class="table-section">
+                        <div class="form-table-layout">
+                            <div class="form-group">
+                                <label for="openingPrayer">Opening Prayer:</label>
+                                <input type="text" id="openingPrayer" th:field="*{openingPrayer}" placeholder="e.g., Primary">
+                            </div>
+                            <div class="form-group">
+                                <label for="closingPrayer">Closing Prayer:</label>
+                                <input type="text" id="closingPrayer" th:field="*{closingPrayer}" placeholder="e.g., YSA">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="handbookReading">Handbook reading scriptural thought:</label>
+                            <textarea id="handbookReading" th:field="*{handbookReading}" rows="2" placeholder="Enter handbook reading or scriptural thought..."></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="auxiliary">Auxiliary:</label>
+                            <textarea id="auxiliary" th:field="*{auxiliary}" rows="2" placeholder="e.g., Elders Quorum - If any Help Needed"></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="agenda">Agenda:</label>
+                            <textarea id="agenda" th:field="*{agenda}" rows="2" placeholder="e.g., Payment Approval Form"></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="welfare">Welfare:</label>
+                            <textarea id="welfare" th:field="*{welfare}" rows="2" placeholder="e.g., If any Help Needed"></textarea>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary">Preview Agenda</button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="layout :: footer"></footer>
+</body>
+</html>

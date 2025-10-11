@@ -1,0 +1,16 @@
+com\church\programgenerator\service\FileStorageService.class
+com\church\programgenerator\controller\HomeController.class
+com\church\programgenerator\controller\SacramentController.class
+com\church\programgenerator\service\SacramentProgramPreviewService.class
+com\church\programgenerator\model\SacramentProgram.class
+com\church\programgenerator\ProgramGeneratorApplication.class
+com\church\programgenerator\model\BishopricProgram.class
+com\church\programgenerator\service\BishopricProgramPdfService.class
+com\church\programgenerator\service\BishopricProgramDocumentService.class
+com\church\programgenerator\model\Speaker.class
+com\church\programgenerator\model\WardCouncilProgram.class
+com\church\programgenerator\controller\WardCouncilController.class
+com\church\programgenerator\service\SacramentProgramDocumentService.class
+com\church\programgenerator\service\WardCouncilDocumentService.class
+com\church\programgenerator\service\WardCouncilPdfService.class
+com\church\programgenerator\controller\BishopricController.class

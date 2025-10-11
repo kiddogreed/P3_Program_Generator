@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout :: head('Bishopric Meeting Preview')">
+    <style>
+        .bishopric-preview {
+            max-width: 800px;
+            margin: 20px auto;
+            background: white;
+            border: 3px solid #2c5282;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(44, 82, 130, 0.15);
+            position: relative;
+            min-height: 600px;
+        }
+        
+        .bishopric-preview::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            border: 2px solid #4a90a4;
+            border-radius: 15px;
+            pointer-events: none;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Ccircle cx='2' cy='2' r='1' fill='%234a90a4' opacity='0.3'/%3E%3Ccircle cx='18' cy='2' r='1' fill='%234a90a4' opacity='0.3'/%3E%3Ccircle cx='2' cy='18' r='1' fill='%234a90a4' opacity='0.3'/%3E%3Ccircle cx='18' cy='18' r='1' fill='%234a90a4' opacity='0.3'/%3E%3C/svg%3E") repeat;
+            background-size: 20px 20px;
+        }
+        
+        .bishopric-preview::after {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            bottom: 15px;
+            border: 1px solid rgba(74, 144, 164, 0.3);
+            border-radius: 12px;
+            pointer-events: none;
+        }
+        
+        .bishopric-header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 1;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 8px;
+        }
+        
+        .church-name {
+            color: #2c5282;
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+        
+        .temple-icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+            opacity: 0.8;
+        }
+        
+        .bishopric-title {
+            color: #2c5282;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            line-height: 1.2;
+        }
+        
+        .bishopric-subtitle {
+            color: #4a90a4;
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+        
+        .meeting-date {
+            color: #2c5282;
+            font-size: 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .bishopric-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .meeting-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .meeting-table th,
+        .meeting-table td {
+            padding: 12px 20px;
+            text-align: left;
+            border: 2px solid #e74c3c;
+        }
+        
+        .meeting-table th {
+            background-color: rgba(231, 76, 60, 0.1);
+            color: #2c5282;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            width: 40%;
+        }
+        
+        .meeting-table td {
+            color: #374151;
+            font-size: 14px;
+            font-weight: 500;
+            background-color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .meeting-table tr:hover {
+            background-color: rgba(231, 76, 60, 0.05);
+        }
+        
+        .agenda-header {
+            color: #e74c3c;
+            font-size: 18px;
+            font-weight: 600;
+            margin: 20px 0 10px 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .date-header {
+            color: #e74c3c;
+            font-size: 16px;
+            font-weight: 600;
+            float: right;
+            margin: 20px 0 10px 0;
+        }
+        
+        .export-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            padding: 10px 25px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            border: none;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #2c5282 0%, #4a90a4 100%);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        @media (max-width: 768px) {
+            .meeting-table th,
+            .meeting-table td {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+            
+            .meeting-table th {
+                width: 35%;
+            }
+            
+            .agenda-header {
+                font-size: 16px;
+            }
+            
+            .date-header {
+                font-size: 14px;
+                float: none;
+                text-align: center;
+                margin: 10px 0;
+            }
+            
+            .export-buttons {
+                flex-direction: column;
+            }
+            
+            .bishopric-preview {
+                padding: 20px;
+                margin: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav th:replace="layout :: navigation"></nav>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="bishopric-preview">
+                <div class="bishopric-header">
+                    <div class="church-name">THE CHURCH OF JESUS CHRIST OF LATTER-DAY SAINTS</div>
+                    <div class="temple-icon">🏛️</div>
+                    <div class="bishopric-title">
+                        <span th:text="${bishopricProgram.wardName}">PASAY 3RD</span> WARD
+                    </div>
+                    <div class="bishopric-subtitle">BISHOPRIC MEETING</div>
+                    <div class="meeting-date" th:text="${#temporals.format(bishopricProgram.meetingDate, 'EEEE, MMMM dd, yyyy')}">FRIDAY, SEPTEMBER 12, 2025</div>
+                </div>
+                
+                <div class="bishopric-content">
+                    <div class="agenda-header">Agenda</div>
+                    <div class="date-header" th:text="${#temporals.format(bishopricProgram.meetingDate, 'MM-dd-yy')}">10-12-25</div>
+                    <div style="clear: both;"></div>
+                    
+                    <table class="meeting-table">
+                        <tr th:if="${bishopricProgram.presiding != null and !bishopricProgram.presiding.isEmpty()}">
+                            <th>Presiding:</th>
+                            <td th:text="${bishopricProgram.presiding}">Bishop Name</td>
+                        </tr>
+                        <tr th:if="${bishopricProgram.conducting != null and !bishopricProgram.conducting.isEmpty()}">
+                            <th>Conducting:</th>
+                            <td th:text="${bishopricProgram.conducting}">Conducting Authority</td>
+                        </tr>
+                        <tr th:if="${bishopricProgram.openingPrayer != null and !bishopricProgram.openingPrayer.isEmpty()}">
+                            <th>Opening Prayer:</th>
+                            <td th:text="${bishopricProgram.openingPrayer}">Opening Prayer by</td>
+                        </tr>
+                        <tr th:if="${bishopricProgram.handbookSpiritual != null and !bishopricProgram.handbookSpiritual.isEmpty()}">
+                            <th>Handbook Spiritual Thought:</th>
+                            <td th:text="${bishopricProgram.handbookSpiritual}">Handbook spiritual thought</td>
+                        </tr>
+                        <tr th:if="${agendaItemsList != null and !agendaItemsList.isEmpty()}">
+                            <th>Agenda Items:</th>
+                            <td>
+                                <span th:each="item, iterStat : ${agendaItemsList}">
+                                    <span th:text="${item}">Agenda item</span>
+                                    <br th:if="${!iterStat.last}" />
+                                </span>
+                            </td>
+                        </tr>
+                        <tr th:if="${bishopricProgram.callingsAndReleases != null and !bishopricProgram.callingsAndReleases.isEmpty()}">
+                            <th>Callings and Releases:</th>
+                            <td th:text="${bishopricProgram.callingsAndReleases}">Callings and releases</td>
+                        </tr>
+                        <tr th:if="${bishopricProgram.closingPrayer != null and !bishopricProgram.closingPrayer.isEmpty()}">
+                            <th>Closing Prayer:</th>
+                            <td th:text="${bishopricProgram.closingPrayer}">Closing Prayer by</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="export-buttons">
+                <form th:action="@{/bishopric/export/docx}" method="post" style="display: inline;">
+                    <input type="hidden" name="wardName" th:value="${bishopricProgram.wardName}">
+                    <input type="hidden" name="meetingDate" th:value="${bishopricProgram.meetingDate}">
+                    <input type="hidden" name="presiding" th:value="${bishopricProgram.presiding}">
+                    <input type="hidden" name="conducting" th:value="${bishopricProgram.conducting}">
+                    <input type="hidden" name="openingPrayer" th:value="${bishopricProgram.openingPrayer}">
+                    <input type="hidden" name="closingPrayer" th:value="${bishopricProgram.closingPrayer}">
+                    <input type="hidden" name="handbookSpiritual" th:value="${bishopricProgram.handbookSpiritual}">
+                    <input type="hidden" name="agendaItemsText" th:value="${param.agendaItemsText[0]}">
+                    <input type="hidden" name="callingsAndReleases" th:value="${bishopricProgram.callingsAndReleases}">
+                    <button type="submit" class="btn btn-primary">Export to Word</button>
+                </form>
+                
+                <form th:action="@{/bishopric/export/pdf}" method="post" style="display: inline;">
+                    <input type="hidden" name="wardName" th:value="${bishopricProgram.wardName}">
+                    <input type="hidden" name="meetingDate" th:value="${bishopricProgram.meetingDate}">
+                    <input type="hidden" name="presiding" th:value="${bishopricProgram.presiding}">
+                    <input type="hidden" name="conducting" th:value="${bishopricProgram.conducting}">
+                    <input type="hidden" name="openingPrayer" th:value="${bishopricProgram.openingPrayer}">
+                    <input type="hidden" name="closingPrayer" th:value="${bishopricProgram.closingPrayer}">
+                    <input type="hidden" name="handbookSpiritual" th:value="${bishopricProgram.handbookSpiritual}">
+                    <input type="hidden" name="agendaItemsText" th:value="${param.agendaItemsText[0]}">
+                    <input type="hidden" name="callingsAndReleases" th:value="${bishopricProgram.callingsAndReleases}">
+                    <button type="submit" class="btn btn-primary">Export to PDF</button>
+                </form>
+                
+                <a th:href="@{/bishopric}" class="btn btn-secondary">Edit Program</a>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="layout :: footer"></footer>
+</body>
+</html>

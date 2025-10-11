@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout :: head('Sacrament Meeting Program')"></head>
+<body>
+    <nav th:replace="layout :: navigation"></nav>
+
+    <main class="main-content">
+        <div class="container">
+            <h1>Sacrament Meeting Program</h1>
+            
+            <div class="program-form">
+                <form class="meeting-form" th:action="@{/sacrament/generate}" method="post" th:object="${sacramentProgram}">
+                    <div class="form-section">
+                        <h3>Ward Information</h3>
+                        <div class="form-group">
+                            <label for="stakeName">Stake Name:</label>
+                            <input type="text" id="stakeName" th:field="*{stakeName}" placeholder="e.g., Pasay Philippines Stake">
+                        </div>
+                        <div class="form-group">
+                            <label for="wardName">Ward Name:</label>
+                            <input type="text" id="wardName" th:field="*{wardName}" placeholder="e.g., Pasay 3rd Ward">
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>Meeting Details</h3>
+                        <div class="form-group">
+                            <label for="date">Date:</label>
+                            <input type="date" id="date" th:field="*{date}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="presiding">Presiding:</label>
+                            <input type="text" id="presiding" th:field="*{presiding}" placeholder="Bishop Name">
+                        </div>
+                        <div class="form-group">
+                            <label for="conducting">Conducted by:</label>
+                            <select id="conducting" th:field="*{conducting}">
+                                <option value="">Select Conductor</option>
+                                <option value="(2nd Co) Bro. Joenice Gaco" th:selected="*{conducting} == '(2nd Co) Bro. Joenice Gaco'">(2nd Co) Bro. Joenice Gaco</option>
+                                <option value="(1st Co) Bro. John Moroni Mendoza" th:selected="*{conducting} == '(1st Co) Bro. John Moroni Mendoza'">(1st Co) Bro. John Moroni Mendoza</option>
+                                <option value="(Bishop) Sherwin Tan" th:selected="*{conducting} == '(Bishop) Sherwin Tan'">(Bishop) Sherwin Tan</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="acknowledgement">Acknowledgement: <span class="char-limit">(max 400 characters)</span></label>
+                            <textarea id="acknowledgement" th:field="*{acknowledgement}" rows="2" maxlength="400" placeholder="Acknowledgement text (optional)" 
+                                     oninput="updateCharCount('acknowledgement', 400)"></textarea>
+                            <small class="char-count" id="acknowledgement-count">0/400 characters</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="announcements">Announcements: <span class="char-limit">(max 400 characters)</span></label>
+                            <textarea id="announcements" name="announcements" rows="4" maxlength="400" th:text="${announcementsText}" 
+                                     placeholder="Enter announcements here, one per line or separated by commas (optional)"
+                                     oninput="updateCharCount('announcements', 400)"></textarea>
+                            <small class="char-count" id="announcements-count">0/400 characters</small>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>Music</h3>
+                        <div class="form-group">
+                            <label for="chorister">Chorister:</label>
+                            <input type="text" id="chorister" th:field="*{chorister}" placeholder="Chorister Name">
+                        </div>
+                        <div class="form-group">
+                            <label for="pianist">Pianist:</label>
+                            <input type="text" id="pianist" th:field="*{pianist}" placeholder="Pianist Name">
+                        </div>
+                        <div class="form-group">
+                            <label for="openingHymn">Opening Hymn:</label>
+                            <input type="text" id="openingHymn" th:field="*{openingHymn}" placeholder="Hymn #274 - 'The Iron Rod'">
+                        </div>
+                        <div class="form-group">
+                            <label for="sacramentHymn">Sacrament Hymn:</label>
+                            <input type="text" id="sacramentHymn" th:field="*{sacramentHymn}" placeholder="Hymn #191 - 'Behold the Great redeemer Die'">
+                        </div>
+                        <div class="form-group">
+                            <label for="closingHymn">Closing Hymn:</label>
+                            <input type="text" id="closingHymn" th:field="*{closingHymn}" placeholder="Hymn #85 - 'How Firm a Foundation'">
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>Program</h3>
+                        <div class="form-group">
+                            <label for="invocation">Invocation:</label>
+                            <input type="text" id="invocation" th:field="*{invocation}" placeholder="Member Name">
+                        </div>
+                        <div class="form-group">
+                            <label for="wardBusiness">Ward Business: <span class="char-limit">(max 400 characters)</span></label>
+                            <textarea id="wardBusiness" th:field="*{wardBusiness}" rows="4" maxlength="400" 
+                                     placeholder="Ward business items (optional)&#10;Press Enter for new lines to add multiple items"
+                                     oninput="updateCharCount('wardBusiness', 400)"></textarea>
+                            <small class="char-count" id="wardBusiness-count">0/400 characters</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="stakeBusiness">Stake Business: <span class="char-limit">(max 300 characters for 1 line only)</span></label>
+                            <textarea id="stakeBusiness" th:field="*{stakeBusiness}" rows="1" maxlength="300" 
+                                     placeholder="Stake business items (optional) - single line only"
+                                     oninput="updateCharCount('stakeBusiness', 300)"></textarea>
+                            <small class="char-count" id="stakeBusiness-count">0/300 characters</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="benediction">Benediction:</label>
+                            <input type="text" id="benediction" th:field="*{benediction}" placeholder="Member Name">
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>Speakers</h3>
+                        <div class="form-group">
+                            <label for="speakersAuxiliary">Speakers Auxiliary:</label>
+                            <select id="speakersAuxiliary" name="speakersAuxiliary" th:field="*{speakersAuxiliary}">
+                                <option value="">Select Auxiliary</option>
+                                <option value="Elders Quorum">Elders Quorum</option>
+                                <option value="Relief Society">Relief Society</option>
+                                <option value="Family History and Missionary Work">Family History and Missionary Work</option>
+                                <option value="Youth Organization">Youth Organization</option>
+                                <option value="Primary Organization">Primary Organization</option>
+                                <option value="Stake Organization">Stake Organization</option>
+                            </select>
+                        </div>
+                        <div class="speaker-row">
+                            <div class="form-group">
+                                <label for="speaker1Title">1st Speaker Title:</label>
+                                <select id="speaker1Title" name="speaker1Title" th:value="${speaker1Title}">
+                                    <option value="">Select Title</option>
+                                    <option value="Bro." th:selected="${speaker1Title == 'Bro.'}">Bro.</option>
+                                    <option value="Sis." th:selected="${speaker1Title == 'Sis.'}">Sis.</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="speaker1Name">1st Speaker Name:</label>
+                                <input type="text" id="speaker1Name" name="speaker1Name" th:value="${speaker1Name}" placeholder="First Speaker Name">
+                            </div>
+                        </div>
+                        <div class="speaker-row">
+                            <div class="form-group">
+                                <label for="speaker2Title">2nd Speaker Title:</label>
+                                <select id="speaker2Title" name="speaker2Title" th:value="${speaker2Title}">
+                                    <option value="">Select Title</option>
+                                    <option value="Bro." th:selected="${speaker2Title == 'Bro.'}">Bro.</option>
+                                    <option value="Sis." th:selected="${speaker2Title == 'Sis.'}">Sis.</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="speaker2Name">2nd Speaker Name:</label>
+                                <input type="text" id="speaker2Name" name="speaker2Name" th:value="${speaker2Name}" placeholder="Second Speaker Name">
+                            </div>
+                        </div>
+                        <div class="speaker-row">
+                            <div class="form-group">
+                                <label for="speaker3Title">3rd Speaker Title:</label>
+                                <select id="speaker3Title" name="speaker3Title" th:value="${speaker3Title}">
+                                    <option value="">Select Title</option>
+                                    <option value="Bro." th:selected="${speaker3Title == 'Bro.'}">Bro.</option>
+                                    <option value="Sis." th:selected="${speaker3Title == 'Sis.'}">Sis.</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="speaker3Name">3rd Speaker Name:</label>
+                                <input type="text" id="speaker3Name" name="speaker3Name" th:value="${speaker3Name}" placeholder="Third Speaker Name">
+                            </div>
+                        </div>
+                        <div class="speaker-row">
+                            <div class="form-group">
+                                <label for="speaker4Title">4th Speaker Title:</label>
+                                <select id="speaker4Title" name="speaker4Title" th:value="${speaker4Title}">
+                                    <option value="">Select Title</option>
+                                    <option value="Bro." th:selected="${speaker4Title == 'Bro.'}">Bro.</option>
+                                    <option value="Sis." th:selected="${speaker4Title == 'Sis.'}">Sis.</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="speaker4Name">4th Speaker Name:</label>
+                                <input type="text" id="speaker4Name" name="speaker4Name" th:value="${speaker4Name}" placeholder="Fourth Speaker Name">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" formaction="/sacrament/preview" class="btn btn-primary">Preview Program</button>
+                        <button type="reset" class="btn btn-secondary">Clear Form</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="layout :: footer"></footer>
+
+    <script>
+        function updateCharCount(fieldId, maxLength) {
+            const field = document.getElementById(fieldId);
+            const countElement = document.getElementById(fieldId + '-count');
+            const currentLength = field.value.length;
+            
+            countElement.textContent = currentLength + '/' + maxLength + ' characters';
+            
+            // Change color when approaching limit
+            if (currentLength > maxLength * 0.9) {
+                countElement.style.color = '#e53e3e'; // Red when near limit
+            } else if (currentLength > maxLength * 0.8) {
+                countElement.style.color = '#dd6b20'; // Orange when getting close
+            } else {
+                countElement.style.color = '#4a5568'; // Normal gray
+            }
+        }
+
+        // Initialize character counters on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCharCount('acknowledgement', 200);
+            updateCharCount('announcements', 400);
+            updateCharCount('wardBusiness', 300);
+            updateCharCount('stakeBusiness', 300);
+        });
+    </script>
+</body>
+</html>

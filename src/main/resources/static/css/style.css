@@ -1,0 +1,462 @@
+/* CSS Variables for consistent theming */
+:root {
+    --primary-color: #2c5282;
+    --primary-hover: #2a4975;
+    --secondary-color: #4a5568;
+    --accent-color: #3182ce;
+    --background-color: #f7fafc;
+    --card-background: #ffffff;
+    --text-color: #2d3748;
+    --border-color: #e2e8f0;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --border-radius: 8px;
+    --max-width: 1200px;
+}
+
+/* Global styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    background-color: var(--background-color);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Navigation */
+.navbar {
+    background-color: var(--primary-color);
+    padding: 1rem 0;
+    box-shadow: var(--shadow);
+}
+
+.nav-container {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 1rem;
+}
+
+.nav-logo a {
+    color: white;
+    text-decoration: none;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.nav-menu {
+    display: flex;
+    gap: 2rem;
+}
+
+.nav-link {
+    color: white;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius);
+    transition: background-color 0.3s ease;
+}
+
+.nav-link:hover {
+    background-color: var(--primary-hover);
+}
+
+/* Main content */
+.main-content {
+    flex: 1;
+    padding: 2rem 0;
+}
+
+.container {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--primary-color);
+    font-size: 2.5rem;
+}
+
+.welcome-text {
+    text-align: center;
+    font-size: 1.2rem;
+    margin-bottom: 3rem;
+    color: var(--secondary-color);
+}
+
+/* Program cards */
+.program-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.card {
+    background: var(--card-background);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    box-shadow: var(--shadow);
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+}
+
+.card h3 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
+
+.card p {
+    margin-bottom: 1.5rem;
+    color: var(--secondary-color);
+}
+
+/* Buttons */
+.btn {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    text-decoration: none;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    text-align: center;
+    cursor: pointer;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-hover);
+}
+
+.btn-secondary {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #2d3748;
+}
+
+/* Forms */
+.program-form {
+    max-width: 900px;
+    margin: 0 auto;
+    background: var(--card-background);
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+}
+
+.meeting-form {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.form-section {
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 1.5rem;
+}
+
+.form-section:last-of-type {
+    border-bottom: none;
+}
+
+.form-section h3 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    padding-top: 1rem;
+}
+
+/* Speaker form layout */
+.speaker-row {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+/* Footer */
+.footer {
+    background-color: var(--secondary-color);
+    color: white;
+    text-align: center;
+    padding: 1.5rem 0;
+    margin-top: auto;
+}
+
+.footer-container {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .nav-container {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .nav-menu {
+        gap: 1rem;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    .program-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .nav-menu {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .program-form {
+        padding: 1rem;
+    }
+    
+    .speaker-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Preview page styles */
+.preview-container {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.preview-section, .export-section, .edit-section {
+    background: var(--card-background);
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+}
+
+.preview-section h2, .export-section h2, .edit-section h2 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 0.5rem;
+}
+
+/* Program preview content styles */
+.program-preview-content {
+    font-family: 'Times New Roman', serif;
+    line-height: 1.6;
+    color: #000;
+    background: white;
+    padding: 2rem;
+    border: 1px solid #ddd;
+    border-radius: var(--border-radius);
+}
+
+.church-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.church-logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.logo-image {
+    max-width: 120px;
+    max-height: 120px;
+    margin-bottom: 0.5rem;
+}
+
+.logo-placeholder {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.church-name {
+    font-size: 11px;
+    font-weight: bold;
+    line-height: 1.2;
+}
+
+.program-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.program-details, .music-section, .program-flow, .speakers-section, .closing-elements {
+    margin-bottom: 1.5rem;
+}
+
+.detail-row, .program-item, .speaker-item {
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
+}
+
+.music-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.sacrament-note {
+    font-style: italic;
+    font-size: 10px;
+    margin: 1rem 0;
+    padding: 0.5rem;
+    background: #f8f9fa;
+    border-left: 3px solid var(--primary-color);
+}
+
+.section-title {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.attendance-footer {
+    text-align: right;
+    font-weight: bold;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid #ddd;
+}
+
+/* Export section styles */
+.export-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.file-info {
+    background: var(--background-color);
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    font-size: 0.9rem;
+}
+
+.file-info code {
+    background: #e2e8f0;
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    font-family: monospace;
+}
+
+.btn-success {
+    background-color: #38a169;
+    color: white;
+}
+
+.btn-success:hover {
+    background-color: #2f855a;
+}
+
+/* Responsive preview layout */
+@media (max-width: 768px) {
+    .preview-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .export-buttons {
+        flex-direction: column;
+    }
+    
+    .program-preview-content {
+        padding: 1rem;
+        font-size: 14px;
+    }
+}
+
+/* Character counter styles */
+.char-limit {
+    color: var(--secondary-color);
+    font-size: 0.85em;
+    font-weight: normal;
+}
+
+.char-count {
+    display: block;
+    margin-top: 0.25rem;
+    color: var(--secondary-color);
+    font-size: 0.8em;
+    text-align: right;
+}

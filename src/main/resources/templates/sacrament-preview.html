@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout :: head('Sacrament Program Preview')"></head>
+<body>
+    <nav th:replace="layout :: navigation"></nav>
+
+    <main class="main-content">
+        <div class="container">
+            <h1>Sacrament Program Preview</h1>
+            
+            <div class="preview-container">
+                <!-- Preview Section -->
+                <div class="preview-section">
+                    <h2>Program Preview</h2>
+                    <div class="program-preview-content" th:utext="${previewHtml}"></div>
+                </div>
+                
+                <!-- Export Options -->
+                <div class="export-section">
+                    <h2>Export Options</h2>
+                    <div class="export-buttons">
+                        <form th:action="@{/sacrament/export/docx}" method="post" style="display: inline-block;">
+                            <!-- Hidden fields to maintain form data -->
+                            <input type="hidden" th:field="${sacramentProgram.stakeName}">
+                            <input type="hidden" th:field="${sacramentProgram.wardName}">
+                            <input type="hidden" th:field="${sacramentProgram.date}">
+                            <input type="hidden" th:field="${sacramentProgram.presiding}">
+                            <input type="hidden" th:field="${sacramentProgram.conducting}">
+                            <input type="hidden" th:field="${sacramentProgram.acknowledgement}">
+                            <input type="hidden" th:field="${sacramentProgram.chorister}">
+                            <input type="hidden" th:field="${sacramentProgram.pianist}">
+                            <input type="hidden" th:field="${sacramentProgram.openingHymn}">
+                            <input type="hidden" th:field="${sacramentProgram.sacramentHymn}">
+                            <input type="hidden" th:field="${sacramentProgram.closingHymn}">
+                            <input type="hidden" th:field="${sacramentProgram.invocation}">
+                            <input type="hidden" th:field="${sacramentProgram.wardBusiness}">
+                            <input type="hidden" th:field="${sacramentProgram.stakeBusiness}">
+                            <input type="hidden" th:field="${sacramentProgram.benediction}">
+                            
+                            <input type="hidden" th:value="${speaker1Name}" name="speaker1Name">
+                            <input type="hidden" th:value="${speaker2Name}" name="speaker2Name">
+                            <input type="hidden" th:value="${speaker3Name}" name="speaker3Name">
+                            <input type="hidden" th:value="${speaker4Name}" name="speaker4Name">
+                            <input type="hidden" th:value="${speaker1Title}" name="speaker1Title">
+                            <input type="hidden" th:value="${speaker2Title}" name="speaker2Title">
+                            <input type="hidden" th:value="${speaker3Title}" name="speaker3Title">
+                            <input type="hidden" th:value="${speaker4Title}" name="speaker4Title">
+                            <input type="hidden" th:value="${speakersAuxiliary}" name="speakersAuxiliary">
+                            <input type="hidden" th:value="${param.announcements[0]}" name="announcements">
+                            
+                            <button type="submit" class="btn btn-primary">
+                                📄 Export as Word (.docx)
+                            </button>
+                        </form>
+                        
+                        <form th:action="@{/sacrament/export/pdf}" method="post" style="display: inline-block;">
+                            <!-- Hidden fields to maintain form data -->
+                            <input type="hidden" th:field="${sacramentProgram.stakeName}">
+                            <input type="hidden" th:field="${sacramentProgram.wardName}">
+                            <input type="hidden" th:field="${sacramentProgram.date}">
+                            <input type="hidden" th:field="${sacramentProgram.presiding}">
+                            <input type="hidden" th:field="${sacramentProgram.conducting}">
+                            <input type="hidden" th:field="${sacramentProgram.acknowledgement}">
+                            <input type="hidden" th:field="${sacramentProgram.chorister}">
+                            <input type="hidden" th:field="${sacramentProgram.pianist}">
+                            <input type="hidden" th:field="${sacramentProgram.openingHymn}">
+                            <input type="hidden" th:field="${sacramentProgram.sacramentHymn}">
+                            <input type="hidden" th:field="${sacramentProgram.closingHymn}">
+                            <input type="hidden" th:field="${sacramentProgram.invocation}">
+                            <input type="hidden" th:field="${sacramentProgram.wardBusiness}">
+                            <input type="hidden" th:field="${sacramentProgram.stakeBusiness}">
+                            <input type="hidden" th:field="${sacramentProgram.benediction}">
+                            
+                            <input type="hidden" th:value="${speaker1Name}" name="speaker1Name">
+                            <input type="hidden" th:value="${speaker2Name}" name="speaker2Name">
+                            <input type="hidden" th:value="${speaker3Name}" name="speaker3Name">
+                            <input type="hidden" th:value="${speaker4Name}" name="speaker4Name">
+                            <input type="hidden" th:value="${speaker1Title}" name="speaker1Title">
+                            <input type="hidden" th:value="${speaker2Title}" name="speaker2Title">
+                            <input type="hidden" th:value="${speaker3Title}" name="speaker3Title">
+                            <input type="hidden" th:value="${speaker4Title}" name="speaker4Title">
+                            <input type="hidden" th:value="${speakersAuxiliary}" name="speakersAuxiliary">
+                            <input type="hidden" th:value="${param.announcements[0]}" name="announcements">
+                            
+                            <button type="submit" class="btn btn-success">
+                                📋 Export as PDF (.pdf)
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <div class="file-info">
+                        <p><strong>Files will be saved to:</strong> <code>src/reports/</code></p>
+                        <p>Files are automatically named with the meeting date (e.g., <code>sacrament20251011.docx</code>)</p>
+                    </div>
+                </div>
+                
+                <!-- Edit Option -->
+                <div class="edit-section">
+                    <h2>Need to Make Changes?</h2>
+                    <form th:action="@{/sacrament/edit}" method="post" style="display: inline-block;">
+                        <!-- Hidden fields to maintain form data -->
+                        <input type="hidden" th:field="${sacramentProgram.stakeName}">
+                        <input type="hidden" th:field="${sacramentProgram.wardName}">
+                        <input type="hidden" th:field="${sacramentProgram.date}">
+                        <input type="hidden" th:field="${sacramentProgram.presiding}">
+                        <input type="hidden" th:field="${sacramentProgram.conducting}">
+                        <input type="hidden" th:field="${sacramentProgram.acknowledgement}">
+                        <input type="hidden" th:field="${sacramentProgram.chorister}">
+                        <input type="hidden" th:field="${sacramentProgram.pianist}">
+                        <input type="hidden" th:field="${sacramentProgram.openingHymn}">
+                        <input type="hidden" th:field="${sacramentProgram.sacramentHymn}">
+                        <input type="hidden" th:field="${sacramentProgram.closingHymn}">
+                        <input type="hidden" th:field="${sacramentProgram.invocation}">
+                        <input type="hidden" th:field="${sacramentProgram.wardBusiness}">
+                        <input type="hidden" th:field="${sacramentProgram.stakeBusiness}">
+                        <input type="hidden" th:field="${sacramentProgram.benediction}">
+                        
+                        <input type="hidden" th:value="${speaker1Name}" name="speaker1Name">
+                        <input type="hidden" th:value="${speaker2Name}" name="speaker2Name">
+                        <input type="hidden" th:value="${speaker3Name}" name="speaker3Name">
+                        <input type="hidden" th:value="${speaker4Name}" name="speaker4Name">
+                        <input type="hidden" th:value="${speaker1Title}" name="speaker1Title">
+                        <input type="hidden" th:value="${speaker2Title}" name="speaker2Title">
+                        <input type="hidden" th:value="${speaker3Title}" name="speaker3Title">
+                        <input type="hidden" th:value="${speaker4Title}" name="speaker4Title">
+                        <input type="hidden" th:value="${param.announcements[0]}" name="announcements">
+                        
+                        <button type="submit" class="btn btn-secondary">← Back to Edit Form</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="layout :: footer"></footer>
+</body>
+</html>
