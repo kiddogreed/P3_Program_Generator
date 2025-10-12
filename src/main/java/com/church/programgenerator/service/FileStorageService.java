@@ -32,17 +32,22 @@ public class FileStorageService {
     private SacramentProgramDocumentService documentService;
 
     private static final String REPORTS_DIR = "src/reports";
+    
+    // Organized subdirectories for different meeting types
+    private static final String SACRAMENT_DIR = REPORTS_DIR + "/sacrament";
+    private static final String BISHOPRIC_DIR = REPORTS_DIR + "/bishopric";
+    private static final String WARDCOUNCIL_DIR = REPORTS_DIR + "/wardcouncil";
 
     public String saveDocxFile(SacramentProgram program) throws IOException {
-        // Ensure reports directory exists
-        createReportsDirectory();
+        // Ensure sacrament reports directory exists
+        createSacramentDirectory();
         
         // Generate document
         byte[] documentBytes = documentService.generateSacramentProgram(program);
         
         // Create filename
         String filename = generateFilename(program, ".docx");
-        String filePath = REPORTS_DIR + "/" + filename;
+        String filePath = SACRAMENT_DIR + "/" + filename;
         
         // Save file
         try (FileOutputStream fos = new FileOutputStream(filePath)) {
@@ -53,17 +58,44 @@ public class FileStorageService {
     }
 
     public String savePdfFile(SacramentProgram program) throws IOException {
-        // Ensure reports directory exists
-        createReportsDirectory();
+        // Ensure sacrament reports directory exists
+        createSacramentDirectory();
         
         // Generate PDF
         byte[] pdfBytes = generatePdfDocument(program);
         
         // Create filename
         String filename = generateFilename(program, ".pdf");
-        String filePath = REPORTS_DIR + "/" + filename;
+        String filePath = SACRAMENT_DIR + "/" + filename;
         
         // Save file
+        try (FileOutputStream fos = new FileOutputStream(filePath)) {
+            fos.write(pdfBytes);
+        }
+        
+        return filePath;
+    }
+    
+    // Generic file saving methods for other meeting types
+    public String saveDocxFile(String meetingType, String filename, byte[] documentBytes) throws IOException {
+        String directoryPath = getDirectoryForMeetingType(meetingType);
+        createDirectoryIfNotExists(directoryPath);
+        
+        String filePath = directoryPath + "/" + filename;
+        
+        try (FileOutputStream fos = new FileOutputStream(filePath)) {
+            fos.write(documentBytes);
+        }
+        
+        return filePath;
+    }
+    
+    public String savePdfFile(String meetingType, String filename, byte[] pdfBytes) throws IOException {
+        String directoryPath = getDirectoryForMeetingType(meetingType);
+        createDirectoryIfNotExists(directoryPath);
+        
+        String filePath = directoryPath + "/" + filename;
+        
         try (FileOutputStream fos = new FileOutputStream(filePath)) {
             fos.write(pdfBytes);
         }
@@ -281,19 +313,42 @@ public class FileStorageService {
                 .setFontSize(6));
     }
 
-    private void createReportsDirectory() throws IOException {
-        Path reportsPath = Paths.get(REPORTS_DIR);
-        if (!Files.exists(reportsPath)) {
-            Files.createDirectories(reportsPath);
+    private void createSacramentDirectory() throws IOException {
+        Path sacramentPath = Paths.get(SACRAMENT_DIR);
+        if (!Files.exists(sacramentPath)) {
+            Files.createDirectories(sacramentPath);
         }
+    }
+    
+    private void createDirectoryIfNotExists(String directoryPath) throws IOException {
+        Path path = Paths.get(directoryPath);
+        if (!Files.exists(path)) {
+            Files.createDirectories(path);
+        }
+    }
+    
+    private String getDirectoryForMeetingType(String meetingType) {
+        return switch (meetingType.toLowerCase()) {
+            case "sacrament" -> SACRAMENT_DIR;
+            case "bishopric" -> BISHOPRIC_DIR;
+            case "wardcouncil", "ward-council" -> WARDCOUNCIL_DIR;
+            default -> REPORTS_DIR; // fallback to main reports directory
+        };
     }
 
     private String generateFilename(SacramentProgram program, String extension) {
-        return "sacrament" + 
-                (program.getDate() != null ? 
-                    program.getDate().format(DateTimeFormatter.ofPattern("yyyyMMdd")) : 
-                    LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))) + 
-                extension;
+        String dateStr = program.getDate() != null ? 
+            program.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) : 
+            LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        return "sacramentProgram" + dateStr + extension;
+    }
+    
+    // Generate filename for other meeting types
+    public String generateFilename(String meetingType, LocalDate date, String extension) {
+        String dateStr = date != null ? 
+            date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) : 
+            LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        return meetingType + "Meeting" + dateStr + extension;
     }
 
     private String getOrdinalNumber(int number) {

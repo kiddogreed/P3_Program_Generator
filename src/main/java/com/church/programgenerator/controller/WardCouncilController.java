@@ -1,7 +1,6 @@
 package com.church.programgenerator.controller;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -16,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.church.programgenerator.model.WardCouncilProgram;
+import com.church.programgenerator.service.FileStorageService;
 import com.church.programgenerator.service.WardCouncilDocumentService;
 import com.church.programgenerator.service.WardCouncilPdfService;
 
@@ -28,6 +28,9 @@ public class WardCouncilController {
     
     @Autowired
     private WardCouncilPdfService pdfService;
+    
+    @Autowired
+    private FileStorageService fileStorageService;
 
     @GetMapping
     public String wardCouncilMeeting(Model model) {
@@ -63,12 +66,10 @@ public class WardCouncilController {
             byte[] documentBytes = documentService.generateDocument(program);
             
             // Create filename with date
-            String filename = String.format("wardCouncilMeeting%s.docx", 
-                meetingDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+            String filename = fileStorageService.generateFilename("wardCouncil", meetingDate, ".docx");
             
-            // Save to reports directory
-            String reportPath = String.format("src/reports/%s", filename);
-            documentService.saveDocument(program, reportPath);
+            // Save to organized wardcouncil directory
+            String filePath = fileStorageService.saveDocxFile("wardcouncil", filename, documentBytes);
             
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
@@ -101,12 +102,10 @@ public class WardCouncilController {
             byte[] pdfBytes = pdfService.generatePdf(program);
             
             // Create filename with date
-            String filename = String.format("wardCouncilMeeting%s.pdf", 
-                meetingDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+            String filename = fileStorageService.generateFilename("wardCouncil", meetingDate, ".pdf");
             
-            // Save to reports directory
-            String reportPath = String.format("src/reports/%s", filename);
-            pdfService.savePdf(program, reportPath);
+            // Save to organized wardcouncil directory
+            fileStorageService.savePdfFile("wardcouncil", filename, pdfBytes);
             
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)

@@ -4,26 +4,43 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${title}">Church Program Generator</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css?v=2.0}">
+    <script th:src="@{/js/navigation.js}" defer></script>
 </head>
 <body>
-    <nav th:fragment="navigation" class="navbar">
+    <nav th:fragment="navigation(activePage)" class="navbar">
         <div class="nav-container">
             <div class="nav-logo">
-                <a th:href="@{/}">Church Program Generator</a>
+                <a th:href="@{/}">Pasay 3rd Ward Program Generator</a>
             </div>
-            <div class="nav-menu">
-                <a th:href="@{/}" class="nav-link">Home</a>
-                <a th:href="@{/sacrament}" class="nav-link">Sacrament Program</a>
-                <a th:href="@{/ward-council}" class="nav-link">Ward Council</a>
-                <a th:href="@{/bishopric}" class="nav-link">Bishopric Meeting</a>
+            <div class="nav-tabs">
+                <a th:href="@{/}" 
+                   th:class="'nav-tab' + (${activePage} == 'home' ? ' active' : '')">
+                   Home
+                </a>
+                <a th:href="@{/sacrament}" 
+                   th:class="'nav-tab' + (${activePage} == 'sacrament' ? ' active' : '')">
+                   Sacrament program
+                </a>
+                <a th:href="@{/ward-council}" 
+                   th:class="'nav-tab' + (${activePage} == 'wardcouncil' ? ' active' : '')">
+                   Ward council
+                </a>
+                <a th:href="@{/bishopric}" 
+                   th:class="'nav-tab' + (${activePage} == 'bishopric' ? ' active' : '')">
+                   Bishopric meeting
+                </a>
+                <a href="#" class="nav-tab disabled">
+                   Speaker invites
+                   <span class="coming-soon">Coming Soon</span>
+                </a>
             </div>
         </div>
     </nav>
 
     <footer th:fragment="footer" class="footer">
         <div class="footer-container">
-            <p>&copy; 2025 Church Program Generator. All rights reserved.</p>
+            <p>&copy; 2025 Pasay 3rd | Church Program Generator. All rights reserved. | JRRD</p>
         </div>
     </footer>
 </body>

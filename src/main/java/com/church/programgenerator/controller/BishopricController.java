@@ -1,7 +1,6 @@
 package com.church.programgenerator.controller;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 
@@ -20,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.church.programgenerator.model.BishopricProgram;
 import com.church.programgenerator.service.BishopricProgramDocumentService;
 import com.church.programgenerator.service.BishopricProgramPdfService;
+import com.church.programgenerator.service.FileStorageService;
 
 @Controller
 @RequestMapping("/bishopric")
@@ -30,6 +30,9 @@ public class BishopricController {
     
     @Autowired
     private BishopricProgramPdfService pdfService;
+    
+    @Autowired
+    private FileStorageService fileStorageService;
 
     @GetMapping
     public String bishopricMeeting(Model model) {
@@ -81,12 +84,10 @@ public class BishopricController {
             byte[] documentBytes = documentService.generateDocument(program);
             
             // Create filename with date
-            String filename = String.format("bishopricMeeting%s.docx", 
-                meetingDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+            String filename = fileStorageService.generateFilename("bishopric", meetingDate, ".docx");
             
-            // Save to reports directory
-            String reportPath = String.format("src/reports/%s", filename);
-            documentService.saveDocument(program, reportPath);
+            // Save to organized bishopric directory
+            fileStorageService.saveDocxFile("bishopric", filename, documentBytes);
             
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
@@ -120,12 +121,10 @@ public class BishopricController {
             byte[] pdfBytes = pdfService.generatePdf(program);
             
             // Create filename with date
-            String filename = String.format("bishopricMeeting%s.pdf", 
-                meetingDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+            String filename = fileStorageService.generateFilename("bishopric", meetingDate, ".pdf");
             
-            // Save to reports directory
-            String reportPath = String.format("src/reports/%s", filename);
-            pdfService.savePdf(program, reportPath);
+            // Save to organized bishopric directory
+            fileStorageService.savePdfFile("bishopric", filename, pdfBytes);
             
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)

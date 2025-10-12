@@ -1,36 +1,63 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="layout :: head('Church Program Generator')"></head>
+<head th:replace="~{layout :: head('Church Program Generator')}"></head>
 <body>
-    <nav th:replace="layout :: navigation"></nav>
+    <nav th:replace="~{layout :: navigation('home')}"></nav>
 
     <main class="main-content">
         <div class="container">
-            <h1>Church Program Generator</h1>
+            <h1 class="church-title">The Church of Jesus Christ of Latter-day Saints</h1>
             <p class="welcome-text">Welcome to the Church Program Generator. Select a program type to get started:</p>
             
             <div class="program-cards">
                 <div class="card">
-                    <h3>Sacrament Meeting Program</h3>
-                    <p>Create and manage sacrament meeting programs with hymns, speakers, and special musical numbers.</p>
-                    <a th:href="@{/sacrament}" class="btn btn-primary">Create Sacrament Program</a>
+                    <div class="card-image">
+                        <img th:src="@{/images/icons/sacrament.svg}" 
+                             src="/images/icons/sacrament.svg"
+                             alt="Sacrament Meeting" 
+                             class="meeting-icon"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="fallback-icon sacrament-fallback">🎵</div>
+                    </div>
+                    <div class="card-content">
+                        <p class="card-description">Create and manage sacrament meeting programs with hymns, speakers, and special musical numbers.</p>
+                        <a th:href="@{/sacrament}" class="btn btn-primary">Create Sacrament Program</a>
+                    </div>
                 </div>
                 
                 <div class="card">
-                    <h3>Ward Council Meeting</h3>
-                    <p>Organize ward council meetings with agenda items and discussion topics.</p>
-                    <a th:href="@{/ward-council}" class="btn btn-primary">Plan Ward Council</a>
+                    <div class="card-image">
+                        <img th:src="@{/images/icons/ward-council.svg}" 
+                             src="/images/icons/ward-council.svg"
+                             alt="Ward Council Meeting" 
+                             class="meeting-icon"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="fallback-icon wardcouncil-fallback">📋</div>
+                    </div>
+                    <div class="card-content">
+                        <p class="card-description">Organize ward council meetings with agenda items and discussion topics.</p>
+                        <a th:href="@{/ward-council}" class="btn btn-primary">Plan Ward Council</a>
+                    </div>
                 </div>
                 
                 <div class="card">
-                    <h3>Bishopric Meeting</h3>
-                    <p>Plan bishopric meetings with leadership discussions and ward business.</p>
-                    <a th:href="@{/bishopric}" class="btn btn-primary">Plan Bishopric Meeting</a>
+                    <div class="card-image">
+                        <img th:src="@{/images/icons/bishopric.svg}" 
+                             src="/images/icons/bishopric.svg"
+                             alt="Bishopric Meeting" 
+                             class="meeting-icon"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="fallback-icon bishopric-fallback">👔</div>
+                    </div>
+                    <div class="card-content">
+                        <p class="card-description">Plan bishopric meetings with leadership discussions and ward business.</p>
+                        <a th:href="@{/bishopric}" class="btn btn-primary">Plan Bishopric Meeting</a>
+                    </div>
                 </div>
             </div>
         </div>
     </main>
 
-    <footer th:replace="layout :: footer"></footer>
+    <footer th:replace="~{layout :: footer}"></footer>
 </body>
 </html>
