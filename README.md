@@ -141,16 +141,31 @@ A professional Spring Boot web application for creating and managing church meet
 
 ## 📁 Document Export System
 
-### 🗂️ File Storage Structure
+### 🗂️ Organized File Storage Structure
 ```
 src/reports/
-├── sacramentProgram2025-10-12.docx
-├── sacramentProgram2025-10-12.pdf
-├── wardCouncilMeeting2025-10-12.docx
-├── wardCouncilMeeting2025-10-12.pdf
-├── bishopricMeeting2025-10-12.docx
-└── bishopricMeeting2025-10-12.pdf
+├── sacrament/                          # Sacrament Meeting Programs
+│   ├── sacramentProgram2025-10-12.docx
+│   ├── sacramentProgram2025-10-12.pdf
+│   ├── sacramentProgram2025-10-19.docx
+│   └── sacramentProgram2025-10-19.pdf
+├── wardcouncil/                        # Ward Council Meetings  
+│   ├── wardCouncilMeeting2025-10-12.docx
+│   ├── wardCouncilMeeting2025-10-12.pdf
+│   ├── wardCouncilMeeting2025-11-02.docx
+│   └── wardCouncilMeeting2025-11-02.pdf
+└── bishopric/                          # Bishopric Meetings
+    ├── bishopricMeeting2025-10-12.docx
+    ├── bishopricMeeting2025-10-12.pdf
+    ├── bishopricMeeting2025-10-15.docx
+    └── bishopricMeeting2025-10-15.pdf
 ```
+
+#### **📋 Organized Benefits**
+- **Easy Navigation**: Find documents by meeting type quickly
+- **Better Organization**: Separate folders prevent file mixing
+- **Scalable Structure**: Handles large numbers of documents efficiently
+- **Clear Categorization**: Professional file management system
 
 ### 📄 Document Features
 
