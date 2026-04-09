@@ -119,8 +119,8 @@ public class FileStorageService {
              PdfDocument pdfDoc = new PdfDocument(writer);
              Document document = new Document(pdfDoc)) {
             
-            // Set margins
-            document.setMargins(36, 54, 36, 54);
+            // Set tight margins: top, right, bottom, left (in points)
+            document.setMargins(24, 40, 24, 40);
             
             // Add church header
             addPdfHeader(document, program);
@@ -150,8 +150,8 @@ public class FileStorageService {
             if (logoStream != null) {
                 byte[] logoBytes = logoStream.readAllBytes();
                 Image logo = new Image(ImageDataFactory.create(logoBytes))
-                        .setWidth(60)
-                        .setHeight(60)
+                        .setWidth(50)
+                        .setHeight(50)
                         .setHorizontalAlignment(HorizontalAlignment.CENTER);
                 document.add(logo);
             } else {
@@ -185,8 +185,8 @@ public class FileStorageService {
                 .setTextAlignment(TextAlignment.CENTER)
                 .setBold()
                 .setFontColor(new DeviceRgb(0x2c, 0x52, 0x82))
-                .setFontSize(12)
-                .setMarginBottom(6);
+                .setFontSize(10)
+                .setMarginBottom(4);
         document.add(title);
     }
 
@@ -195,42 +195,38 @@ public class FileStorageService {
         // Date
         document.add(new Paragraph()
                 .add(new Text("Date: ").setBold())
-                .add(program.getDate() != null ? 
-                    program.getDate().format(DateTimeFormatter.ofPattern("MMMM d, yyyy")) : 
+                .add(program.getDate() != null ?
+                    program.getDate().format(DateTimeFormatter.ofPattern("MMMM d, yyyy")) :
                     "_____________")
-                .setFontSize(10).setMarginBottom(2));
-        
+                .setFontSize(9).setMarginBottom(1));
+
         // Presiding
         document.add(new Paragraph()
                 .add(new Text("Presiding: ").setBold())
                 .add(program.getPresiding() != null ? program.getPresiding() : "_____________")
-                .setFontSize(10).setMarginBottom(2));
-        
+                .setFontSize(9).setMarginBottom(1));
+
         // Conducting
         document.add(new Paragraph()
                 .add(new Text("Conducting: ").setBold())
                 .add(program.getConducting() != null ? program.getConducting() : "_____________")
-                .setFontSize(10).setMarginBottom(2));
-        
+                .setFontSize(9).setMarginBottom(1));
+
         // Acknowledgement
         if (program.getAcknowledgement() != null && !program.getAcknowledgement().isEmpty()) {
             document.add(createMultilineParagraph("Acknowledgement: ", program.getAcknowledgement(), varFont));
-            // Blank line for hand-written additions
-            document.add(new Paragraph(" ").setFontSize(varFont).setMarginBottom(0));
         }
-        
+
         // Announcements
         if (program.getAnnouncements() != null && !program.getAnnouncements().isEmpty()) {
             Paragraph announcementsHeader = new Paragraph()
                     .add(new Text("Announcements:").setBold())
-                    .setFontSize(varFont).setMarginBottom(1);
+                    .setFontSize(9).setMarginBottom(1);
             document.add(announcementsHeader);
             for (int i = 0; i < program.getAnnouncements().size(); i++) {
                 document.add(new Paragraph((i + 1) + ". " + program.getAnnouncements().get(i))
                         .setFontSize(varFont).setMarginBottom(1));
             }
-            // Blank line for hand-written additions
-            document.add(new Paragraph(" ").setFontSize(varFont).setMarginBottom(0));
         }
     }
 
@@ -243,9 +239,9 @@ public class FileStorageService {
                 .add(new Text("Pianist: ").setBold())
                 .add(program.getPianist() != null ? program.getPianist() : "_____________")
                 .setTextAlignment(TextAlignment.CENTER)
-                .setFontSize(10)
-                .setMarginTop(6)
-                .setMarginBottom(6);
+                .setFontSize(9)
+                .setMarginTop(2)
+                .setMarginBottom(2);
         
         document.add(musicParagraph);
     }
@@ -256,50 +252,48 @@ public class FileStorageService {
         document.add(new Paragraph()
                 .add(new Text("Opening Hymn: ").setBold())
                 .add(program.getOpeningHymn() != null ? program.getOpeningHymn() : "_____________")
-                .setFontSize(10).setMarginBottom(2));
-        
+                .setFontSize(9).setMarginBottom(1));
+
         // Invocation
         document.add(new Paragraph()
                 .add(new Text("Invocation: ").setBold())
                 .add(program.getInvocation() != null ? program.getInvocation() : "_____________")
-                .setFontSize(10).setMarginBottom(2));
-        
+                .setFontSize(9).setMarginBottom(1));
+
         // Ward Business
         if (program.getWardBusiness() != null && !program.getWardBusiness().isEmpty()) {
             document.add(createMultilineParagraph("Ward Business: ", program.getWardBusiness(), varFont));
-            // Blank line for hand-written additions
-            document.add(new Paragraph(" ").setFontSize(varFont).setMarginBottom(0));
         }
-        
+
         // Stake Business
         if (program.getStakeBusiness() != null && !program.getStakeBusiness().isEmpty()) {
             document.add(createMultilineParagraph("Stake Business: ", program.getStakeBusiness(), varFont));
         }
-        
+
         // Sacrament Hymn
         document.add(new Paragraph()
                 .add(new Text("Sacrament Hymn: ").setBold())
                 .add(program.getSacramentHymn() != null ? program.getSacramentHymn() : "_____________")
-                .setFontSize(10).setMarginBottom(2));
-        
+                .setFontSize(9).setMarginBottom(1));
+
         // Sacrament note
         document.add(new Paragraph("Thank you for your reverence during the sacrament, and thank you to the priesthood brethren who bless and passed the bread and water. You may now Join your family.")
                 .setItalic()
-                .setFontSize(9)
-                .setMarginTop(4)
-                .setMarginBottom(4));
+                .setFontSize(8)
+                .setMarginTop(2)
+                .setMarginBottom(2));
     }
 
     private void addPdfSpeakers(Document document, SacramentProgram program) {
         float varFont = computePdfAdaptiveFontSize(program);
         // Create speakers header with auxiliary
         Paragraph speakersHeader = new Paragraph();
-        speakersHeader.add(new Text("Speakers: ").setBold().setFontSize(10));
-        
+        speakersHeader.add(new Text("Speakers: ").setBold().setFontSize(9));
+
         if (program.getSpeakersAuxiliary() != null && !program.getSpeakersAuxiliary().isEmpty()) {
-            speakersHeader.add(new Text(program.getSpeakersAuxiliary()).setFontSize(10).setBold());
+            speakersHeader.add(new Text(program.getSpeakersAuxiliary()).setFontSize(9).setBold());
         }
-        speakersHeader.setMarginTop(6);
+        speakersHeader.setMarginTop(2);
         document.add(speakersHeader);
         
         if (program.getSpeakers() != null && !program.getSpeakers().isEmpty()) {
@@ -327,20 +321,20 @@ public class FileStorageService {
         document.add(new Paragraph()
                 .add(new Text("Closing Hymn: ").setBold())
                 .add(program.getClosingHymn() != null ? program.getClosingHymn() : "_____________")
-                .setFontSize(10).setMarginTop(6).setMarginBottom(2));
-        
+                .setFontSize(9).setMarginTop(2).setMarginBottom(1));
+
         // Benediction
         document.add(new Paragraph()
                 .add(new Text("Benediction: ").setBold())
                 .add(program.getBenediction() != null ? program.getBenediction() : "_____________")
-                .setFontSize(10).setMarginBottom(2));
-        
+                .setFontSize(9).setMarginBottom(1));
+
         // Attendance footer
         document.add(new Paragraph("Sacrament Attendance:________")
                 .setBold()
                 .setTextAlignment(TextAlignment.RIGHT)
-                .setFontSize(10)
-                .setMarginTop(12));
+                .setFontSize(9)
+                .setMarginTop(4));
     }
 
     private void createSacramentDirectory() throws IOException {
@@ -427,9 +421,9 @@ public class FileStorageService {
                 if (s.getName() != null) total += s.getName().length();
                 if (s.getTitle() != null) total += s.getTitle().length();
             }
-        if (total > 1000) return 7.5f;
-        if (total > 700)  return 8.5f;
-        if (total > 450)  return 9f;
+        if (total > 800) return 7f;
+        if (total > 500) return 8f;
+        if (total > 250) return 9f;
         return 10f;
     }
 }

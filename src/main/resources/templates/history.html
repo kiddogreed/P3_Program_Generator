@@ -24,6 +24,8 @@
                 <a th:href="@{/history(type='BISHOPRIC')}"
                    th:class="'filter-btn' + (${activeFilter} == 'BISHOPRIC' ? ' active' : '')">Bishopric</a>
             </div>
+            <p th:if="${totalItems > 0}" style="color:#718096;font-size:.85rem;margin:4px 0 8px;"
+               th:text="'Showing page ' + (${currentPage} + 1) + ' of ' + ${totalPages} + ' (' + ${totalItems} + ' total)'"></p>
 
             <!-- Empty state -->
             <div th:if="${#lists.isEmpty(programs)}" class="history-empty">
@@ -73,6 +75,21 @@
                         </tr>
                     </tbody>
                 </table>
+            </div>
+
+            <!-- Pagination -->
+            <div th:if="${totalPages > 1}" style="margin-top:16px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+                <a th:if="${currentPage > 0}"
+                   th:href="@{/history(page=${currentPage - 1}, type=${activeType})}"
+                   class="btn btn-sm btn-secondary">&laquo; Prev</a>
+                <th:block th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+                    <a th:href="@{/history(page=${i}, type=${activeType})}"
+                       th:class="'btn btn-sm' + (${i == currentPage} ? ' btn-primary' : ' btn-secondary')"
+                       th:text="${i + 1}"></a>
+                </th:block>
+                <a th:if="${currentPage < totalPages - 1}"
+                   th:href="@{/history(page=${currentPage + 1}, type=${activeType})}"
+                   class="btn btn-sm btn-secondary">Next &raquo;</a>
             </div>
         </div>
     </main>

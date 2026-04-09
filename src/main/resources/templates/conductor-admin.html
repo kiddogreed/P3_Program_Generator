@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout :: head('Manage Conductors')"></head>
+<body>
+    <nav th:replace="layout :: navigation('sacrament')"></nav>
+
+    <main class="main-content">
+        <div class="container">
+            <h1>Manage Conductors</h1>
+
+            <div th:if="${successMessage}" class="alert alert-success" role="alert"
+                 th:text="${successMessage}"></div>
+            <div th:if="${errorMessage}" class="alert alert-error" role="alert"
+                 th:text="${errorMessage}"></div>
+
+            <!-- Add conductor form -->
+            <div class="program-form" style="margin-bottom:24px;">
+                <form th:action="@{/conductors/add}" method="post" style="display:flex;gap:10px;align-items:flex-end;">
+                    <div class="form-group" style="flex:1;margin:0;">
+                        <label for="conductorName">New Conductor Name:</label>
+                        <input type="text" id="conductorName" name="name"
+                               placeholder="e.g., (2nd Co) Bro. Joenice Gaco"
+                               maxlength="200" required style="width:100%;">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Conductor</button>
+                    <a href="/sacrament" class="btn btn-secondary">← Back to Form</a>
+                </form>
+            </div>
+
+            <!-- Conductors list -->
+            <div th:if="${#lists.isEmpty(conductors)}" class="history-empty">
+                <p>No conductors yet. Add one above.</p>
+            </div>
+
+            <div th:unless="${#lists.isEmpty(conductors)}" class="history-table-wrapper">
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="c, iter : ${conductors}">
+                            <td th:text="${iter.index + 1}"></td>
+                            <td th:text="${c.name}"></td>
+                            <td class="action-cell">
+                                <form th:action="@{/conductors/delete/{id}(id=${c.id})}" method="post"
+                                      onsubmit="return confirm('Delete this conductor?')">
+                                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="layout :: footer"></footer>
+</body>
+</html>

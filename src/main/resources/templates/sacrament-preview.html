@@ -37,14 +37,12 @@
                             <input type="hidden" th:field="${sacramentProgram.stakeBusiness}">
                             <input type="hidden" th:field="${sacramentProgram.benediction}">
                             
-                            <input type="hidden" th:value="${speaker1Name}" name="speaker1Name">
-                            <input type="hidden" th:value="${speaker2Name}" name="speaker2Name">
-                            <input type="hidden" th:value="${speaker3Name}" name="speaker3Name">
-                            <input type="hidden" th:value="${speaker4Name}" name="speaker4Name">
-                            <input type="hidden" th:value="${speaker1Title}" name="speaker1Title">
-                            <input type="hidden" th:value="${speaker2Title}" name="speaker2Title">
-                            <input type="hidden" th:value="${speaker3Title}" name="speaker3Title">
-                            <input type="hidden" th:value="${speaker4Title}" name="speaker4Title">
+                            <th:block th:each="n : ${speakerNames}">
+                                <input type="hidden" name="speakerNames" th:value="${n}">
+                            </th:block>
+                            <th:block th:each="t : ${speakerTitles}">
+                                <input type="hidden" name="speakerTitles" th:value="${t}">
+                            </th:block>
                             <input type="hidden" th:value="${speakersAuxiliary}" name="speakersAuxiliary">
                             <input type="hidden" th:value="${announcementsText}" name="announcements">
                             
@@ -71,14 +69,12 @@
                             <input type="hidden" th:field="${sacramentProgram.stakeBusiness}">
                             <input type="hidden" th:field="${sacramentProgram.benediction}">
                             
-                            <input type="hidden" th:value="${speaker1Name}" name="speaker1Name">
-                            <input type="hidden" th:value="${speaker2Name}" name="speaker2Name">
-                            <input type="hidden" th:value="${speaker3Name}" name="speaker3Name">
-                            <input type="hidden" th:value="${speaker4Name}" name="speaker4Name">
-                            <input type="hidden" th:value="${speaker1Title}" name="speaker1Title">
-                            <input type="hidden" th:value="${speaker2Title}" name="speaker2Title">
-                            <input type="hidden" th:value="${speaker3Title}" name="speaker3Title">
-                            <input type="hidden" th:value="${speaker4Title}" name="speaker4Title">
+                            <th:block th:each="n : ${speakerNames}">
+                                <input type="hidden" name="speakerNames" th:value="${n}">
+                            </th:block>
+                            <th:block th:each="t : ${speakerTitles}">
+                                <input type="hidden" name="speakerTitles" th:value="${t}">
+                            </th:block>
                             <input type="hidden" th:value="${speakersAuxiliary}" name="speakersAuxiliary">
                             <input type="hidden" th:value="${announcementsText}" name="announcements">
                             
@@ -115,14 +111,12 @@
                         <input type="hidden" th:field="${sacramentProgram.stakeBusiness}">
                         <input type="hidden" th:field="${sacramentProgram.benediction}">
                         
-                        <input type="hidden" th:value="${speaker1Name}" name="speaker1Name">
-                        <input type="hidden" th:value="${speaker2Name}" name="speaker2Name">
-                        <input type="hidden" th:value="${speaker3Name}" name="speaker3Name">
-                        <input type="hidden" th:value="${speaker4Name}" name="speaker4Name">
-                        <input type="hidden" th:value="${speaker1Title}" name="speaker1Title">
-                        <input type="hidden" th:value="${speaker2Title}" name="speaker2Title">
-                        <input type="hidden" th:value="${speaker3Title}" name="speaker3Title">
-                        <input type="hidden" th:value="${speaker4Title}" name="speaker4Title">
+                        <th:block th:each="n : ${speakerNames}">
+                            <input type="hidden" name="speakerNames" th:value="${n}">
+                        </th:block>
+                        <th:block th:each="t : ${speakerTitles}">
+                            <input type="hidden" name="speakerTitles" th:value="${t}">
+                        </th:block>
                         <input type="hidden" th:value="${speakersAuxiliary}" name="speakersAuxiliary">
                         <input type="hidden" th:value="${announcementsText}" name="announcements">
                         

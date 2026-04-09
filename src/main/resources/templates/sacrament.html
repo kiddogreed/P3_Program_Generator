@@ -14,7 +14,7 @@
                  th:text="${errorMessage}"></div>
             
             <div class="program-form">
-                <form class="meeting-form" th:action="@{/sacrament/generate}" method="post" th:object="${sacramentProgram}">
+                <form class="meeting-form" th:action="@{/sacrament/preview}" method="post" th:object="${sacramentProgram}">
                     <div class="form-section">
                         <h3>Ward Information</h3>
                         <div class="form-group">
@@ -39,12 +39,16 @@
                         </div>
                         <div class="form-group">
                             <label for="conducting">Conducted by:</label>
-                            <select id="conducting" th:field="*{conducting}">
-                                <option value="">Select Conductor</option>
-                                <option value="(2nd Co) Bro. Joenice Gaco" th:selected="*{conducting} == '(2nd Co) Bro. Joenice Gaco'">(2nd Co) Bro. Joenice Gaco</option>
-                                <option value="(1st Co) Bro. John Moroni Mendoza" th:selected="*{conducting} == '(1st Co) Bro. John Moroni Mendoza'">(1st Co) Bro. John Moroni Mendoza</option>
-                                <option value="(Bishop) Sherwin Tan" th:selected="*{conducting} == '(Bishop) Sherwin Tan'">(Bishop) Sherwin Tan</option>
-                            </select>
+                            <div style="display:flex;align-items:center;gap:8px;">
+                                <select id="conducting" th:field="*{conducting}" style="flex:1;">
+                                    <option value="">Select Conductor</option>
+                                    <option th:each="c : ${conductors}"
+                                            th:value="${c.name}"
+                                            th:text="${c.name}">
+                                    </option>
+                                </select>
+                                <a href="/conductors" class="btn btn-sm btn-secondary" target="_blank" title="Manage Conductors" style="white-space:nowrap;">⚙ Manage</a>
+                            </div>
                         </div>
                         <div class="form-group">
                             <label for="acknowledgement">Acknowledgement: <span class="char-limit">(max 400 characters)</span></label>
@@ -126,66 +130,19 @@
                                 <option value="Stake Organization">Stake Organization</option>
                             </select>
                         </div>
-                        <div class="speaker-row">
-                            <div class="form-group">
-                                <label for="speaker1Title">1st Speaker Title:</label>
-                                <select id="speaker1Title" name="speaker1Title" th:value="${speaker1Title}">
-                                    <option value="">Select Title</option>
-                                    <option value="Bro." th:selected="${speaker1Title == 'Bro.'}">Bro.</option>
-                                    <option value="Sis." th:selected="${speaker1Title == 'Sis.'}">Sis.</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="speaker1Name">1st Speaker Name:</label>
-                                <input type="text" id="speaker1Name" name="speaker1Name" th:value="${speaker1Name}" placeholder="First Speaker Name">
-                            </div>
+
+                        <div id="speakersContainer">
+                            <!-- Speaker rows injected by JS -->
                         </div>
-                        <div class="speaker-row">
-                            <div class="form-group">
-                                <label for="speaker2Title">2nd Speaker Title:</label>
-                                <select id="speaker2Title" name="speaker2Title" th:value="${speaker2Title}">
-                                    <option value="">Select Title</option>
-                                    <option value="Bro." th:selected="${speaker2Title == 'Bro.'}">Bro.</option>
-                                    <option value="Sis." th:selected="${speaker2Title == 'Sis.'}">Sis.</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="speaker2Name">2nd Speaker Name:</label>
-                                <input type="text" id="speaker2Name" name="speaker2Name" th:value="${speaker2Name}" placeholder="Second Speaker Name">
-                            </div>
-                        </div>
-                        <div class="speaker-row">
-                            <div class="form-group">
-                                <label for="speaker3Title">3rd Speaker Title:</label>
-                                <select id="speaker3Title" name="speaker3Title" th:value="${speaker3Title}">
-                                    <option value="">Select Title</option>
-                                    <option value="Bro." th:selected="${speaker3Title == 'Bro.'}">Bro.</option>
-                                    <option value="Sis." th:selected="${speaker3Title == 'Sis.'}">Sis.</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="speaker3Name">3rd Speaker Name:</label>
-                                <input type="text" id="speaker3Name" name="speaker3Name" th:value="${speaker3Name}" placeholder="Third Speaker Name">
-                            </div>
-                        </div>
-                        <div class="speaker-row">
-                            <div class="form-group">
-                                <label for="speaker4Title">4th Speaker Title:</label>
-                                <select id="speaker4Title" name="speaker4Title" th:value="${speaker4Title}">
-                                    <option value="">Select Title</option>
-                                    <option value="Bro." th:selected="${speaker4Title == 'Bro.'}">Bro.</option>
-                                    <option value="Sis." th:selected="${speaker4Title == 'Sis.'}">Sis.</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="speaker4Name">4th Speaker Name:</label>
-                                <input type="text" id="speaker4Name" name="speaker4Name" th:value="${speaker4Name}" placeholder="Fourth Speaker Name">
-                            </div>
+
+                        <div style="margin-top:8px;">
+                            <button type="button" class="btn btn-secondary btn-sm" onclick="addSpeaker()" id="addSpeakerBtn">+ Add Speaker</button>
+                            <small id="speakerLimitNote" style="color:#718096;margin-left:8px;"></small>
                         </div>
                     </div>
 
                     <div class="form-actions">
-                        <button type="submit" formaction="/sacrament/preview" class="btn btn-primary">Preview Program</button>
+                        <button type="submit" class="btn btn-primary">Preview Program</button>
                         <button type="reset" class="btn btn-secondary">Clear Form</button>
                         <a href="/sacrament/test-preview" class="btn btn-secondary" style="text-decoration:none;">🧪 Test Full Preview</a>
                     </div>
@@ -196,30 +153,134 @@
 
     <footer th:replace="layout :: footer"></footer>
 
-    <script>
+    <script th:inline="javascript">
+        // ── Character counter ──────────────────────────────────────────────
         function updateCharCount(fieldId, maxLength) {
             const field = document.getElementById(fieldId);
-            const countElement = document.getElementById(fieldId + '-count');
-            const currentLength = field.value.length;
-            
-            countElement.textContent = currentLength + '/' + maxLength + ' characters';
-            
-            // Change color when approaching limit
-            if (currentLength > maxLength * 0.9) {
-                countElement.style.color = '#e53e3e'; // Red when near limit
-            } else if (currentLength > maxLength * 0.8) {
-                countElement.style.color = '#dd6b20'; // Orange when getting close
+            const countEl = document.getElementById(fieldId + '-count');
+            if (!field || !countEl) return;
+            const len = field.value.length;
+            countEl.textContent = len + '/' + maxLength + ' characters';
+            countEl.style.color = len > maxLength * 0.9 ? '#e53e3e'
+                                 : len > maxLength * 0.8 ? '#dd6b20' : '#4a5568';
+        }
+
+        // ── Dynamic speakers ───────────────────────────────────────────────
+        const MAX_SPEAKERS = 7;
+        const DEFAULT_SPEAKERS = 3;
+
+        // Initial data from server (empty list on new form; populated on edit/history load)
+        const initialSpeakerNames   = /*[[${speakerNames}]]*/ [];
+        const initialSpeakerTitles  = /*[[${speakerTitles}]]*/ [];
+
+        const ordinals = ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th'];
+
+        function buildSpeakerRow(index, name, title) {
+            const ord = ordinals[index] || (index + 1) + 'th';
+            const div = document.createElement('div');
+            div.className = 'speaker-row';
+            div.style.cssText = 'display:flex;align-items:flex-end;gap:8px;margin-bottom:8px;';
+
+            // Title select
+            const titleWrap = document.createElement('div');
+            titleWrap.className = 'form-group';
+            titleWrap.style.flex = '0 0 140px';
+            const titleLabel = document.createElement('label');
+            titleLabel.textContent = ord + ' Speaker Title:';
+            const titleSel = document.createElement('select');
+            titleSel.name = 'speakerTitles';
+            titleSel.innerHTML = '<option value="">Title</option>'
+                + ['Bro.', 'Sis.'].map(t =>
+                    `<option value="${t}"${title === t ? ' selected' : ''}>${t}</option>`
+                ).join('');
+            titleWrap.appendChild(titleLabel);
+            titleWrap.appendChild(titleSel);
+
+            // Name input
+            const nameWrap = document.createElement('div');
+            nameWrap.className = 'form-group';
+            nameWrap.style.flex = '1';
+            const nameLabel = document.createElement('label');
+            nameLabel.textContent = ord + ' Speaker Name:';
+            const nameInput = document.createElement('input');
+            nameInput.type = 'text';
+            nameInput.name = 'speakerNames';
+            nameInput.value = name || '';
+            nameInput.placeholder = ord + ' Speaker Name';
+            nameInput.maxLength = 100;
+            nameWrap.appendChild(nameLabel);
+            nameWrap.appendChild(nameInput);
+
+            div.appendChild(titleWrap);
+            div.appendChild(nameWrap);
+
+            // Remove button (never shown for the first row)
+            if (index > 0) {
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.className = 'btn btn-sm btn-danger';
+                removeBtn.textContent = '✕';
+                removeBtn.style.cssText = 'flex:0 0 auto;margin-bottom:2px;';
+                removeBtn.onclick = function () {
+                    div.remove();
+                    renumberSpeakers();
+                    updateSpeakerAddButton();
+                };
+                div.appendChild(removeBtn);
+            }
+
+            return div;
+        }
+
+        function renumberSpeakers() {
+            const rows = document.querySelectorAll('#speakersContainer .speaker-row');
+            rows.forEach((row, i) => {
+                const ord = ordinals[i] || (i + 1) + 'th';
+                const labels = row.querySelectorAll('label');
+                if (labels[0]) labels[0].textContent = ord + ' Speaker Title:';
+                if (labels[1]) labels[1].textContent = ord + ' Speaker Name:';
+                const nameInput = row.querySelector('input[name="speakerNames"]');
+                if (nameInput) nameInput.placeholder = ord + ' Speaker Name';
+            });
+        }
+
+        function updateSpeakerAddButton() {
+            const count = document.querySelectorAll('#speakersContainer .speaker-row').length;
+            const btn = document.getElementById('addSpeakerBtn');
+            const note = document.getElementById('speakerLimitNote');
+            if (count >= MAX_SPEAKERS) {
+                btn.disabled = true;
+                note.textContent = 'Maximum ' + MAX_SPEAKERS + ' speakers reached.';
             } else {
-                countElement.style.color = '#4a5568'; // Normal gray
+                btn.disabled = false;
+                note.textContent = '';
             }
         }
 
-        // Initialize character counters on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            updateCharCount('acknowledgement', 200);
+        function addSpeaker() {
+            const count = document.querySelectorAll('#speakersContainer .speaker-row').length;
+            if (count >= MAX_SPEAKERS) return;
+            const container = document.getElementById('speakersContainer');
+            container.appendChild(buildSpeakerRow(count, '', ''));
+            updateSpeakerAddButton();
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Character counters
+            updateCharCount('acknowledgement', 400);
             updateCharCount('announcements', 400);
-            updateCharCount('wardBusiness', 300);
+            updateCharCount('wardBusiness', 400);
             updateCharCount('stakeBusiness', 300);
+
+            // Initialise speaker rows
+            const container = document.getElementById('speakersContainer');
+            const count = Math.max(initialSpeakerNames.length, DEFAULT_SPEAKERS);
+            for (let i = 0; i < count; i++) {
+                container.appendChild(buildSpeakerRow(i,
+                    initialSpeakerNames[i] || '',
+                    initialSpeakerTitles[i] || ''));
+            }
+            updateSpeakerAddButton();
         });
     </script>
 </body>

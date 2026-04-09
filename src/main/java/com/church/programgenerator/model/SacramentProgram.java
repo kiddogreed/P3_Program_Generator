@@ -1,19 +1,25 @@
 package com.church.programgenerator.model;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 public class SacramentProgram {
     private String stakeName;
     @NotBlank(message = "Ward name is required")
     private String wardName;
     @NotNull(message = "Meeting date is required")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate date;
     private String presiding;
     private String conducting;
+    @Size(max = 600, message = "Acknowledgement cannot exceed 600 characters")
     private String acknowledgement;
     private List<String> announcements;
     
@@ -26,7 +32,9 @@ public class SacramentProgram {
     
     // Program sections
     private String invocation;
+    @Size(max = 400, message = "Ward Business cannot exceed 400 characters")
     private String wardBusiness;
+    @Size(max = 400, message = "Stake Business cannot exceed 400 characters")
     private String stakeBusiness;
     private List<Speaker> speakers;
     private String speakersAuxiliary;

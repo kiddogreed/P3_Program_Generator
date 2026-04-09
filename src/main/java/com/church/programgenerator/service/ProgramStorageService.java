@@ -1,5 +1,15 @@
 package com.church.programgenerator.service;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
+
 import com.church.programgenerator.model.BishopricProgram;
 import com.church.programgenerator.model.SacramentProgram;
 import com.church.programgenerator.model.SavedProgram;
@@ -7,13 +17,6 @@ import com.church.programgenerator.model.WardCouncilProgram;
 import com.church.programgenerator.repository.SavedProgramRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 @Service
 public class ProgramStorageService {
@@ -87,6 +90,14 @@ public class ProgramStorageService {
     @Cacheable(value = "programHistory", key = "#meetingType")
     public List<SavedProgram> getProgramsByType(String meetingType) {
         return repository.findByMeetingTypeOrderByCreatedAtDesc(meetingType);
+    }
+
+    public Page<SavedProgram> getAllPrograms(int page, int size) {
+        return repository.findAllByOrderByCreatedAtDesc(PageRequest.of(page, size));
+    }
+
+    public Page<SavedProgram> getProgramsByType(String meetingType, int page, int size) {
+        return repository.findByMeetingTypeOrderByCreatedAtDesc(meetingType.toUpperCase(), PageRequest.of(page, size));
     }
 
     public SacramentProgram loadSacramentProgram(Long id) {
