@@ -277,19 +277,6 @@
             </div>
             
             <div class="export-buttons">
-                <form th:action="@{/bishopric/export/docx}" method="post" style="display: inline;">
-                    <input type="hidden" name="wardName" th:value="${bishopricProgram.wardName}">
-                    <input type="hidden" name="meetingDate" th:value="${bishopricProgram.meetingDate}">
-                    <input type="hidden" name="presiding" th:value="${bishopricProgram.presiding}">
-                    <input type="hidden" name="conducting" th:value="${bishopricProgram.conducting}">
-                    <input type="hidden" name="openingPrayer" th:value="${bishopricProgram.openingPrayer}">
-                    <input type="hidden" name="closingPrayer" th:value="${bishopricProgram.closingPrayer}">
-                    <input type="hidden" name="handbookSpiritual" th:value="${bishopricProgram.handbookSpiritual}">
-                    <input type="hidden" name="agendaItemsText" th:value="${param.agendaItemsText[0]}">
-                    <input type="hidden" name="callingsAndReleases" th:value="${bishopricProgram.callingsAndReleases}">
-                    <button type="submit" class="btn btn-primary">Export to Word</button>
-                </form>
-                
                 <form th:action="@{/bishopric/export/pdf}" method="post" style="display: inline;">
                     <input type="hidden" name="wardName" th:value="${bishopricProgram.wardName}">
                     <input type="hidden" name="meetingDate" th:value="${bishopricProgram.meetingDate}">

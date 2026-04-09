@@ -10,6 +10,29 @@ A modern, professional Spring Boot web application for creating and managing chu
 
 ## 🆕 **Latest Updates (April 2026)**
 
+### **📱 Full Mobile Browser Compatibility (April 2026)**
+- **Hamburger Navigation**: Navigation bar collapses into a hamburger menu (☰) on screens ≤768px — tap to expand/collapse; menu auto-closes on link tap or outside click
+- **Responsive Forms**: Single-column layout with full-width buttons on mobile; all form rows stack vertically
+- **Speaker Rows Stack**: Dynamically added speaker rows wrap and stack on screens ≤520px
+- **iOS Auto-Zoom Fix**: All form inputs/textareas/selects set to `font-size: 16px` on ≤480px screens — prevents iOS Safari from zooming in on focus
+- **History Table**: Low-priority columns hidden on small screens; action buttons stack vertically
+- **Preview & Export**: Single-column layout for preview containers and export button groups on mobile
+- **Bishopric Forms**: Reduced padding/margin; form rows forced to single-column grid on mobile
+- **Cross-Browser Tested**: Chrome Mobile, Safari iOS, Samsung Internet, Firefox Mobile
+
+### **☁️ Cloud Deployment Ready (April 2026)**
+- **Environment Variable Support**: `DATABASE_URL`, `DATABASE_USERNAME`, `DATABASE_PASSWORD` now override `application.properties` — no code change needed for cloud deployment
+- **Local Fallback**: Defaults to `localhost:5432/church_programs` when env vars are absent — local dev unchanged
+- **Railway / Render / Fly.io Ready**: Connect GitHub repo → add PostgreSQL plugin → set 3 env vars → live URL
+
+### **🎨 Bishopric Meeting PDF Redesign (April 2026)**
+- **Elegant Single-Page Layout**: Full lavender `#e8e4f0` background with double-border frame
+- **C-Scroll Corner Ornaments**: Decorative PdfCanvas-drawn ornaments at each corner
+- **Serif Typography**: Times New Roman / Times fonts for a formal, traditional look
+- **Centered Layout**: All content centered — ward name, date, logo, meeting details
+- **Auto-Scale**: Font size auto-adjusts (scale 0.72–1.0) to fill the page without overflow
+- **PDF Only**: DOCX export removed from Bishopric preview — PDF is the sole export format
+
 ### **🎯 Document Output Overhaul — DOCX & PDF Match Preview (April 2026)**
 - **Blue Section Header**: Program header now renders in church blue (`#2c5282`) at 12pt bold in both DOCX and PDF — matching the HTML preview
 - **Consistent Font Sizing**: All body text uniformly set to 11pt (DOCX) / 10pt (PDF); previously inconsistent across sections
@@ -105,8 +128,9 @@ A modern, professional Spring Boot web application for creating and managing chu
 - **MSN-Style Interface**: Dark gradient navigation with professional appearance
 - **Tabbed Navigation**: Intuitive tab system for different meeting types
 - **History Tab**: Browse and reload saved programs from the navigation bar
+- **Hamburger Menu**: Collapses to a ☰ toggle button on mobile — animated, accessible
 - **Coming Soon Features**: Visual indicators for future functionality (Speaker Invites)
-- **Mobile Responsive**: Seamless experience across all device types
+- **Mobile Responsive**: Full hamburger nav on ≤768px; iOS/Android tested
 - **Visual Feedback**: Active states, hover effects, and smooth transitions
 
 ### 🗄️ Program History & Database
@@ -216,9 +240,9 @@ docker-compose up -d
 #### **Method 3: Cloud Deployment (Access Anywhere)**
 **Requirements:** Cloud hosting account
 
-- **Railway**: Connect GitHub repo for automatic deployment
-- **Render**: Free tier with direct JAR deployment
-- **Heroku**: Classic platform with buildpack support
+- **Railway** *(Recommended)*: Connect GitHub repo → add PostgreSQL plugin → set `DATABASE_URL`, `DATABASE_USERNAME`, `DATABASE_PASSWORD` → auto-deploys on every push
+- **Render**: Free tier with direct JAR deployment (sleeps after 15 min on free tier)
+- **Fly.io**: Uses existing Dockerfile directly via `flyctl` CLI
 - **AWS/Azure/GCP**: Enterprise-grade hosting options
 
 #### **Method 4: Network Sharing (Local Network)**
@@ -506,6 +530,7 @@ data/
 
 #### **Data & Caching**
 - **PostgreSQL 17**: Production-grade relational database (`localhost:5432`, database `church_programs`)
+- **Environment Variable Override**: `DATABASE_URL`, `DATABASE_USERNAME`, `DATABASE_PASSWORD` for cloud deployment
 - **Caffeine Cache**: High-performance in-memory caching library
 - **Jackson + JavaTimeModule**: JSON serialization of program data including `LocalDate`/`LocalDateTime`
 
@@ -517,7 +542,7 @@ data/
 - **Hover Effects**: Subtle backdrop blur and lift animations
 - **Active State Styling**: White overlay with blue accent indicators
 - **Church Icon Integration**: Emoji-based church icon (🏛️) for branding
-- **Responsive Behavior**: Mobile-optimized with horizontal scrolling
+- **Hamburger Menu**: On mobile (≤768px), tabs collapse behind a ☰ button — animated X on open
 
 ### 🎨 **Visual Design System**
 - **Color Palette**:
@@ -532,10 +557,12 @@ data/
   - **Font Hierarchy**: Proper sizing for headers, body text, and navigation
 
 ### 📱 **Responsive Design Features**
-- **Mobile Navigation**: Stacked layout with horizontal scroll for tabs
+- **Hamburger Navigation**: Collapses nav tabs into a toggle menu on mobile (≤768px)
 - **Card Interface**: Grid-based layout that adapts to screen size
-- **Touch Optimization**: Larger touch targets and improved spacing
-- **Cross-Browser Support**: Tested on Chrome, Firefox, Safari, and Edge
+- **Touch Optimization**: Larger touch targets and improved spacing; menu closes on outside tap
+- **iOS Auto-Zoom Prevention**: `font-size: 16px` on all inputs at ≤480px
+- **Speaker Row Stacking**: JS-built flex rows wrap to full width on ≤520px screens
+- **Cross-Browser Support**: Tested on Chrome, Firefox, Safari (iOS), Samsung Internet, and Edge
 - **Print Optimization**: Clean print styles for generated documents
 
 ## ⚙️ Configuration & Environment
@@ -552,11 +579,11 @@ spring.application.name=ProgramGenerator
 # Thymeleaf Configuration
 spring.thymeleaf.cache=false              # Set true in production
 
-# PostgreSQL Database
-spring.datasource.url=jdbc:postgresql://localhost:5432/church_programs
+# PostgreSQL Database (supports environment variable overrides for cloud deployment)
+spring.datasource.url=${DATABASE_URL:jdbc:postgresql://localhost:5432/church_programs}
 spring.datasource.driver-class-name=org.postgresql.Driver
-spring.datasource.username=postgres
-spring.datasource.password=<your-password>
+spring.datasource.username=${DATABASE_USERNAME:postgres}
+spring.datasource.password=${DATABASE_PASSWORD:<your-password>}
 spring.jpa.hibernate.ddl-auto=update     # Auto-create/update tables
 spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
 

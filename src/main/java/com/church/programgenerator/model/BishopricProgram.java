@@ -1,21 +1,33 @@
 package com.church.programgenerator.model;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
 public class BishopricProgram {
     @NotBlank(message = "Ward name is required")
+    @Size(max = 100)
     private String wardName = "3rd Ward";
     @NotNull(message = "Meeting date is required")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate meetingDate;
+    @Size(max = 150)
     private String presiding;
+    @Size(max = 150)
     private String conducting;
+    @Size(max = 150)
     private String openingPrayer;
+    @Size(max = 300)
     private String handbookSpiritual;
     private List<String> agendaItems;
+    @Size(max = 500)
     private String callingsAndReleases;
+    @Size(max = 150)
     private String closingPrayer;
     
     // Default constructor

@@ -198,8 +198,8 @@
                 <form th:action="@{/bishopric/preview}" method="post" th:object="${bishopricProgram}" class="bishopric-content">
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="wardName">Ward Name:</label>
-                            <input type="text" id="wardName" th:field="*{wardName}" placeholder="Ward Name">
+                            <label for="wardName">Ward Name: <small style="color:#718096">(max 100)</small></label>
+                            <input type="text" id="wardName" th:field="*{wardName}" placeholder="Ward Name" maxlength="100">
                         </div>
                         <div class="form-group">
                             <label for="meetingDate">Meeting Date:</label>
@@ -210,45 +210,45 @@
                     <div class="decorative-border">
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="presiding">Presiding:</label>
-                                <input type="text" id="presiding" th:field="*{presiding}" placeholder="Bishop's Name">
+                                <label for="presiding">Presiding: <small style="color:#718096">(max 150)</small></label>
+                                <input type="text" id="presiding" th:field="*{presiding}" placeholder="Bishop's Name" maxlength="150">
                             </div>
                             <div class="form-group">
-                                <label for="conducting">Conducting:</label>
-                                <input type="text" id="conducting" th:field="*{conducting}" placeholder="Conducting Authority">
+                                <label for="conducting">Conducting: <small style="color:#718096">(max 150)</small></label>
+                                <input type="text" id="conducting" th:field="*{conducting}" placeholder="Conducting Authority" maxlength="150">
                             </div>
                         </div>
                         
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="openingPrayer">Opening Prayer:</label>
-                                <input type="text" id="openingPrayer" th:field="*{openingPrayer}" placeholder="Opening Prayer by">
+                                <label for="openingPrayer">Opening Prayer: <small style="color:#718096">(max 150)</small></label>
+                                <input type="text" id="openingPrayer" th:field="*{openingPrayer}" placeholder="Opening Prayer by" maxlength="150">
                             </div>
                             <div class="form-group">
-                                <label for="closingPrayer">Closing Prayer:</label>
-                                <input type="text" id="closingPrayer" th:field="*{closingPrayer}" placeholder="Closing Prayer by">
+                                <label for="closingPrayer">Closing Prayer: <small style="color:#718096">(max 150)</small></label>
+                                <input type="text" id="closingPrayer" th:field="*{closingPrayer}" placeholder="Closing Prayer by" maxlength="150">
                             </div>
                         </div>
                     </div>
                     
                     <div class="agenda-section">
-                        <h3>Handbook Spiritual Thought</h3>
+                        <h3>Handbook Spiritual Thought <small style="color:#718096;font-weight:400">(max 300 chars)</small></h3>
                         <div class="form-group form-group-full">
-                            <textarea id="handbookSpiritual" th:field="*{handbookSpiritual}" rows="3" placeholder="Enter handbook spiritual thought or reference..."></textarea>
+                            <textarea id="handbookSpiritual" th:field="*{handbookSpiritual}" rows="3" maxlength="300" placeholder="Enter handbook spiritual thought or reference..."></textarea>
                         </div>
                     </div>
                     
                     <div class="agenda-section">
-                        <h3>Agenda Items</h3>
+                        <h3>Agenda Items <small style="color:#718096;font-weight:400">(one per line, max 600 total)</small></h3>
                         <div class="form-group form-group-full">
-                            <textarea id="agendaItems" name="agendaItemsText" rows="6" placeholder="Enter agenda items (one per line)..."></textarea>
+                            <textarea id="agendaItems" name="agendaItemsText" rows="6" maxlength="600" placeholder="Enter agenda items (one per line)..."></textarea>
                         </div>
                     </div>
                     
                     <div class="agenda-section">
-                        <h3>Callings and Releases</h3>
+                        <h3>Callings and Releases <small style="color:#718096;font-weight:400">(max 500 chars)</small></h3>
                         <div class="form-group form-group-full">
-                            <textarea id="callingsAndReleases" th:field="*{callingsAndReleases}" rows="4" placeholder="Enter callings and releases..."></textarea>
+                            <textarea id="callingsAndReleases" th:field="*{callingsAndReleases}" rows="4" maxlength="500" placeholder="Enter callings and releases..."></textarea>
                         </div>
                     </div>
                     
