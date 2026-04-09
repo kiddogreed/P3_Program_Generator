@@ -46,7 +46,7 @@
                             <input type="hidden" th:value="${speaker3Title}" name="speaker3Title">
                             <input type="hidden" th:value="${speaker4Title}" name="speaker4Title">
                             <input type="hidden" th:value="${speakersAuxiliary}" name="speakersAuxiliary">
-                            <input type="hidden" th:value="${param.announcements[0]}" name="announcements">
+                            <input type="hidden" th:value="${announcementsText}" name="announcements">
                             
                             <button type="submit" class="btn btn-primary">
                                 📄 Export as Word (.docx)
@@ -80,7 +80,7 @@
                             <input type="hidden" th:value="${speaker3Title}" name="speaker3Title">
                             <input type="hidden" th:value="${speaker4Title}" name="speaker4Title">
                             <input type="hidden" th:value="${speakersAuxiliary}" name="speakersAuxiliary">
-                            <input type="hidden" th:value="${param.announcements[0]}" name="announcements">
+                            <input type="hidden" th:value="${announcementsText}" name="announcements">
                             
                             <button type="submit" class="btn btn-success">
                                 📋 Export as PDF (.pdf)
@@ -123,7 +123,8 @@
                         <input type="hidden" th:value="${speaker2Title}" name="speaker2Title">
                         <input type="hidden" th:value="${speaker3Title}" name="speaker3Title">
                         <input type="hidden" th:value="${speaker4Title}" name="speaker4Title">
-                        <input type="hidden" th:value="${param.announcements[0]}" name="announcements">
+                        <input type="hidden" th:value="${speakersAuxiliary}" name="speakersAuxiliary">
+                        <input type="hidden" th:value="${announcementsText}" name="announcements">
                         
                         <button type="submit" class="btn btn-secondary">← Back to Edit Form</button>
                     </form>

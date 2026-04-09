@@ -1,12 +1,16 @@
 package com.church.programgenerator.model;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 public class SacramentProgram {
     private String stakeName;
+    @NotBlank(message = "Ward name is required")
     private String wardName;
+    @NotNull(message = "Meeting date is required")
     private LocalDate date;
     private String presiding;
     private String conducting;

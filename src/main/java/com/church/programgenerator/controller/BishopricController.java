@@ -20,6 +20,7 @@ import com.church.programgenerator.model.BishopricProgram;
 import com.church.programgenerator.service.BishopricProgramDocumentService;
 import com.church.programgenerator.service.BishopricProgramPdfService;
 import com.church.programgenerator.service.FileStorageService;
+import com.church.programgenerator.service.ProgramStorageService;
 
 @Controller
 @RequestMapping("/bishopric")
@@ -33,6 +34,9 @@ public class BishopricController {
     
     @Autowired
     private FileStorageService fileStorageService;
+
+    @Autowired
+    private ProgramStorageService programStorageService;
 
     @GetMapping
     public String bishopricMeeting(Model model) {
@@ -83,6 +87,9 @@ public class BishopricController {
             // Generate document
             byte[] documentBytes = documentService.generateDocument(program);
             
+            // Auto-save to database
+            try { programStorageService.saveBishopricProgram(program); } catch (Exception ignored) {}
+
             // Create filename with date
             String filename = fileStorageService.generateFilename("bishopric", meetingDate, ".docx");
             
@@ -119,6 +126,9 @@ public class BishopricController {
             
             // Generate PDF
             byte[] pdfBytes = pdfService.generatePdf(program);
+
+            // Auto-save to database
+            try { programStorageService.saveBishopricProgram(program); } catch (Exception ignored) {}
             
             // Create filename with date
             String filename = fileStorageService.generateFilename("bishopric", meetingDate, ".pdf");

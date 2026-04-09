@@ -1,9 +1,13 @@
 package com.church.programgenerator.model;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 public class WardCouncilProgram {
+    @NotBlank(message = "Ward name is required")
     private String wardName = "Pasay 3rd";
+    @NotNull(message = "Meeting date is required")
     private LocalDate meetingDate;
     private String openingPrayer;
     private String handbookReading;

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Saved Programs – History')}"></head>
+<body>
+    <nav th:replace="~{layout :: navigation('history')}"></nav>
+
+    <main class="main-content">
+        <div class="container">
+            <h1>Saved Programs</h1>
+
+            <!-- Flash / success message -->
+            <div th:if="${successMessage}" class="alert alert-success" role="alert">
+                <span th:text="${successMessage}"></span>
+            </div>
+
+            <!-- Filter bar -->
+            <div class="history-filters">
+                <a th:href="@{/history}"
+                   th:class="'filter-btn' + (${activeFilter} == 'ALL' ? ' active' : '')">All</a>
+                <a th:href="@{/history(type='SACRAMENT')}"
+                   th:class="'filter-btn' + (${activeFilter} == 'SACRAMENT' ? ' active' : '')">Sacrament</a>
+                <a th:href="@{/history(type='WARD_COUNCIL')}"
+                   th:class="'filter-btn' + (${activeFilter} == 'WARD_COUNCIL' ? ' active' : '')">Ward Council</a>
+                <a th:href="@{/history(type='BISHOPRIC')}"
+                   th:class="'filter-btn' + (${activeFilter} == 'BISHOPRIC' ? ' active' : '')">Bishopric</a>
+            </div>
+
+            <!-- Empty state -->
+            <div th:if="${#lists.isEmpty(programs)}" class="history-empty">
+                <p>No saved programs yet. Programs are saved automatically when you export a document.</p>
+                <a th:href="@{/}" class="btn btn-primary">Create a Program</a>
+            </div>
+
+            <!-- Programs table -->
+            <div th:unless="${#lists.isEmpty(programs)}" class="history-table-wrapper">
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Description</th>
+                            <th>Meeting Date</th>
+                            <th>Saved</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="prog : ${programs}">
+                            <td>
+                                <span th:class="'badge badge-' + ${#strings.toLowerCase(prog.meetingType)}"
+                                      th:text="${prog.meetingType == 'WARD_COUNCIL' ? 'Ward Council' :
+                                                 prog.meetingType == 'SACRAMENT' ? 'Sacrament' : 'Bishopric'}">
+                                </span>
+                            </td>
+                            <td th:text="${prog.description}"></td>
+                            <td th:text="${#temporals.format(prog.meetingDate, 'MMM d, yyyy')}"></td>
+                            <td th:text="${#temporals.format(prog.createdAt, 'MMM d, yyyy h:mm a')}"></td>
+                            <td class="action-cell">
+                                <!-- Load button routes to the correct form -->
+                                <a th:if="${prog.meetingType == 'SACRAMENT'}"
+                                   th:href="@{/history/load/sacrament/{id}(id=${prog.id})}"
+                                   class="btn btn-sm btn-primary">Load</a>
+                                <a th:if="${prog.meetingType == 'BISHOPRIC'}"
+                                   th:href="@{/history/load/bishopric/{id}(id=${prog.id})}"
+                                   class="btn btn-sm btn-primary">Load</a>
+                                <a th:if="${prog.meetingType == 'WARD_COUNCIL'}"
+                                   th:href="@{/history/load/ward-council/{id}(id=${prog.id})}"
+                                   class="btn btn-sm btn-primary">Load</a>
+                                <form th:action="@{/history/delete/{id}(id=${prog.id})}" method="post"
+                                      onsubmit="return confirm('Delete this saved program?')">
+                                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="~{layout :: footer}"></footer>
+</body>
+</html>

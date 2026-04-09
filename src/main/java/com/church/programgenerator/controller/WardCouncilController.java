@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.church.programgenerator.model.WardCouncilProgram;
 import com.church.programgenerator.service.FileStorageService;
+import com.church.programgenerator.service.ProgramStorageService;
 import com.church.programgenerator.service.WardCouncilDocumentService;
 import com.church.programgenerator.service.WardCouncilPdfService;
 
@@ -31,6 +32,9 @@ public class WardCouncilController {
     
     @Autowired
     private FileStorageService fileStorageService;
+
+    @Autowired
+    private ProgramStorageService programStorageService;
 
     @GetMapping
     public String wardCouncilMeeting(Model model) {
@@ -64,6 +68,9 @@ public class WardCouncilController {
             
             // Generate document
             byte[] documentBytes = documentService.generateDocument(program);
+
+            // Auto-save to database
+            try { programStorageService.saveWardCouncilProgram(program); } catch (Exception ignored) {}
             
             // Create filename with date
             String filename = fileStorageService.generateFilename("wardCouncil", meetingDate, ".docx");
@@ -100,6 +107,9 @@ public class WardCouncilController {
             
             // Generate PDF
             byte[] pdfBytes = pdfService.generatePdf(program);
+
+            // Auto-save to database
+            try { programStorageService.saveWardCouncilProgram(program); } catch (Exception ignored) {}
             
             // Create filename with date
             String filename = fileStorageService.generateFilename("wardCouncil", meetingDate, ".pdf");

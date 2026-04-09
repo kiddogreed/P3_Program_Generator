@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.church.programgenerator.model.SacramentProgram;
 import com.church.programgenerator.model.Speaker;
 import com.church.programgenerator.service.FileStorageService;
+import com.church.programgenerator.service.ProgramStorageService;
 import com.church.programgenerator.service.SacramentProgramDocumentService;
 import com.church.programgenerator.service.SacramentProgramPreviewService;
 
@@ -34,6 +35,9 @@ public class SacramentController {
     
     @Autowired
     private FileStorageService fileStorageService;
+
+    @Autowired
+    private ProgramStorageService programStorageService;
 
     @GetMapping
     public String sacramentProgram(Model model) {
@@ -122,7 +126,60 @@ public class SacramentController {
         model.addAttribute("speaker3Title", speaker3Title);
         model.addAttribute("speaker4Title", speaker4Title);
         model.addAttribute("speakersAuxiliary", speakersAuxiliary);
+        model.addAttribute("announcementsText", announcements);
         
+        return "sacrament-preview";
+    }
+
+    @GetMapping("/test-preview")
+    public String testPreview(Model model) {
+        SacramentProgram program = new SacramentProgram();
+        program.setStakeName("Pasay Philippine Stake");
+        program.setWardName("Pasay 3rd Ward");
+        program.setDate(LocalDate.of(2026, 4, 12));
+        program.setPresiding("Bishop Sherwin Tan");
+        program.setConducting("(2nd Co) Bro. Joenice Gaco");
+        program.setAcknowledgement("(2nd Co) Bro. Jonathan OrdillasBro. Adrian Matro (Wrd Clrk), Johanne Perlas (Asst. Clrk. rec). Bro. Norman Oliva (Asst. Clrk. fin), (wrd exc. Secr.) John Russelle Domingo, (wrd exc. Asst. Secr.) Genesis Ferareza, To all Visitors and Stake Leaders (Welcome).");
+        program.setChorister("Sis. Kyle Domingo");
+        program.setPianist("Bro. Oscar Driz");
+        program.setOpeningHymn("#26 \"Joseph Smith's First Prayer\"");
+        program.setSacramentHymn("#181 \"Jesus of Nazareth, Savior and King\"");
+        program.setClosingHymn("#270 \"I'll Go Where You Want Me to Go\"");
+        program.setInvocation("Sis. Izabel Ann Mamaril Oliva");
+        program.setWardBusiness("n/a");
+        program.setStakeBusiness("Bro. Gajultos JR");
+        program.setBenediction("Sis. Zharich Villalobos Ebro");
+        program.setSpeakersAuxiliary("Relief Society");
+
+        String announcementsText = "Ongoing Sports (Invite to participate or watch and support our teams)\nApril 5 Easter Sunday";
+        processAnnouncements(program, announcementsText);
+
+        String s1Name = "Lyka Villanueva";
+        String s2Name = "Myrna Driz";
+        String s3Name = "Meraluna Docabo";
+        String s4Name = "";
+        String s1Title = "Sis.";
+        String s2Title = "Sis.";
+        String s3Title = "Sis.";
+        String s4Title = "";
+
+        addSpeakersToProgram(program, s1Name, s2Name, s3Name, s4Name, s1Title, s2Title, s3Title, s4Title);
+
+        String previewHtml = previewService.generateHtmlPreview(program);
+
+        model.addAttribute("previewHtml", previewHtml);
+        model.addAttribute("sacramentProgram", program);
+        model.addAttribute("speaker1Name", s1Name);
+        model.addAttribute("speaker2Name", s2Name);
+        model.addAttribute("speaker3Name", s3Name);
+        model.addAttribute("speaker4Name", s4Name);
+        model.addAttribute("speaker1Title", s1Title);
+        model.addAttribute("speaker2Title", s2Title);
+        model.addAttribute("speaker3Title", s3Title);
+        model.addAttribute("speaker4Title", s4Title);
+        model.addAttribute("speakersAuxiliary", "Relief Society");
+        model.addAttribute("announcementsText", announcementsText);
+
         return "sacrament-preview";
     }
     
@@ -154,6 +211,9 @@ public class SacramentController {
             // Save to file system
             String filePath = fileStorageService.saveDocxFile(program);
             
+            // Auto-save to database
+            try { programStorageService.saveSacramentProgram(program); } catch (Exception ignored) {}
+
             // Also return for download
             byte[] documentBytes = fileStorageService.getDocxBytes(program);
             String filename = generateFilename(program, ".docx");
@@ -198,6 +258,9 @@ public class SacramentController {
             
             // Save to file system
             String filePath = fileStorageService.savePdfFile(program);
+
+            // Auto-save to database
+            try { programStorageService.saveSacramentProgram(program); } catch (Exception ignored) {}
             
             // Also return for download
             byte[] pdfBytes = fileStorageService.getPdfBytes(program);

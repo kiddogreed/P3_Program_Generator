@@ -160,7 +160,7 @@ public class SacramentProgramPreviewService {
         
         // Add auxiliary if specified
         if (program.getSpeakersAuxiliary() != null && !program.getSpeakersAuxiliary().isEmpty()) {
-            html.append(" <em>(").append(program.getSpeakersAuxiliary()).append(")</em>");
+            html.append(" <strong>").append(program.getSpeakersAuxiliary()).append("</strong>");
         }
         
         html.append("</div>");

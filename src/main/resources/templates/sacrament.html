@@ -7,6 +7,11 @@
     <main class="main-content">
         <div class="container">
             <h1>Sacrament Meeting Program</h1>
+
+            <div th:if="${successMessage}" class="alert alert-success" role="alert"
+                 th:text="${successMessage}"></div>
+            <div th:if="${errorMessage}" class="alert alert-error" role="alert"
+                 th:text="${errorMessage}"></div>
             
             <div class="program-form">
                 <form class="meeting-form" th:action="@{/sacrament/generate}" method="post" th:object="${sacramentProgram}">
@@ -117,6 +122,7 @@
                                 <option value="Family History and Missionary Work">Family History and Missionary Work</option>
                                 <option value="Youth Organization">Youth Organization</option>
                                 <option value="Primary Organization">Primary Organization</option>
+                                <option value="Sunday School">Sunday School</option>
                                 <option value="Stake Organization">Stake Organization</option>
                             </select>
                         </div>
@@ -181,6 +187,7 @@
                     <div class="form-actions">
                         <button type="submit" formaction="/sacrament/preview" class="btn btn-primary">Preview Program</button>
                         <button type="reset" class="btn btn-secondary">Clear Form</button>
+                        <a href="/sacrament/test-preview" class="btn btn-secondary" style="text-decoration:none;">🧪 Test Full Preview</a>
                     </div>
                 </form>
             </div>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Error')}"></head>
+<body>
+    <nav th:replace="~{layout :: navigation('home')}"></nav>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="error-card">
+                <div class="error-icon">⚠️</div>
+                <h1 class="error-title" th:text="${errorTitle ?: 'An Error Occurred'}">An Error Occurred</h1>
+                <p class="error-message" th:text="${errorMessage ?: 'Please go back and try again.'}">
+                    Please go back and try again.
+                </p>
+                <div class="error-actions">
+                    <a href="javascript:history.back()" class="btn btn-secondary">Go Back</a>
+                    <a th:href="@{/}" class="btn btn-primary">Home</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="~{layout :: footer}"></footer>
+</body>
+</html>

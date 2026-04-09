@@ -95,22 +95,24 @@ public class SacramentProgramDocumentService {
         headerRun.addBreak();
         headerRun.setText("Sacrament Program");
         headerRun.setBold(true);
-        headerRun.setFontSize(9);
+        headerRun.setFontSize(12);
+        headerRun.setColor("2c5282");
     }
     
     private void addProgramDetails(XWPFDocument document, SacramentProgram program) {
+        int varFont = computeDocxAdaptiveFontSize(program);
         // Date
         XWPFParagraph dateParagraph = document.createParagraph();
         dateParagraph.setSpacingAfter(0); // No line spacing
         XWPFRun dateRun = dateParagraph.createRun();
         dateRun.setText("Date: ");
         dateRun.setBold(true);
-        dateRun.setFontSize(12);
+        dateRun.setFontSize(11);
         XWPFRun dateValueRun = dateParagraph.createRun();
         dateValueRun.setText(program.getDate() != null ? 
             program.getDate().format(DateTimeFormatter.ofPattern("MMMM d, yyyy")) : 
             "_____________");
-        dateValueRun.setFontSize(10);
+        dateValueRun.setFontSize(11);
         
         // Presiding
         XWPFParagraph presidingParagraph = document.createParagraph();
@@ -118,10 +120,10 @@ public class SacramentProgramDocumentService {
         XWPFRun presidingRun = presidingParagraph.createRun();
         presidingRun.setText("Presiding: ");
         presidingRun.setBold(true);
-        presidingRun.setFontSize(12);
+        presidingRun.setFontSize(11);
         XWPFRun presidingValueRun = presidingParagraph.createRun();
         presidingValueRun.setText(program.getPresiding() != null ? program.getPresiding() : "_____________");
-        presidingValueRun.setFontSize(10);
+        presidingValueRun.setFontSize(11);
         
         // Conducting
         XWPFParagraph conductingParagraph = document.createParagraph();
@@ -129,10 +131,10 @@ public class SacramentProgramDocumentService {
         XWPFRun conductingRun = conductingParagraph.createRun();
         conductingRun.setText("Conducting: ");
         conductingRun.setBold(true);
-        conductingRun.setFontSize(12);
+        conductingRun.setFontSize(11);
         XWPFRun conductingValueRun = conductingParagraph.createRun();
         conductingValueRun.setText(program.getConducting() != null ? program.getConducting() : "_____________");
-        conductingValueRun.setFontSize(10);
+        conductingValueRun.setFontSize(11);
         
         // Acknowledgement
         if (program.getAcknowledgement() != null && !program.getAcknowledgement().isEmpty()) {
@@ -141,10 +143,14 @@ public class SacramentProgramDocumentService {
             XWPFRun ackRun = ackParagraph.createRun();
             ackRun.setText("Acknowledgement: ");
             ackRun.setBold(true);
-            ackRun.setFontSize(12);
+            ackRun.setFontSize(11);
             XWPFRun ackValueRun = ackParagraph.createRun();
-            ackValueRun.setFontSize(10);
+            ackValueRun.setFontSize(varFont);
             addMultilineText(ackValueRun, program.getAcknowledgement());
+            // Blank line for hand-written additions
+            XWPFParagraph ackBlankLine = document.createParagraph();
+            ackBlankLine.setSpacingAfter(0);
+            ackBlankLine.createRun().setFontSize(11);
         }
         
         // Announcements
@@ -154,56 +160,63 @@ public class SacramentProgramDocumentService {
             XWPFRun announcementsRun = announcementsParagraph.createRun();
             announcementsRun.setText("Announcements:");
             announcementsRun.setBold(true);
-            announcementsRun.setFontSize(12);
+            announcementsRun.setFontSize(11);
             
             for (int i = 0; i < program.getAnnouncements().size(); i++) {
                 XWPFParagraph itemParagraph = document.createParagraph();
-                itemParagraph.setSpacingAfter(0); // No line spacing
+                itemParagraph.setSpacingAfter(0);
                 XWPFRun itemRun = itemParagraph.createRun();
                 itemRun.setText((i + 1) + ". " + program.getAnnouncements().get(i));
-                itemRun.setFontSize(10);
+                itemRun.setFontSize(varFont);
             }
+            // Blank line for hand-written additions
+            XWPFParagraph annBlankLine = document.createParagraph();
+            annBlankLine.setSpacingAfter(0);
+            annBlankLine.createRun().setFontSize(11);
         }
     }
     
     private void addMusicSection(XWPFDocument document, SacramentProgram program) {
         // Chorister and Pianist on same line
         XWPFParagraph musicParagraph = document.createParagraph();
-        musicParagraph.setSpacingAfter(0); // No line spacing
+        musicParagraph.setAlignment(ParagraphAlignment.CENTER);
+        musicParagraph.setSpacingBefore(120);
+        musicParagraph.setSpacingAfter(120);
         
         XWPFRun choristerRun = musicParagraph.createRun();
         choristerRun.setText("Chorister: ");
         choristerRun.setBold(true);
-        choristerRun.setFontSize(12);
+        choristerRun.setFontSize(11);
         XWPFRun choristerValueRun = musicParagraph.createRun();
         choristerValueRun.setText(program.getChorister() != null ? program.getChorister() : "_____________");
-        choristerValueRun.setFontSize(10);
+        choristerValueRun.setFontSize(11);
         
         // Add spacing and pipe separator
         XWPFRun separatorRun = musicParagraph.createRun();
         separatorRun.setText("     |     ");
-        separatorRun.setFontSize(10);
+        separatorRun.setFontSize(11);
         
         XWPFRun pianistRun = musicParagraph.createRun();
         pianistRun.setText("Pianist: ");
         pianistRun.setBold(true);
-        pianistRun.setFontSize(12);
+        pianistRun.setFontSize(11);
         XWPFRun pianistValueRun = musicParagraph.createRun();
         pianistValueRun.setText(program.getPianist() != null ? program.getPianist() : "_____________");
-        pianistValueRun.setFontSize(10);
+        pianistValueRun.setFontSize(11);
     }
     
     private void addProgramFlow(XWPFDocument document, SacramentProgram program) {
+        int varFont = computeDocxAdaptiveFontSize(program);
         // Opening Hymn
         XWPFParagraph openingHymnParagraph = document.createParagraph();
         openingHymnParagraph.setSpacingAfter(0); // No line spacing
         XWPFRun openingHymnRun = openingHymnParagraph.createRun();
         openingHymnRun.setText("Opening Hymn: ");
         openingHymnRun.setBold(true);
-        openingHymnRun.setFontSize(12);
+        openingHymnRun.setFontSize(11);
         XWPFRun openingHymnValueRun = openingHymnParagraph.createRun();
         openingHymnValueRun.setText(program.getOpeningHymn() != null ? program.getOpeningHymn() : "_____________");
-        openingHymnValueRun.setFontSize(10);
+        openingHymnValueRun.setFontSize(11);
         
         // Invocation
         XWPFParagraph invocationParagraph = document.createParagraph();
@@ -211,10 +224,10 @@ public class SacramentProgramDocumentService {
         XWPFRun invocationRun = invocationParagraph.createRun();
         invocationRun.setText("Invocation: ");
         invocationRun.setBold(true);
-        invocationRun.setFontSize(12);
+        invocationRun.setFontSize(11);
         XWPFRun invocationValueRun = invocationParagraph.createRun();
         invocationValueRun.setText(program.getInvocation() != null ? program.getInvocation() : "_____________");
-        invocationValueRun.setFontSize(10);
+        invocationValueRun.setFontSize(11);
         
         // Ward Business
         if (program.getWardBusiness() != null && !program.getWardBusiness().isEmpty()) {
@@ -223,10 +236,14 @@ public class SacramentProgramDocumentService {
             XWPFRun wardBusinessRun = wardBusinessParagraph.createRun();
             wardBusinessRun.setText("Ward Business: ");
             wardBusinessRun.setBold(true);
-            wardBusinessRun.setFontSize(12);
+            wardBusinessRun.setFontSize(11);
             XWPFRun wardBusinessValueRun = wardBusinessParagraph.createRun();
-            wardBusinessValueRun.setFontSize(10);
+            wardBusinessValueRun.setFontSize(varFont);
             addMultilineText(wardBusinessValueRun, program.getWardBusiness());
+            // Blank line for hand-written additions
+            XWPFParagraph wbBlankLine = document.createParagraph();
+            wbBlankLine.setSpacingAfter(0);
+            wbBlankLine.createRun().setFontSize(11);
         }
         
         // Stake Business
@@ -236,9 +253,9 @@ public class SacramentProgramDocumentService {
             XWPFRun stakeBusinessRun = stakeBusinessParagraph.createRun();
             stakeBusinessRun.setText("Stake Business: ");
             stakeBusinessRun.setBold(true);
-            stakeBusinessRun.setFontSize(12);
+            stakeBusinessRun.setFontSize(11);
             XWPFRun stakeBusinessValueRun = stakeBusinessParagraph.createRun();
-            stakeBusinessValueRun.setFontSize(10);
+            stakeBusinessValueRun.setFontSize(varFont);
             addMultilineText(stakeBusinessValueRun, program.getStakeBusiness());
         }
         
@@ -248,10 +265,10 @@ public class SacramentProgramDocumentService {
         XWPFRun sacramentHymnRun = sacramentHymnParagraph.createRun();
         sacramentHymnRun.setText("Sacrament Hymn: ");
         sacramentHymnRun.setBold(true);
-        sacramentHymnRun.setFontSize(12);
+        sacramentHymnRun.setFontSize(11);
         XWPFRun sacramentHymnValueRun = sacramentHymnParagraph.createRun();
         sacramentHymnValueRun.setText(program.getSacramentHymn() != null ? program.getSacramentHymn() : "_____________");
-        sacramentHymnValueRun.setFontSize(10);
+        sacramentHymnValueRun.setFontSize(11);
         
         // Sacrament note
         XWPFParagraph sacramentNoteParagraph = document.createParagraph();
@@ -259,23 +276,25 @@ public class SacramentProgramDocumentService {
         XWPFRun sacramentNoteRun = sacramentNoteParagraph.createRun();
         sacramentNoteRun.setText("Thank you for your reverence during the sacrament, and thank you to the priesthood brethren who bless and passed the bread and water. You may now Join your family.");
         sacramentNoteRun.setItalic(true);
-        sacramentNoteRun.setFontSize(10);
+        sacramentNoteRun.setFontSize(9);
     }
     
     private void addSpeakersSection(XWPFDocument document, SacramentProgram program) {
+        int varFont = computeDocxAdaptiveFontSize(program);
         XWPFParagraph speakerHeaderParagraph = document.createParagraph();
         speakerHeaderParagraph.setSpacingAfter(0); // No line spacing
         XWPFRun speakerHeaderRun = speakerHeaderParagraph.createRun();
+        speakerHeaderParagraph.setSpacingBefore(120);
         speakerHeaderRun.setText("Speakers: ");
         speakerHeaderRun.setBold(true);
-        speakerHeaderRun.setFontSize(12);
+        speakerHeaderRun.setFontSize(11);
         
         // Add auxiliary if specified
         if (program.getSpeakersAuxiliary() != null && !program.getSpeakersAuxiliary().isEmpty()) {
             XWPFRun auxiliaryRun = speakerHeaderParagraph.createRun();
-            auxiliaryRun.setText("(" + program.getSpeakersAuxiliary() + ")");
-            auxiliaryRun.setFontSize(10);
-            auxiliaryRun.setItalic(true);
+            auxiliaryRun.setText(program.getSpeakersAuxiliary());
+            auxiliaryRun.setFontSize(11);
+            auxiliaryRun.setBold(true);
         }
         
         if (program.getSpeakers() != null && !program.getSpeakers().isEmpty()) {
@@ -293,13 +312,13 @@ public class SacramentProgramDocumentService {
                 }
                 
                 speakerRun.setText(speakerText);
-                speakerRun.setFontSize(10);
+                speakerRun.setFontSize(varFont);
                 
                 if (speaker.getTopic() != null && !speaker.getTopic().isEmpty()) {
                     XWPFRun topicRun = speakerParagraph.createRun();
                     topicRun.setText(" - " + speaker.getTopic());
                     topicRun.setItalic(true);
-                    topicRun.setFontSize(10);
+                    topicRun.setFontSize(varFont);
                 }
             }
         }
@@ -315,29 +334,30 @@ public class SacramentProgramDocumentService {
         XWPFRun closingHymnRun = closingHymnParagraph.createRun();
         closingHymnRun.setText("Closing Hymn: ");
         closingHymnRun.setBold(true);
-        closingHymnRun.setFontSize(12);
+        closingHymnRun.setFontSize(11);
         XWPFRun closingHymnValueRun = closingHymnParagraph.createRun();
         closingHymnValueRun.setText(program.getClosingHymn() != null ? program.getClosingHymn() : "_____________");
-        closingHymnValueRun.setFontSize(10);
+        closingHymnValueRun.setFontSize(11);
         
         // Benediction
         XWPFParagraph benedictionParagraph = document.createParagraph();
-        benedictionParagraph.setSpacingAfter(0); // No line spacing
+        benedictionParagraph.setSpacingAfter(0);
         XWPFRun benedictionRun = benedictionParagraph.createRun();
         benedictionRun.setText("Benediction: ");
         benedictionRun.setBold(true);
-        benedictionRun.setFontSize(12);
+        benedictionRun.setFontSize(11);
         XWPFRun benedictionValueRun = benedictionParagraph.createRun();
         benedictionValueRun.setText(program.getBenediction() != null ? program.getBenediction() : "_____________");
-        benedictionValueRun.setFontSize(10);
+        benedictionValueRun.setFontSize(11);
         
         // Attendance footer
         XWPFParagraph attendanceParagraph = document.createParagraph();
         attendanceParagraph.setAlignment(ParagraphAlignment.RIGHT);
+        attendanceParagraph.setSpacingBefore(120);
         XWPFRun attendanceRun = attendanceParagraph.createRun();
         attendanceRun.setText("Sacrament Attendance:________");
         attendanceRun.setBold(true);
-        attendanceRun.setFontSize(12);
+        attendanceRun.setFontSize(11);
     }
     
     private String getOrdinalNumber(int number) {
@@ -355,7 +375,6 @@ public class SacramentProgramDocumentService {
             return;
         }
         
-        run.setFontSize(8);
         String[] lines = text.split("\\r?\\n");
         for (int i = 0; i < lines.length; i++) {
             if (i > 0) {
@@ -363,5 +382,27 @@ public class SacramentProgramDocumentService {
             }
             run.setText(lines[i]);
         }
+    }
+
+    /**
+     * Computes a reduced font size for variable-length content fields
+     * based on total character count across all variable fields.
+     */
+    private int computeDocxAdaptiveFontSize(SacramentProgram program) {
+        int total = 0;
+        if (program.getAcknowledgement() != null) total += program.getAcknowledgement().length();
+        if (program.getAnnouncements() != null)
+            total += program.getAnnouncements().stream().mapToInt(String::length).sum();
+        if (program.getWardBusiness() != null) total += program.getWardBusiness().length();
+        if (program.getStakeBusiness() != null) total += program.getStakeBusiness().length();
+        if (program.getSpeakers() != null)
+            for (Speaker s : program.getSpeakers()) {
+                if (s.getName() != null) total += s.getName().length();
+                if (s.getTitle() != null) total += s.getTitle().length();
+            }
+        if (total > 1000) return 8;
+        if (total > 700)  return 9;
+        if (total > 450)  return 10;
+        return 11;
     }
 }

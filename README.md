@@ -8,35 +8,83 @@ A modern, professional Spring Boot web application for creating and managing chu
 ![License](https://img.shields.io/badge/License-MIT-yellow.svg)
 ![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)
 
-## 🆕 **Latest Updates (October 2025)**
+## 🆕 **Latest Updates (April 2026)**
 
-### **✨ MSN-Style Navigation Interface**
+### **🎯 Document Output Overhaul — DOCX & PDF Match Preview (April 2026)**
+- **Blue Section Header**: Program header now renders in church blue (`#2c5282`) at 12pt bold in both DOCX and PDF — matching the HTML preview
+- **Consistent Font Sizing**: All body text uniformly set to 11pt (DOCX) / 10pt (PDF); previously inconsistent across sections
+- **Centered Music Row**: Chorister/Pianist row is center-aligned with pipe separator in both export formats
+- **Announcements in PDF**: Announcements section was previously missing from PDF exports — now included
+- **Blank Lines for Handwriting**: Empty lines added after Acknowledgement, Announcements, and Ward Business for pen annotations on printed copies
+
+### **📐 Adaptive Font Scaling**
+- **Auto Scaling on Overflow**: When total field content exceeds threshold, font size automatically scales down to prevent text overflow:
+  - ≤450 chars → 11pt/10pt · ≤700 → 10pt/9pt · ≤1000 → 9pt/8.5pt · >1000 → 8pt/7.5pt
+- **Per-Document Calculation**: `computeDocxAdaptiveFontSize()` and `computePdfAdaptiveFontSize()` count characters across variable fields (Acknowledgement, Announcements, Ward Business, Stake Business, Speakers)
+
+### **🏷️ Speakers Auxiliary Display Fix**
+- **Bold Value Display**: Speakers auxiliary (e.g. "Relief Society", "Sunday School") now shown in bold on the same line as the label — `Speakers: Relief Society`
+- **Removed Parentheses & Italic**: Previously displayed as italic `(Relief Society)` — updated in HTML preview, DOCX, and PDF services
+- **Consistent Across All Outputs**: Fix applied to `SacramentProgramPreviewService`, `SacramentProgramDocumentService`, and `FileStorageService`
+
+### **🧪 Test Preview Endpoint**
+- **`GET /sacrament/test-preview`**: New endpoint pre-fills all form fields with real Pasay 3rd Ward data for quick full-program testing
+- **"🧪 Test Full Preview" Button**: Added to the sacrament form's action buttons for one-click access
+- **Announcements Fix**: Fixed `param.announcements[0]` → `announcementsText` model attribute in `sacrament-preview.html` so announcements survive the round-trip through preview → export
+
+### **🗄️ PostgreSQL Migration**
+- **PostgreSQL 17**: Switched from H2 to PostgreSQL — database `church_programs` on `localhost:5432`
+- **Auto DDL**: `ddl-auto=update` creates/updates the `saved_programs` table on startup
+- **Driver Updated**: `pom.xml` replaced H2 dependency with `org.postgresql:postgresql` runtime driver
+
+### **🗄️ Database Integration for Program Storage** *(earlier April 2026)*
+- **Auto-Save on Export**: Every DOCX or PDF export silently saves the program to the database
+- **Saved Programs History**: Browse, reload, and delete past programs from a dedicated History page
+- **Type Filtering**: Filter history by Sacrament, Ward Council, or Bishopric meeting type
+- **One-Click Reload**: Load any saved program back into its form, pre-filled and ready to edit
+
+### **🛡️ Enhanced Error Handling & User Feedback**
+- **Global Exception Handler**: Centralized `@ControllerAdvice` catches validation errors, type mismatches, and unexpected exceptions — no more raw stack traces
+- **User-Friendly Error Page**: Clean error card with title, message, Go Back, and Home buttons
+- **Bean Validation**: `@NotBlank` and `@NotNull` enforce required fields (ward name, meeting date) on all three program models
+- **Flash Alert Banners**: Success and error messages displayed inline on form pages (e.g. "Program loaded from history")
+- **Structured Error Responses**: Export endpoints return descriptive error messages instead of empty 500 responses
+
+### **⚡ Performance Optimization & Caching**
+- **Caffeine Cache**: In-memory cache (max 200 entries, 30-minute TTL) via `spring.cache.type=caffeine`
+- **`@Cacheable` on History Queries**: `getAllPrograms()` and `getProgramsByType()` served from cache
+- **`@CacheEvict` on Mutations**: Cache invalidated automatically on every save or delete
+- **GZIP Compression**: Server-side compression enabled for HTML, CSS, JS, and JSON responses (min 1 KB)
+- **Thymeleaf Production Cache**: Easily toggled for production deployments
+
+### **🎨 Additional Document Templates & Formatting**
+- **New UI Components**: Alert banners, meeting-type badges, filter buttons, and small action buttons added to the design system
+- **Responsive History Table**: Sortable columns, type-color badges, and mobile-friendly layout
+- **CSS Version Bump**: All new styles appended; backward-compatible with existing forms
+
+### **✨ MSN-Style Navigation Interface** *(October 2025)*
 - **Dark Gradient Navigation**: Professional MSN-inspired navigation bar with deep blue gradient
 - **Rounded Tab Design**: Modern rounded tabs with smooth hover animations
 - **Active Tab Highlighting**: Visual feedback with accent colors and subtle effects
 - **Responsive Design**: Mobile-optimized navigation that adapts to all screen sizes
 - **Backdrop Blur Effects**: Modern glass-morphism styling for enhanced visual appeal
 
-### **📦 Deployment Ready**
+### **📦 Deployment Ready** *(October 2025)*
 - **Standalone JAR Distribution**: Complete deployment package for easy distribution
 - **Docker Containerization**: Containerized deployment with no Java installation required
 - **Network Access**: Configured for local network sharing across devices
 - **Production Scripts**: Ready-to-use startup scripts for Windows, Mac, and Linux
 - **Cloud Deployment Ready**: Optimized for Heroku, Railway, Render, and other cloud platforms
 
-### **🎯 Enhanced User Experience**
-- **Improved Template Parsing**: Fixed Thymeleaf fragment issues for seamless navigation
-- **Cross-Platform Compatibility**: Tested on multiple browsers and operating systems
-- **Professional Styling**: Church-appropriate design with modern web standards
-- **Cache-Busting**: Automatic CSS refresh for development and production environments
-
 ## ✨ Core Features
 
 ### 🎵 Sacrament Meeting Programs
 - **Complete Meeting Structure**: Opening/Sacrament/Closing hymns with speaker management
-- **Speaker Assignment System**: Multiple speakers with topics and auxiliary organization assignments
+- **Speaker Assignment System**: Multiple speakers with auxiliary organization label displayed bold inline (e.g. `Speakers: Relief Society`)
 - **Leadership Integration**: Presiding and conducting assignments with professional formatting
-- **Elegant Document Generation**: Beautiful bordered layouts with church branding
+- **Adaptive Font Scaling**: Automatically reduces font size when content is long to prevent overflow
+- **Blank Annotation Lines**: Empty lines after Acknowledgement, Announcements, and Ward Business for pen annotations
+- **Elegant Document Generation**: Blue-header layout matching the HTML preview in both DOCX and PDF
 - **Multi-Format Export**: Professional Word (.docx) and PDF document generation
 
 ### 📋 Ward Council Meetings
@@ -56,15 +104,31 @@ A modern, professional Spring Boot web application for creating and managing chu
 ### 🌐 Modern Navigation System
 - **MSN-Style Interface**: Dark gradient navigation with professional appearance
 - **Tabbed Navigation**: Intuitive tab system for different meeting types
+- **History Tab**: Browse and reload saved programs from the navigation bar
 - **Coming Soon Features**: Visual indicators for future functionality (Speaker Invites)
 - **Mobile Responsive**: Seamless experience across all device types
 - **Visual Feedback**: Active states, hover effects, and smooth transitions
+
+### 🗄️ Program History & Database
+- **Auto-Save**: Programs are saved to the database every time a document is exported
+- **History Browser**: Dedicated `/history` page lists all saved programs sorted by date
+- **Reload Saved Programs**: Load any historical program back into an editable form
+- **Type Filtering**: Filter history by meeting type (Sacrament, Ward Council, Bishopric)
+- **Delete Records**: Remove outdated entries directly from the history table
+- **Persistent Storage**: PostgreSQL database keeps data between restarts
+
+### 🛡️ Error Handling & Validation
+- **Global Exception Handler**: All errors route to a clean, user-friendly error page
+- **Form Validation**: Required fields enforced with descriptive inline messages
+- **Flash Notifications**: Success and error banners on every form page
+- **Safe Exports**: Export failures return a human-readable message, not a crash
 
 ## 🚀 Quick Start Guide
 
 ### Prerequisites
 - **Java 17+** (Required for Spring Boot 3.x)
 - **Maven 3.6+** (Build automation tool)
+- **PostgreSQL 17** (Database server — create database `church_programs` before first run)
 - **Git** (Version control - optional for ZIP download)
 
 ### 💻 Development Setup
@@ -181,6 +245,15 @@ docker-compose up -d
 - User-friendly error messages
 
 ## 📖 Complete User Guide
+
+### 🗄️ **Saved Programs History**
+
+1. **Navigate to History**: Click the **History** tab in the top navigation
+2. **Browse All Programs**: All exported programs are listed, newest first
+3. **Filter by Type**: Click Sacrament, Ward Council, or Bishopric to narrow the list
+4. **Reload a Program**: Click **Load** to open a saved program pre-filled in its form
+5. **Delete a Record**: Click **Delete** and confirm to remove the entry from the database
+6. **Database**: Programs stored in PostgreSQL — connect via `psql -U postgres -d church_programs` for direct inspection
 
 ### 🏠 **Home Page Navigation**
 1. **Access Main Interface**: Navigate to http://localhost:8080
@@ -335,12 +408,17 @@ src/
 │   │   │   ├── HomeController.java            # Main navigation handler
 │   │   │   ├── SacramentController.java       # Sacrament meeting logic
 │   │   │   ├── WardCouncilController.java     # Ward council management
-│   │   │   └── BishopricController.java       # Bishopric meeting handling
+│   │   │   ├── BishopricController.java       # Bishopric meeting handling
+│   │   │   ├── HistoryController.java         # Saved programs history
+│   │   │   └── GlobalExceptionHandler.java    # Centralized error handling
 │   │   ├── model/                             # Data Models
 │   │   │   ├── SacramentProgram.java          # Sacrament meeting data model
 │   │   │   ├── WardCouncilProgram.java        # Ward council data model
 │   │   │   ├── BishopricProgram.java          # Bishopric meeting model
-│   │   │   └── Speaker.java                   # Speaker entity model
+│   │   │   ├── Speaker.java                   # Speaker entity model
+│   │   │   └── SavedProgram.java              # JPA entity for DB storage
+│   │   ├── repository/                        # Spring Data Repositories
+│   │   │   └── SavedProgramRepository.java    # JPA repository for saved programs
 │   │   ├── service/                           # Business Logic Services
 │   │   │   ├── SacramentProgramDocumentService.java      # Word generation
 │   │   │   ├── SacramentProgramPreviewService.java       # HTML preview
@@ -349,6 +427,7 @@ src/
 │   │   │   ├── WardCouncilPdfService.java                # PDF generation
 │   │   │   ├── BishopricProgramDocumentService.java      # Word generation
 │   │   │   ├── BishopricProgramPdfService.java           # PDF generation
+│   │   │   ├── ProgramStorageService.java                # DB save/load with caching
 │   │   │   └── FileStorageService.java                   # File management
 │   │   └── ProgramGeneratorApplication.java              # Spring Boot main class
 │   └── resources/
@@ -366,12 +445,16 @@ src/
 │       │   ├── ward-council.html              # Ward council form
 │       │   ├── ward-council-preview.html      # Ward council preview
 │       │   ├── bishopric.html                 # Bishopric meeting form
-│       │   └── bishopric-preview.html         # Bishopric preview
+│       │   ├── bishopric-preview.html         # Bishopric preview
+│       │   ├── history.html                   # Saved programs browser
+│       │   └── error.html                     # Global error page
 │       └── application.properties             # Application configuration
 ├── reports/                                   # Generated documents storage
 │   ├── sacrament/                            # Sacrament program exports
 │   ├── wardcouncil/                          # Ward council exports
 │   └── bishopric/                            # Bishopric meeting exports
+data/
+│   └── church-programs.mv.db                # H2 persistent database
 ├── deployment/                               # Distribution package
 │   ├── program-generator-0.0.1-SNAPSHOT.jar # Standalone executable
 │   ├── run-church-program.bat               # Windows startup script
@@ -389,8 +472,11 @@ src/
 #### **Backend Framework**
 - **Spring Boot 3.1.5**: Latest Spring framework with Java 17 support
 - **Spring Web MVC**: RESTful controllers and web service handling
+- **Spring Data JPA**: Repository pattern for database access
+- **Spring Cache (Caffeine)**: In-memory caching with TTL and size limits
+- **Spring Validation**: Bean Validation (`jakarta.validation`) for form input
 - **Spring DevTools**: Development hot-reload and debugging support
-- **Embedded Tomcat**: Built-in web server with production-ready configuration
+- **Embedded Tomcat**: Built-in web server with GZIP compression enabled
 
 #### **Frontend Technologies**
 - **Thymeleaf 3.1**: Server-side template engine with fragment support
@@ -417,6 +503,11 @@ src/
 - **Spring Boot Maven Plugin**: JAR packaging and executable generation
 - **Docker Support**: Containerization with multi-stage builds
 - **Production Scripts**: Cross-platform startup and deployment scripts
+
+#### **Data & Caching**
+- **PostgreSQL 17**: Production-grade relational database (`localhost:5432`, database `church_programs`)
+- **Caffeine Cache**: High-performance in-memory caching library
+- **Jackson + JavaTimeModule**: JSON serialization of program data including `LocalDate`/`LocalDateTime`
 
 ## 🎨 Design System & User Interface
 
@@ -459,7 +550,24 @@ server.address=0.0.0.0                    # Network access enabled
 spring.application.name=ProgramGenerator
 
 # Thymeleaf Configuration
-spring.thymeleaf.cache=false              # Development mode
+spring.thymeleaf.cache=false              # Set true in production
+
+# PostgreSQL Database
+spring.datasource.url=jdbc:postgresql://localhost:5432/church_programs
+spring.datasource.driver-class-name=org.postgresql.Driver
+spring.datasource.username=postgres
+spring.datasource.password=<your-password>
+spring.jpa.hibernate.ddl-auto=update     # Auto-create/update tables
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+
+# Caffeine Cache
+spring.cache.type=caffeine
+spring.cache.caffeine.spec=maximumSize=200,expireAfterWrite=30m
+
+# GZIP Compression
+server.compression.enabled=true
+server.compression.mime-types=text/html,text/css,application/javascript,application/json
+server.compression.min-response-size=1024
 
 # Logging Configuration
 logging.level.root=INFO
@@ -733,8 +841,9 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 ## 🚀 Future Roadmap & Enhancement Plans
 
-### 🗄️ **Phase 1: Database Integration (Q1 2026)**
-- **Program History**: Save and retrieve historical meeting programs
+### 🗄️ **Phase 1: Database Integration (Q1 2026)** ✅ *Completed*
+- **Program History**: Save and retrieve historical meeting programs ✅
+- **PostgreSQL Migration**: Switched from H2 to PostgreSQL 17 ✅
 - **Template Management**: Create and save custom program templates  
 - **Speaker Database**: Maintain speaker information and topic libraries
 - **Search Functionality**: Find previous programs by date, speaker, or topic
@@ -774,16 +883,16 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 ## 🎯 **Implementation Priority Timeline**
 
 ### **Immediate (Next 3 months)**
-- [ ] Enhanced error handling and user feedback
-- [ ] Additional document templates and formatting options
-- [ ] Performance optimization and caching improvements
-- [ ] Extended browser compatibility testing
+- [x] Enhanced error handling and user feedback
+- [x] Additional document templates and formatting options
+- [x] Performance optimization and caching improvements
+- [x] Database integration for program storage
 
 ### **Short-term (3-6 months)**
-- [ ] Database integration for program storage
 - [ ] Basic user authentication system
 - [ ] Mobile app development initiation
 - [ ] Advanced document formatting features
+- [ ] Extended browser compatibility testing
 
 ### **Medium-term (6-12 months)**
 - [ ] Multi-language internationalization
@@ -813,13 +922,15 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 ## 📊 **Project Statistics**
 
-- **Total Lines of Code**: ~2,500+ (Java, HTML, CSS, JavaScript)
-- **Dependencies**: 15+ Spring Boot and utility libraries
+- **Total Lines of Code**: ~3,500+ (Java, HTML, CSS, JavaScript)
+- **Dependencies**: 20+ Spring Boot and utility libraries
 - **Supported Browsers**: 4+ major browsers with mobile support
 - **Document Formats**: 2 (Word .docx, PDF)
 - **Meeting Types**: 3 (Sacrament, Ward Council, Bishopric)
 - **Deployment Options**: 4+ (JAR, Docker, Cloud, Network)
 - **Supported Platforms**: Windows, macOS, Linux, Docker containers
+- **Database**: H2 file-based, auto-schema, persistent across restarts
+- **Cache**: Caffeine in-memory, 200 entries, 30-min TTL
 
 ---
 

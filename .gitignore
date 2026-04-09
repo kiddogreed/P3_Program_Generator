@@ -1,0 +1,43 @@
+# Maven build output
+target/
+
+# Java
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+
+# IDE files
+.idea/
+*.iml
+*.ipr
+*.iws
+.classpath
+.project
+.settings/
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+nul
+
+# Spring Boot
+application-local.properties
+application-secret.properties
+
+# Logs
+*.log
+logs/
+
+# Reports (generated output — keep directory markers only)
+src/reports/sacrament/*.docx
+src/reports/sacrament/*.pdf
+src/reports/wardcouncil/*.docx
+src/reports/wardcouncil/*.pdf
+src/reports/bishopric/*.docx
+src/reports/bishopric/*.pdf
+
+# Docker
+.dockerignore
