@@ -14,13 +14,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.church.programgenerator.model.AgendaItem;
 import com.church.programgenerator.model.BishopricProgram;
 import com.church.programgenerator.model.SacramentProgram;
 import com.church.programgenerator.model.SavedProgram;
 import com.church.programgenerator.model.Speaker;
 import com.church.programgenerator.model.WardCouncilProgram;
+import com.church.programgenerator.service.AuxiliaryService;
 import com.church.programgenerator.service.ConductorService;
 import com.church.programgenerator.service.ProgramStorageService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Controller
 @RequestMapping("/history")
@@ -30,10 +33,13 @@ public class HistoryController {
 
     private final ProgramStorageService storageService;
     private final ConductorService conductorService;
+    private final AuxiliaryService auxiliaryService;
 
-    public HistoryController(ProgramStorageService storageService, ConductorService conductorService) {
+    public HistoryController(ProgramStorageService storageService, ConductorService conductorService,
+                             AuxiliaryService auxiliaryService) {
         this.storageService = storageService;
         this.conductorService = conductorService;
+        this.auxiliaryService = auxiliaryService;
     }
 
     @GetMapping
@@ -99,14 +105,31 @@ public class HistoryController {
         model.addAttribute("pageTitle", "Bishopric Meeting");
         model.addAttribute("bishopricProgram", program);
         model.addAttribute("successMessage", "Program loaded from history.");
+        // Serialize agendaItems to JSON for the UI
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            String agendaJson = mapper.writeValueAsString(program.getAgendaItems() != null ? program.getAgendaItems() : new java.util.ArrayList<AgendaItem>());
+            model.addAttribute("agendaItemsJson", agendaJson);
+        } catch (Exception e) {
+            model.addAttribute("agendaItemsJson", "[]");
+        }
         return "bishopric";
     }
 
     @GetMapping("/load/ward-council/{id}")
     public String loadWardCouncil(@PathVariable Long id, Model model) {
         WardCouncilProgram program = storageService.loadWardCouncilProgram(id);
+        String agendaJson = "[]";
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            agendaJson = mapper.writeValueAsString(
+                    program.getAgendaItems() != null ? program.getAgendaItems() : new java.util.ArrayList<AgendaItem>());
+        } catch (Exception ignored) {}
         model.addAttribute("pageTitle", "Ward Council Meeting");
         model.addAttribute("wardCouncilProgram", program);
+        model.addAttribute("agendaItemsJson", agendaJson);
+        model.addAttribute("auxiliaries", auxiliaryService.getAll());
+        model.addAttribute("bishopricConductors", conductorService.getByType("bishopric"));
         model.addAttribute("successMessage", "Program loaded from history.");
         return "ward-council";
     }

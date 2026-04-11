@@ -10,7 +10,29 @@ A modern, professional Spring Boot web application for creating and managing chu
 
 ## 🆕 **Latest Updates (April 2026)**
 
-### **📱 Full Mobile Browser Compatibility (April 2026)**
+### **� Scheduling Rules & Auto-Population (April 2026)**
+- **Rules Page (`/rules`)**: New settings UI to configure ward name, stake name, meeting times, speaker cycle, acknowledgement template, and occurrence schedules
+- **WardConfig Singleton**: Single database row (`ward_config`) stores all scheduling rules and rotation state — zero manual re-entry per meeting
+- **Auto-Populate All Forms**: Every new Sacrament, Bishopric, and Ward Council form opens pre-filled with the correct date, presiding officer, and suggested conductor based on rules
+- **Date Auto-Calculation**:
+  - Sacrament → nearest upcoming Sunday
+  - Bishopric → next Thursday (or Sunday if configured)
+  - Ward Council → next 1st or 3rd Sunday (configurable occurrence rule)
+- **Conductor Round-Robin**: Conducting assignment cycles through members after each saved program; last-used conductor ID stored in `ward_config`
+- **Speaker Cycle Badge**: Sacrament form displays the current speaker type hint (e.g. "Relief Society Month", "Fast & Testimony") based on a 3-month rotating cycle
+
+### **🙏 Prayer & Handbook Auto-Assignment (April 2026)**
+- **Ward Council — Round-Robin from Auxiliaries**: Opening Prayer, Handbook Reading, and Closing Prayer are automatically assigned from the auxiliaries list on each new form load
+- **Bishopric — Round-Robin from Conductors**: Same auto-assignment for Opening Prayer, Closing Prayer, and Handbook Spiritual Thought presenter — pulled from the bishopric conductors list
+- **No Duplicates Rule**: The three assignments (opening/handbook/closing) always go to 3 **consecutive different** people — no two fields get the same name in the same meeting
+- **Persistent Index Tracking**: Six rotation index fields in `ward_config` (`wc_opening_prayer_idx`, `wc_closing_prayer_idx`, `wc_handbook_idx`, `bp_*`) advance on every form load and persist to the database
+- **Ward Council date fix**: `@DateTimeFormat(iso = DATE)` added to `WardCouncilProgram.meetingDate` so the date field pre-fills in `<input type="date">` correctly
+
+### **🔒 Bishopric Presiding Lock (April 2026)**
+- **Always the Bishop**: Presiding field in the Bishopric Meeting form is now a **read-only display** (blue-tinted, locked) — the value is always the first entry in the bishopric conductors list (the Bishop) and cannot be changed by the user
+- **Hidden field binding**: A hidden input carries the value on form submit; the visible field shows it as locked text with a blue border to communicate it is fixed by rule
+
+
 - **Hamburger Navigation**: Navigation bar collapses into a hamburger menu (☰) on screens ≤768px — tap to expand/collapse; menu auto-closes on link tap or outside click
 - **Responsive Forms**: Single-column layout with full-width buttons on mobile; all form rows stack vertically
 - **Speaker Rows Stack**: Dynamically added speaker rows wrap and stack on screens ≤520px
@@ -113,15 +135,20 @@ A modern, professional Spring Boot web application for creating and managing chu
 ### 📋 Ward Council Meetings
 - **Professional Table Layouts**: Elegant agenda format with structured business items
 - **Comprehensive Meeting Structure**: Prayer assignments, handbook readings, auxiliary reports
+- **Auto-Date**: Meeting date pre-fills to next 1st or 3rd Sunday (configurable in Rules)
+- **Auto-Presiding/Conducting**: Bishop always presides; conducting cycles round-robin
+- **Auto Prayer/Handbook**: Opening Prayer, Handbook Reading, Closing Prayer each assigned to a different auxiliary representative — cycles every meeting
 - **Business Item Management**: Organized agenda, welfare, and administrative matters
 - **Christ-Centered Design**: Background imagery and professional styling
 - **Automatic Document Export**: Seamless Word and PDF generation with date stamping
 
 ### 👔 Bishopric Meetings
 - **Executive Meeting Format**: Leadership-focused meeting structure and agenda management
+- **Bishop Always Presides**: Presiding field is locked to the Bishop — read-only, cannot be altered
+- **Auto-Conducting Cycle**: Counselors cycle round-robin for each new meeting
+- **Auto Prayer/Handbook**: Opening Prayer, Closing Prayer, Handbook Spiritual Thought presenter each assigned to a different bishopric member — 3 consecutive different people every meeting
 - **Administrative Tools**: Handbook spiritual thoughts, callings & releases, business items
 - **Professional Styling**: Red-bordered tables matching organizational standards
-- **Leadership Integration**: Bishop and counselor assignment tracking
 - **Document Generation**: High-quality Word and PDF exports with proper formatting
 
 ### 🌐 Modern Navigation System

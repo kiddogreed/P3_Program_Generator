@@ -27,7 +27,8 @@ public class SacramentProgramDocumentService {
         
         try {
             // Add church logo at the top
-            addChurchLogo(document);
+                double scale = computeLogoScale(program);
+                addChurchLogo(document, scale);
             
             // Add program header
             addProgramHeader(document, program);
@@ -46,16 +47,46 @@ public class SacramentProgramDocumentService {
             
             // Add closing elements
             addClosingElements(document, program);
-            
+            // Add P3_LOGO.png as a footer-like logo (centered, extra spacing)
+                addFooterLogo(document, scale);
             // Convert to byte array
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             document.write(outputStream);
             return outputStream.toByteArray();
-            
+
         } finally {
             document.close();
         }
     }
+
+    private void addFooterLogo(XWPFDocument document) {
+        XWPFParagraph footerLogoParagraph = document.createParagraph();
+        footerLogoParagraph.setAlignment(ParagraphAlignment.CENTER);
+        // Add extra spacing before the logo to push it toward the bottom
+        footerLogoParagraph.setSpacingBefore(600); // ~0.5 inch
+        XWPFRun logoRun = footerLogoParagraph.createRun();
+        try (InputStream logoStream = getClass().getResourceAsStream("/static/images/P3_LOGO.png")) {
+            if (logoStream != null) {
+                logoRun.addPicture(logoStream, org.apache.poi.xwpf.usermodel.Document.PICTURE_TYPE_PNG, "P3_LOGO.png",
+                    Units.toEMU(38), Units.toEMU(38));
+            }
+        } catch (Exception ignored) {}
+    }
+        private void addFooterLogo(XWPFDocument document, double scale) {
+            XWPFParagraph footerLogoParagraph = document.createParagraph();
+            footerLogoParagraph.setAlignment(ParagraphAlignment.CENTER);
+            // Dynamic spacing before the logo to push it toward the bottom
+            int baseSpacing = 600; // ~0.5 inch
+            footerLogoParagraph.setSpacingBefore((int)(baseSpacing * scale));
+            XWPFRun logoRun = footerLogoParagraph.createRun();
+            try (InputStream logoStream = getClass().getResourceAsStream("/static/images/P3_LOGO.png")) {
+                if (logoStream != null) {
+                    int logoSize = (int)(38 * scale); // base 38, scale down if needed
+                    logoRun.addPicture(logoStream, org.apache.poi.xwpf.usermodel.Document.PICTURE_TYPE_PNG, "P3_LOGO.png",
+                        Units.toEMU(logoSize), Units.toEMU(logoSize));
+                }
+            } catch (Exception ignored) {}
+        }
     
     private void addChurchLogo(XWPFDocument document) {
         XWPFParagraph logoParagraph = document.createParagraph();
@@ -86,6 +117,54 @@ public class SacramentProgramDocumentService {
         }
         
     }
+        private void addChurchLogo(XWPFDocument document, double scale) {
+            XWPFParagraph logoParagraph = document.createParagraph();
+            logoParagraph.setAlignment(ParagraphAlignment.CENTER);
+
+            XWPFRun logoRun = logoParagraph.createRun();
+            // Try to add LDS logo if available, otherwise add text placeholder
+            try (InputStream logoStream = getClass().getResourceAsStream("/static/images/LDS_LOGO.png")) {
+                if (logoStream != null) {
+                    int logoSize = (int)(70 * scale); // base 70, scale down if needed
+                    logoRun.addPicture(logoStream, org.apache.poi.xwpf.usermodel.Document.PICTURE_TYPE_PNG, "LDS_LOGO.png",
+                        Units.toEMU(logoSize), Units.toEMU(logoSize));
+                } else {
+                    // Fallback text logo
+                    logoRun.setText("THE CHURCH OF");
+                    logoRun.addBreak();
+                    logoRun.setText("JESUS CHRIST");
+                    logoRun.addBreak();
+                    logoRun.setText("OF LATTER-DAY SAINTS");
+                    logoRun.setBold(true);
+                    logoRun.setFontSize((int)(12 * scale));
+                }
+            } catch (Exception e) {
+                // Fallback text logo
+                logoRun.setText("THE CHURCH OF JESUS CHRIST OF LATTER-DAY SAINTS");
+                logoRun.setBold(true);
+                logoRun.setFontSize((int)(12 * scale));
+            }
+        }
+
+        // Compute a scale factor for logo size/spacing based on content length
+        private double computeLogoScale(SacramentProgram program) {
+            int total = 0;
+            if (program.getAcknowledgement() != null) total += program.getAcknowledgement().length();
+            if (program.getAnnouncements() != null)
+                total += program.getAnnouncements().stream().mapToInt(String::length).sum();
+            if (program.getWardBusiness() != null) total += program.getWardBusiness().length();
+            if (program.getStakeBusiness() != null) total += program.getStakeBusiness().length();
+            if (program.getSpeakers() != null)
+                for (Speaker s : program.getSpeakers()) {
+                    if (s.getName() != null) total += s.getName().length();
+                    if (s.getTitle() != null) total += s.getTitle().length();
+                }
+            // Scale: 1.0 for short, 0.8 for medium, 0.6 for long content
+            if (total > 900) return 0.6;
+            if (total > 600) return 0.75;
+            if (total > 300) return 0.85;
+            return 1.0;
+        }
     
     private void addProgramHeader(XWPFDocument document, SacramentProgram program) {
         // Stake and Ward name

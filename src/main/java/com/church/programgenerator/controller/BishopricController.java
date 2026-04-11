@@ -1,7 +1,6 @@
 package com.church.programgenerator.controller;
 
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,57 +15,113 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.church.programgenerator.model.AgendaItem;
 import com.church.programgenerator.model.BishopricProgram;
 import com.church.programgenerator.service.BishopricProgramDocumentService;
 import com.church.programgenerator.service.BishopricProgramPdfService;
+import com.church.programgenerator.service.ConductorService;
 import com.church.programgenerator.service.FileStorageService;
 import com.church.programgenerator.service.ProgramStorageService;
+import com.church.programgenerator.service.WardConfigService;
+import com.church.programgenerator.model.WardConfig;
+import com.church.programgenerator.model.Conductor;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Controller
 @RequestMapping("/bishopric")
 public class BishopricController {
-    
+
     @Autowired
     private BishopricProgramDocumentService documentService;
-    
+
     @Autowired
     private BishopricProgramPdfService pdfService;
-    
+
     @Autowired
     private FileStorageService fileStorageService;
 
     @Autowired
     private ProgramStorageService programStorageService;
 
+    @Autowired
+    private ConductorService conductorService;
+
+    @Autowired
+    private WardConfigService wardConfigService;
+
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+
     @GetMapping
     public String bishopricMeeting(Model model) {
+        WardConfig cfg = wardConfigService.getConfig();
+        BishopricProgram program = new BishopricProgram();
+        program.setWardName(cfg.getWardName());
+        program.setMeetingDate(wardConfigService.nextBishopricDate());
+
+        java.util.List<Conductor> conductors = conductorService.getByType("bishopric");
+        Conductor suggested = wardConfigService.getSuggestedConductor(
+                conductors, cfg.getLastBishopricConductorId());
+        if (suggested != null) {
+            program.setConducting(suggested.getName());
+            // Advance the round-robin so the next load gets the next conductor
+            wardConfigService.markConductorUsed("bishopric", suggested.getId());
+        }
+        // Bishop presides — find conductor whose name starts with "Bishop" (case-insensitive)
+        conductors.stream()
+                .filter(c -> c.getName() != null && c.getName().toLowerCase().startsWith("bishop"))
+                .findFirst()
+                .ifPresent(b -> program.setPresiding(b.getName()));
+
+        // Auto-assign opening prayer, closing prayer, handbook from conductors (each different)
+        if (!conductors.isEmpty()) {
+            int[] idxs = wardConfigService.nextThreeIndices(conductors, cfg.getBpHandbookIdx());
+            program.setOpeningPrayer(conductors.get(idxs[0]).getName());
+            program.setClosingPrayer(conductors.get(idxs[1]).getName());
+            program.setHandbookSpiritual(conductors.get(idxs[2]).getName());
+            // Save the last used index as the rolling base for all three
+            wardConfigService.markBishopricAssignments(idxs[2], idxs[2], idxs[2]);
+        }
+
         model.addAttribute("pageTitle", "Bishopric Meeting");
-        model.addAttribute("bishopricProgram", new BishopricProgram());
+        model.addAttribute("bishopricProgram", program);
+        model.addAttribute("conductors", conductors);
+        model.addAttribute("agendaItemsJson", "[]");
         return "bishopric";
     }
-    
+
+    @PostMapping("/edit")
+    public String editBishopricProgram(
+            @ModelAttribute BishopricProgram bishopricProgram,
+            @RequestParam(required = false) String agendaItemsJson,
+            Model model) {
+        model.addAttribute("pageTitle", "Bishopric Meeting");
+        model.addAttribute("bishopricProgram", bishopricProgram);
+        model.addAttribute("conductors", conductorService.getByType("bishopric"));
+        model.addAttribute("agendaItemsJson", agendaItemsJson != null ? agendaItemsJson : "[]");
+        return "bishopric";
+    }
+
     @PostMapping("/preview")
     public String previewBishopricProgram(
             @ModelAttribute BishopricProgram bishopricProgram,
-            @RequestParam(required = false) String agendaItemsText,
+            @RequestParam(required = false) String agendaItemsJson,
             Model model) {
-        
-        // Process agenda items from textarea
-        List<String> agendaItemsList = null;
-        if (agendaItemsText != null && !agendaItemsText.trim().isEmpty()) {
-            agendaItemsList = Arrays.stream(agendaItemsText.split("\n"))
-                    .map(String::trim)
-                    .filter(item -> !item.isEmpty())
-                    .toList();
+
+        List<AgendaItem> agendaItemsList = parseAgendaJson(agendaItemsJson);
+        if (agendaItemsList != null && !agendaItemsList.isEmpty()) {
             bishopricProgram.setAgendaItems(agendaItemsList);
+        } else {
+            agendaItemsList = null;
         }
-        
+
         model.addAttribute("pageTitle", "Bishopric Meeting Preview");
         model.addAttribute("bishopricProgram", bishopricProgram);
         model.addAttribute("agendaItemsList", agendaItemsList);
+        model.addAttribute("agendaItemsJson", agendaItemsJson != null ? agendaItemsJson : "[]");
         return "bishopric-preview";
     }
-    
+
     @PostMapping("/export/docx")
     public ResponseEntity<byte[]> exportToWord(
             @RequestParam String wardName,
@@ -76,37 +131,24 @@ public class BishopricController {
             @RequestParam(required = false) String openingPrayer,
             @RequestParam(required = false) String closingPrayer,
             @RequestParam(required = false) String handbookSpiritual,
-            @RequestParam(required = false) String agendaItemsText,
-            @RequestParam(required = false) String callingsAndReleases) {
-        
-        try {
-            // Create bishopric program object
-            BishopricProgram program = createBishopricProgram(wardName, meetingDate, presiding, 
-                conducting, openingPrayer, closingPrayer, handbookSpiritual, agendaItemsText, callingsAndReleases);
-            
-            // Generate document
-            byte[] documentBytes = documentService.generateDocument(program);
-            
-            // Auto-save to database
-            try { programStorageService.saveBishopricProgram(program); } catch (Exception ignored) {}
+            @RequestParam(required = false) String agendaItemsJson) {
 
-            // Create filename with date
+        try {
+            BishopricProgram program = buildProgram(wardName, meetingDate, presiding,
+                    conducting, openingPrayer, closingPrayer, handbookSpiritual, agendaItemsJson);
+            byte[] bytes = documentService.generateDocument(program);
+            try { programStorageService.saveBishopricProgram(program); } catch (Exception ignored) {}
             String filename = fileStorageService.generateFilename("bishopric", meetingDate, ".docx");
-            
-            // Save to organized bishopric directory
-            fileStorageService.saveDocxFile("bishopric", filename, documentBytes);
-            
+            fileStorageService.saveDocxFile("bishopric", filename, bytes);
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
                     .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                    .body(documentBytes);
-                    
+                    .body(bytes);
         } catch (Exception e) {
-            return ResponseEntity.internalServerError()
-                    .body("Error generating Word document".getBytes());
+            return ResponseEntity.internalServerError().body("Error generating Word document".getBytes());
         }
     }
-    
+
     @PostMapping("/export/pdf")
     public ResponseEntity<byte[]> exportToPdf(
             @RequestParam String wardName,
@@ -116,60 +158,47 @@ public class BishopricController {
             @RequestParam(required = false) String openingPrayer,
             @RequestParam(required = false) String closingPrayer,
             @RequestParam(required = false) String handbookSpiritual,
-            @RequestParam(required = false) String agendaItemsText,
-            @RequestParam(required = false) String callingsAndReleases) {
-        
-        try {
-            // Create bishopric program object
-            BishopricProgram program = createBishopricProgram(wardName, meetingDate, presiding, 
-                conducting, openingPrayer, closingPrayer, handbookSpiritual, agendaItemsText, callingsAndReleases);
-            
-            // Generate PDF
-            byte[] pdfBytes = pdfService.generatePdf(program);
+            @RequestParam(required = false) String agendaItemsJson) {
 
-            // Auto-save to database
+        try {
+            BishopricProgram program = buildProgram(wardName, meetingDate, presiding,
+                    conducting, openingPrayer, closingPrayer, handbookSpiritual, agendaItemsJson);
+            byte[] pdfBytes = pdfService.generatePdf(program);
             try { programStorageService.saveBishopricProgram(program); } catch (Exception ignored) {}
-            
-            // Create filename with date
             String filename = fileStorageService.generateFilename("bishopric", meetingDate, ".pdf");
-            
-            // Save to organized bishopric directory
             fileStorageService.savePdfFile("bishopric", filename, pdfBytes);
-            
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
                     .contentType(MediaType.APPLICATION_PDF)
                     .body(pdfBytes);
-                    
         } catch (Exception e) {
-            return ResponseEntity.internalServerError()
-                    .body("Error generating PDF document".getBytes());
+            return ResponseEntity.internalServerError().body("Error generating PDF document".getBytes());
         }
     }
-    
-    private BishopricProgram createBishopricProgram(String wardName, LocalDate meetingDate, 
-            String presiding, String conducting, String openingPrayer, String closingPrayer, 
-            String handbookSpiritual, String agendaItemsText, String callingsAndReleases) {
-        
-        BishopricProgram program = new BishopricProgram();
-        program.setWardName(wardName);
-        program.setMeetingDate(meetingDate);
-        program.setPresiding(presiding);
-        program.setConducting(conducting);
-        program.setOpeningPrayer(openingPrayer);
-        program.setClosingPrayer(closingPrayer);
-        program.setHandbookSpiritual(handbookSpiritual);
-        program.setCallingsAndReleases(callingsAndReleases);
-        
-        // Process agenda items
-        if (agendaItemsText != null && !agendaItemsText.trim().isEmpty()) {
-            List<String> agendaItems = Arrays.stream(agendaItemsText.split("\n"))
-                    .map(String::trim)
-                    .filter(item -> !item.isEmpty())
-                    .toList();
-            program.setAgendaItems(agendaItems);
+
+    private BishopricProgram buildProgram(String wardName, LocalDate meetingDate,
+            String presiding, String conducting, String openingPrayer, String closingPrayer,
+            String handbookSpiritual, String agendaItemsJson) {
+        BishopricProgram p = new BishopricProgram();
+        p.setWardName(wardName);
+        p.setMeetingDate(meetingDate);
+        p.setPresiding(presiding);
+        p.setConducting(conducting);
+        p.setOpeningPrayer(openingPrayer);
+        p.setClosingPrayer(closingPrayer);
+        p.setHandbookSpiritual(handbookSpiritual);
+        List<AgendaItem> items = parseAgendaJson(agendaItemsJson);
+        if (items != null && !items.isEmpty()) p.setAgendaItems(items);
+        return p;
+    }
+
+    private List<AgendaItem> parseAgendaJson(String json) {
+        if (json == null || json.isBlank()) return null;
+        try {
+            List<AgendaItem> items = objectMapper.readValue(json, new TypeReference<List<AgendaItem>>() {});
+            return items.stream().filter(i -> i.getTitle() != null && !i.getTitle().isBlank()).toList();
+        } catch (Exception e) {
+            return null;
         }
-        
-        return program;
     }
 }

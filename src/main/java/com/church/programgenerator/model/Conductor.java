@@ -21,6 +21,9 @@ public class Conductor {
     @Column(name = "display_order", nullable = false)
     private int displayOrder = 0;
 
+    @Column(name = "program_type", length = 20, nullable = false, columnDefinition = "varchar(20) default 'sacrament'")
+    private String programType = "sacrament";
+
     public Conductor() {}
 
     public Conductor(String name) {
@@ -35,4 +38,7 @@ public class Conductor {
 
     public int getDisplayOrder() { return displayOrder; }
     public void setDisplayOrder(int displayOrder) { this.displayOrder = displayOrder; }
+
+    public String getProgramType() { return programType; }
+    public void setProgramType(String programType) { this.programType = programType; }
 }

@@ -1,236 +1,288 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="layout :: head('Ward Council Meeting')">
+<head th:replace="~{layout :: head('Ward Council Meeting')}">
     <style>
-        .ward-council-form {
-            max-width: 900px;
-            margin: 20px auto;
-            background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(240,248,255,0.95) 100%);
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            position: relative;
-            overflow: hidden;
+        .wc-form {
+            max-width: 800px; margin: 20px auto; background: white;
+            border: 3px solid #8b7355; border-radius: 15px; padding: 30px;
+            box-shadow: 0 8px 32px rgba(139,115,85,0.15); position: relative;
         }
-        
-        .ward-council-form::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><radialGradient id="bg" cx="50%" cy="30%"><stop offset="0%" stop-color="%23ffffff" stop-opacity="0.8"/><stop offset="100%" stop-color="%23f0f8ff" stop-opacity="0.3"/></radialGradient></defs><rect width="100" height="100" fill="url(%23bg)"/></svg>') center/cover;
-            opacity: 0.7;
-            pointer-events: none;
+        .wc-header { text-align: center; margin-bottom: 28px; background: rgba(255,255,255,0.9); padding: 20px; border-radius: 8px; }
+        .church-name { color: #8b7355; font-size: 11px; font-weight: 600; letter-spacing: 2px; margin-bottom: 8px; text-transform: uppercase; }
+        .wc-title { color: #5a8aaa; font-size: 22px; font-weight: 800; text-transform:uppercase; letter-spacing:2px; margin-bottom:4px; }
+        .wc-subtitle { color: #8b7355; font-size: 14px; font-weight: 600; letter-spacing: 1px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 16px; }
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; color: #5a8aaa; font-weight: 700; margin-bottom: 5px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 10px 12px; border: 1.5px solid #c8d8e8;
+            border-radius: 7px; font-size: 14px; box-sizing: border-box; transition: border-color 0.2s;
         }
-        
-        .ward-council-header {
-            text-align: center;
-            margin-bottom: 30px;
-            position: relative;
-            z-index: 1;
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none; border-color: #5a8aaa; box-shadow: 0 0 0 3px rgba(90,138,170,0.12);
         }
-        
-        .ward-title {
-            color: #8b7355;
-            font-size: 28px;
-            font-weight: 300;
-            margin-bottom: 5px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-        
-        .council-title {
-            color: #5a8aaa;
-            font-size: 32px;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            margin-bottom: 15px;
-        }
-        
-        .agenda-subtitle {
-            color: #d2691e;
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 10px;
-        }
-        
-        .date-display {
-            color: #d2691e;
-            font-size: 16px;
-            font-weight: 500;
-        }
-        
-        .ward-council-content {
-            position: relative;
-            z-index: 1;
-        }
-        
-        .form-table-layout {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-        
-        .form-group-full {
-            grid-column: 1 / -1;
-        }
-        
-        .form-group {
-            margin-bottom: 15px;
-        }
-        
-        .form-group label {
-            display: block;
-            color: #8b7355;
-            font-weight: 600;
-            margin-bottom: 8px;
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .form-group input,
-        .form-group textarea {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e6ed;
-            border-radius: 8px;
-            font-size: 14px;
-            background: rgba(255, 255, 255, 0.9);
-            transition: all 0.3s ease;
-            box-sizing: border-box;
-        }
-        
-        .form-group input:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: #5a8aaa;
-            box-shadow: 0 0 0 3px rgba(90, 138, 170, 0.1);
-            background: rgba(255, 255, 255, 1);
-        }
-        
-        .table-section {
-            background: rgba(255, 255, 255, 0.8);
-            border: 2px solid #d2691e;
-            border-radius: 10px;
-            padding: 20px;
-            margin: 20px 0;
-        }
-        
-        .table-section h3 {
-            color: #d2691e;
-            margin-bottom: 15px;
-            font-size: 16px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #5a8aaa 0%, #8b7355 100%);
-            color: white;
-            border: none;
-            padding: 15px 35px;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 25px;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(90, 138, 170, 0.3);
-        }
-        
-        @media (max-width: 768px) {
-            .form-table-layout {
-                grid-template-columns: 1fr;
-            }
-            
-            .ward-council-form {
-                padding: 20px;
-                margin: 10px;
-            }
-        }
+        .section-card { background: #f7f9fc; border: 1.5px solid #c8d8e8; border-radius: 10px; padding: 20px; margin: 18px 0; }
+        .section-card h3 { color: #5a8aaa; font-size: 15px; font-weight: 700; margin: 0 0 14px; text-transform: uppercase; letter-spacing: 1px; }
+        .agenda-card { background: white; border: 1.5px solid #c8d8e8; border-radius: 9px; margin-bottom: 12px; overflow: hidden; }
+        .agenda-card-header { display: flex; align-items: center; gap: 10px; background: #eef3fb; padding: 10px 14px; border-bottom: 1px solid #c8d8e8; }
+        .agenda-card-num { font-size: 11px; font-weight: 800; color: white; background: #5a8aaa; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .agenda-title-input { flex: 1; padding: 7px 11px; border: 1.5px solid #c8d8e8; border-radius: 6px; font-size: 14px; box-sizing: border-box; }
+        .agenda-title-input:focus { outline: none; border-color: #5a8aaa; }
+        .btn-remove-card { background: #fee2e2; color: #b91c1c; border: 1.5px solid #fca5a5; border-radius: 6px; padding: 5px 12px; cursor: pointer; font-size: 12px; font-weight: 600; flex-shrink: 0; }
+        .btn-remove-card:hover { background: #fecaca; }
+        .btn-add-detail { background: white; color: #5a8aaa; border: 1.5px solid #c8d8e8; border-radius: 6px; padding: 5px 12px; font-size: 12px; font-weight: 600; cursor: pointer; margin-top: 4px; }
+        .btn-remove-detail { background: none; color: #94a3b8; border: none; cursor: pointer; font-size: 13px; padding: 3px 7px; border-radius: 4px; font-weight: 700; }
+        .btn-remove-detail:hover { color: #b91c1c; }
+        .agenda-card-body { padding: 12px 14px; }
+        .detail-row { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; }
+        .detail-bullet { font-size: 14px; color: #5a8aaa; flex-shrink: 0; }
+        .detail-input { flex: 1; padding: 7px 10px; border: 1.5px solid #dde6f0; border-radius: 6px; font-size: 14px; box-sizing: border-box; background: #fafcff; }
+        .detail-input:focus { outline: none; border-color: #5a8aaa; }
+        .btn-primary { background: linear-gradient(135deg,#5a8aaa 0%,#8b7355 100%); color: white; border: none; padding: 12px 30px; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 20px; transition: transform 0.2s; text-transform: uppercase; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(90,138,170,0.3); }
+        .btn { display: inline-block; }
+        .btn-sm { padding: 6px 14px; font-size: 12px; border-radius: 6px; font-weight: 600; cursor: pointer; text-decoration: none; }
+        .btn-secondary { background: white; color: #5a8aaa; border: 1.5px solid #c8d8e8; }
+        .btn-secondary:hover { background: #f0f5fb; }
+        .empty-state { text-align: center; color: #94a3b8; font-size: 13px; padding: 18px 0; }
+        @media (max-width: 768px) { .form-row { grid-template-columns: 1fr; } .wc-form { padding: 16px; margin: 8px; } }
     </style>
 </head>
 <body>
-    <nav th:replace="layout :: navigation('wardcouncil')"></nav>
+    <nav th:replace="~{layout :: navigation('wardcouncil')}"></nav>
 
     <main class="main-content">
         <div class="container">
-            <div th:if="${successMessage}" class="alert alert-success" role="alert"
-                 th:text="${successMessage}"></div>
-            <div th:if="${errorMessage}" class="alert alert-error" role="alert"
-                 th:text="${errorMessage}"></div>
-
-            <div class="ward-council-form">
-                <div class="ward-council-header">
-                    <div class="ward-title" th:text="${wardCouncilProgram.wardName}">Pasay 3rd</div>
-                    <div class="council-title">WARD COUNCIL</div>
-                    <div class="agenda-subtitle">Agenda</div>
+            <div class="wc-form">
+                <div class="wc-header">
+                    <div class="church-name">The Church of Jesus Christ of Latter-day Saints</div>
+                    <div class="wc-title" th:text="${wardCouncilProgram.wardName}">Pasay 3rd Ward</div>
+                    <div class="wc-subtitle">WARD COUNCIL MEETING</div>
                 </div>
-                
-                <form th:action="@{/ward-council/preview}" method="post" th:object="${wardCouncilProgram}" class="ward-council-content">
-                    <div class="form-table-layout">
+
+                <form th:action="@{/ward-council/preview}" method="post" th:object="${wardCouncilProgram}" class="wc-content">
+
+                    <div class="form-row">
                         <div class="form-group">
                             <label for="wardName">Ward Name:</label>
-                            <input type="text" id="wardName" th:field="*{wardName}" placeholder="Ward Name">
+                            <input type="text" id="wardName" th:field="*{wardName}" placeholder="Ward Name" maxlength="100">
                         </div>
                         <div class="form-group">
                             <label for="meetingDate">Meeting Date:</label>
                             <input type="date" id="meetingDate" th:field="*{meetingDate}" required>
                         </div>
                     </div>
-                    
-                    <div class="table-section">
-                        <div class="form-table-layout">
+
+                    <!-- Leadership -->
+                    <div class="section-card">
+                        <h3>Leadership</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="presiding">Presiding:</label>
+                                <!-- Always the Bishop — locked, not selectable -->
+                                <input type="hidden" th:field="*{presiding}" />
+                                <input type="text" id="presiding" th:value="*{presiding}"
+                                       readonly style="width:100%;padding:10px;border:2px solid #c3dafe;border-radius:6px;font-size:14px;box-sizing:border-box;background:#ebf4ff;color:#2b6cb0;font-weight:600;cursor:not-allowed;" />
+                            </div>
+                            <div class="form-group">
+                                <label for="conducting">Conducting:</label>
+                                <select id="conducting" th:field="*{conducting}">
+                                    <option value="">Select Conducting</option>
+                                    <option th:each="c : ${bishopricConductors}" th:value="${c.name}" th:text="${c.name}"></option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Opening & Spiritual -->
+                    <div class="section-card">
+                        <h3>Opening &amp; Spiritual</h3>
+                        <div class="form-row">
                             <div class="form-group">
                                 <label for="openingPrayer">Opening Prayer:</label>
-                                <input type="text" id="openingPrayer" th:field="*{openingPrayer}" placeholder="e.g., Primary">
+                                <select id="openingPrayer" th:field="*{openingPrayer}">
+                                    <option value="">Select Auxiliary</option>
+                                    <option th:each="aux : ${auxiliaries}" th:value="${aux.name}" th:text="${aux.name}"></option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="handbookReading">Handbook Reading / Scriptural Thought:</label>
+                                <select id="handbookReading" th:field="*{handbookReading}">
+                                    <option value="">Select Auxiliary</option>
+                                    <option th:each="aux : ${auxiliaries}" th:value="${aux.name}" th:text="${aux.name}"></option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Agenda Items -->
+                    <div class="section-card">
+                        <h3>Agenda Items</h3>
+                        <div id="agendaContainer"></div>
+                        <div style="margin-top:8px;">
+                            <button type="button" class="btn btn-secondary btn-sm" id="addAgendaBtn" onclick="addAgendaCard()">+ Add Agenda Item</button>
+                            <small id="agendaLimitNote" style="color:#718096;margin-left:8px;"></small>
+                        </div>
+                        <input type="hidden" id="agendaItemsJson" name="agendaItemsJson" value="[]">
+                    </div>
+
+                    <!-- Welfare & Closing -->
+                    <div class="section-card">
+                        <h3>Welfare &amp; Closing</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="welfare">Welfare:</label>
+                                <input type="text" id="welfare" th:field="*{welfare}" placeholder="e.g., If any Help Needed">
                             </div>
                             <div class="form-group">
                                 <label for="closingPrayer">Closing Prayer:</label>
-                                <input type="text" id="closingPrayer" th:field="*{closingPrayer}" placeholder="e.g., YSA">
+                                <select id="closingPrayer" th:field="*{closingPrayer}">
+                                    <option value="">Select Auxiliary</option>
+                                    <option th:each="aux : ${auxiliaries}" th:value="${aux.name}" th:text="${aux.name}"></option>
+                                </select>
                             </div>
                         </div>
-                        
-                        <div class="form-group">
-                            <label for="handbookReading">Handbook reading scriptural thought:</label>
-                            <textarea id="handbookReading" th:field="*{handbookReading}" rows="2" placeholder="Enter handbook reading or scriptural thought..."></textarea>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="auxiliary">Auxiliary:</label>
-                            <textarea id="auxiliary" th:field="*{auxiliary}" rows="2" placeholder="e.g., Elders Quorum - If any Help Needed"></textarea>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="agenda">Agenda:</label>
-                            <textarea id="agenda" th:field="*{agenda}" rows="2" placeholder="e.g., Payment Approval Form"></textarea>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="welfare">Welfare:</label>
-                            <textarea id="welfare" th:field="*{welfare}" rows="2" placeholder="e.g., If any Help Needed"></textarea>
-                        </div>
                     </div>
-                    
+
                     <button type="submit" class="btn-primary">Preview Agenda</button>
                 </form>
             </div>
         </div>
     </main>
 
-    <footer th:replace="layout :: footer"></footer>
+    <footer th:replace="~{layout :: footer}"></footer>
+
+    <script th:inline="javascript">
+        var MAX_AGENDA  = 15;
+        var MAX_DETAILS = 10;
+        var initialAgenda = /*[[${agendaItemsJson}]]*/ '[]';
+
+        function addAgendaCard(titleVal, detailVals) {
+            var container = document.getElementById('agendaContainer');
+            container.querySelectorAll('.empty-state').forEach(function(e){ e.remove(); });
+            var count = container.querySelectorAll('.agenda-card').length;
+            if (count >= MAX_AGENDA) return;
+
+            var card = document.createElement('div');
+            card.className = 'agenda-card';
+
+            var header = document.createElement('div');
+            header.className = 'agenda-card-header';
+
+            var num = document.createElement('span');
+            num.className = 'agenda-card-num';
+            num.textContent = count + 1;
+
+            var titleInput = document.createElement('input');
+            titleInput.type = 'text';
+            titleInput.className = 'agenda-title-input';
+            titleInput.placeholder = 'Agenda item title...';
+            titleInput.maxLength = 250;
+            titleInput.value = titleVal || '';
+
+            var removeCardBtn = document.createElement('button');
+            removeCardBtn.type = 'button';
+            removeCardBtn.className = 'btn-remove-card';
+            removeCardBtn.textContent = 'x Remove';
+            removeCardBtn.onclick = function () { card.remove(); renumberCards(); updateAgendaLimit(); };
+
+            header.appendChild(num);
+            header.appendChild(titleInput);
+            header.appendChild(removeCardBtn);
+
+            var body = document.createElement('div');
+            body.className = 'agenda-card-body';
+            var detailsContainer = document.createElement('div');
+            detailsContainer.className = 'details-container';
+            (detailVals || []).forEach(function (dv) { addDetailRow(detailsContainer, dv); });
+
+            var addDetailBtn = document.createElement('button');
+            addDetailBtn.type = 'button';
+            addDetailBtn.className = 'btn-add-detail';
+            addDetailBtn.textContent = '+ Add Detail';
+            addDetailBtn.onclick = function () { addDetailRow(detailsContainer); };
+
+            body.appendChild(detailsContainer);
+            body.appendChild(addDetailBtn);
+            card.appendChild(header);
+            card.appendChild(body);
+            container.appendChild(card);
+
+            updateAgendaLimit();
+            if (!titleVal) titleInput.focus();
+        }
+
+        function addDetailRow(container, value) {
+            if (container.querySelectorAll('.detail-row').length >= MAX_DETAILS) return;
+            var row = document.createElement('div');
+            row.className = 'detail-row';
+            var bullet = document.createElement('span');
+            bullet.className = 'detail-bullet';
+            bullet.textContent = '\u2022';
+            var input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'detail-input';
+            input.placeholder = 'Detail or sub-item...';
+            input.maxLength = 250;
+            input.value = value || '';
+            var removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.className = 'btn-remove-detail';
+            removeBtn.textContent = 'x';
+            removeBtn.onclick = function () { row.remove(); };
+            row.appendChild(bullet);
+            row.appendChild(input);
+            row.appendChild(removeBtn);
+            container.appendChild(row);
+            if (!value) input.focus();
+        }
+
+        function renumberCards() {
+            document.querySelectorAll('#agendaContainer .agenda-card').forEach(function (card, i) {
+                var num = card.querySelector('.agenda-card-num');
+                if (num) num.textContent = i + 1;
+            });
+        }
+
+        function updateAgendaLimit() {
+            var count = document.querySelectorAll('#agendaContainer .agenda-card').length;
+            var btn = document.getElementById('addAgendaBtn');
+            var note = document.getElementById('agendaLimitNote');
+            btn.disabled = count >= MAX_AGENDA;
+            note.textContent = count >= MAX_AGENDA ? 'Maximum ' + MAX_AGENDA + ' items reached.' : '';
+        }
+
+        document.querySelector('form.wc-content').addEventListener('submit', function () {
+            var items = [];
+            document.querySelectorAll('#agendaContainer .agenda-card').forEach(function (card) {
+                var title = card.querySelector('.agenda-title-input').value.trim();
+                if (!title) return;
+                var details = [];
+                card.querySelectorAll('.detail-input').forEach(function (inp) {
+                    var v = inp.value.trim();
+                    if (v) details.push(v);
+                });
+                items.push({ title: title, details: details });
+            });
+            document.getElementById('agendaItemsJson').value = JSON.stringify(items);
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var container = document.getElementById('agendaContainer');
+            try {
+                var parsed = JSON.parse(initialAgenda);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    parsed.forEach(function (item) { addAgendaCard(item.title || '', item.details || []); });
+                } else { showEmpty(container); }
+            } catch (e) { showEmpty(container); }
+        });
+
+        function showEmpty(container) {
+            var msg = document.createElement('div');
+            msg.className = 'empty-state';
+            msg.textContent = 'No agenda items yet. Click "+ Add Agenda Item" to begin.';
+            container.appendChild(msg);
+        }
+    </script>
 </body>
 </html>

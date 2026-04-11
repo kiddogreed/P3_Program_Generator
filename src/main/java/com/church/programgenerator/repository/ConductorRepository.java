@@ -10,4 +10,5 @@ import com.church.programgenerator.model.Conductor;
 @Repository
 public interface ConductorRepository extends JpaRepository<Conductor, Long> {
     List<Conductor> findAllByOrderByDisplayOrderAscNameAsc();
+    List<Conductor> findByProgramTypeOrderByDisplayOrderAscNameAsc(String programType);
 }

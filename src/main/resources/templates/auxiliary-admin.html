@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Manage Auxiliaries')}">
+    <style>
+        .manage-section { max-width: 600px; margin: 40px auto; }
+        .manage-card { background: #fff; border-radius: 10px; box-shadow: 0 2px 8px #e2e8f0; }
+        .manage-card-header { padding: 18px 26px; border-bottom: 1px solid #e2e8f0; }
+        .manage-card-header h2 { margin: 0; font-size: 17px; font-weight: 700; }
+        .manage-card-body { padding: 22px 26px; }
+        .add-form { display: flex; gap: 10px; align-items: flex-end; margin-bottom: 20px; }
+        .add-form .fg { flex: 1; }
+        .add-form label { font-size: 13px; font-weight: 600; }
+        .add-form input[type="text"] { width: 100%; padding: 9px 12px; border: 1.5px solid #c8d8e8; border-radius: 5px; }
+        .add-form input[type="text"]:focus { outline: none; border-color: #3a7ca5; box-shadow: 0 0 0 3px rgba(58,124,165,0.12); }
+        .aux-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        .aux-table thead th { text-transform: uppercase; letter-spacing: 0.8px; padding: 9px 13px; background: #f8fafc; }
+        .aux-table tbody tr { border-bottom: 1px solid #e8eef5; transition: background 0.1s; }
+        .aux-table tbody tr:last-child { border-bottom: none; }
+        .aux-table tbody tr:hover { background: #f8fafc; }
+        .aux-table td { padding: 10px 13px; vertical-align: middle; color: #1e293b; }
+        .aux-table td.actions { width: 130px; white-space: nowrap; }
+        .btn { padding: 7px 13px; border-radius: 6px; font-size: 12px; font-weight: 600; border: none; cursor: pointer; }
+        .btn-primary { background: #3a7ca5; color: #fff; }
+        .btn-danger { background: #e53e3e; color: #fff; }
+        .btn-secondary { background: #cbd5e1; color: #222; }
+    </style>
+</head>
+<body>
+<nav th:replace="layout :: navigation('manage')"></nav>
+<div class="manage-section">
+    <div class="manage-card">
+        <div class="manage-card-header">
+            <h2>Manage Auxiliaries</h2>
+            <p>Add, edit, or remove auxiliary organizations (e.g., Bishopric, Relief Society).</p>
+        </div>
+        <div class="manage-card-body">
+            <form th:action="@{/auxiliaries/add}" method="post" class="add-form">
+                <div class="fg">
+                    <label for="name">Auxiliary Name</label>
+                    <input type="text" id="name" name="name" required />
+                </div>
+                <button type="submit" class="btn btn-primary">+ Add</button>
+            </form>
+            <table class="aux-table">
+                <thead>
+                    <tr><th>#</th><th>Name</th><th>Actions</th></tr>
+                </thead>
+                <tbody>
+                    <tr th:each="aux,iter : ${auxiliaries}">
+                        <td th:text="${iter.index + 1}"></td>
+                        <td th:text="${aux.name}"></td>
+                        <td class="actions">
+                            <form th:action="@{/auxiliaries/delete/{id}(id=${aux.id})}" method="post" style="display:inline;">
+                                <button type="submit" class="btn btn-danger" onclick="return confirm('Delete this auxiliary?')">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(auxiliaries)}">
+                        <td colspan="3" style="text-align:center;color:#94a3b8;">No auxiliaries found.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

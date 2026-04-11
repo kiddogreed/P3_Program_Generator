@@ -39,16 +39,13 @@
                         </div>
                         <div class="form-group">
                             <label for="conducting">Conducted by:</label>
-                            <div style="display:flex;align-items:center;gap:8px;">
-                                <select id="conducting" th:field="*{conducting}" style="flex:1;">
-                                    <option value="">Select Conductor</option>
-                                    <option th:each="c : ${conductors}"
-                                            th:value="${c.name}"
-                                            th:text="${c.name}">
-                                    </option>
-                                </select>
-                                <a href="/conductors" class="btn btn-sm btn-secondary" target="_blank" title="Manage Conductors" style="white-space:nowrap;">⚙ Manage</a>
-                            </div>
+                            <select id="conducting" th:field="*{conducting}" style="width:100%;">
+                                <option value="">Select Conductor</option>
+                                <option th:each="c : ${conductors}"
+                                        th:value="${c.name}"
+                                        th:text="${c.name}">
+                                </option>
+                            </select>
                         </div>
                         <div class="form-group">
                             <label for="acknowledgement">Acknowledgement: <span class="char-limit">(max 400 characters)</span></label>
@@ -116,18 +113,19 @@
                     </div>
 
                     <div class="form-section">
-                        <h3>Speakers</h3>
+                        <h3>Speakers
+                            <span th:if="${speakerTypeHint != null}"
+                                  style="font-size:12px;font-weight:600;background:#e0f2fe;color:#0369a1;
+                                         padding:3px 10px;border-radius:12px;margin-left:10px;vertical-align:middle;"
+                                  th:text="${speakerTypeHint}"></span>
+                        </h3>
                         <div class="form-group">
                             <label for="speakersAuxiliary">Speakers Auxiliary:</label>
                             <select id="speakersAuxiliary" name="speakersAuxiliary" th:field="*{speakersAuxiliary}">
                                 <option value="">Select Auxiliary</option>
-                                <option value="Elders Quorum">Elders Quorum</option>
-                                <option value="Relief Society">Relief Society</option>
-                                <option value="Family History and Missionary Work">Family History and Missionary Work</option>
-                                <option value="Youth Organization">Youth Organization</option>
-                                <option value="Primary Organization">Primary Organization</option>
-                                <option value="Sunday School">Sunday School</option>
-                                <option value="Stake Organization">Stake Organization</option>
+                                <option th:each="aux : ${auxiliaries}"
+                                    th:value="${aux.name}"
+                                    th:text="${aux.name}"></option>
                             </select>
                         </div>
 
@@ -281,6 +279,37 @@
                     initialSpeakerTitles[i] || ''));
             }
             updateSpeakerAddButton();
+
+            // Auto-update acknowledgement when conductor changes
+            const ackTemplate = /*[[${acknowledgementTemplate}]]*/ '';
+            const conductorNames = /*[[${conductors.![name]}]]*/ [];
+            const conductingSelect = document.getElementById('conducting');
+            function refreshAcknowledgement() {
+                if (!ackTemplate) return;
+                const chosen = conductingSelect.value;
+                const others = conductorNames.filter(n => n !== chosen).join(', ');
+                let ack = ackTemplate.replace('{OTHER_CONDUCTORS}', others);
+                // Remove unresolved bishopric placeholder for now
+                ack = ack.replace('{BISHOPRIC_OTHERS}', '');
+                const ackField = document.getElementById('acknowledgement');
+                if (ackField && (!ackField.dataset.userEdited || ackField.dataset.userEdited === 'false')) {
+                    ackField.value = ack;
+                    updateCharCount('acknowledgement', 400);
+                }
+            }
+            if (conductingSelect) {
+                conductingSelect.addEventListener('change', refreshAcknowledgement);
+                // Mark as user-edited once they type manually
+                const ackField = document.getElementById('acknowledgement');
+                if (ackField) {
+                    ackField.addEventListener('input', function() {
+                        this.dataset.userEdited = 'true';
+                        updateCharCount('acknowledgement', 400);
+                    });
+                }
+                // Run once on load to ensure consistency
+                refreshAcknowledgement();
+            }
         });
     </script>
 </body>

@@ -24,7 +24,7 @@ public class BishopricProgram {
     private String openingPrayer;
     @Size(max = 300)
     private String handbookSpiritual;
-    private List<String> agendaItems;
+    private List<AgendaItem> agendaItems;
     @Size(max = 500)
     private String callingsAndReleases;
     @Size(max = 150)
@@ -84,11 +84,11 @@ public class BishopricProgram {
         this.handbookSpiritual = handbookSpiritual;
     }
     
-    public List<String> getAgendaItems() {
+    public List<AgendaItem> getAgendaItems() {
         return agendaItems;
     }
     
-    public void setAgendaItems(List<String> agendaItems) {
+    public void setAgendaItems(List<AgendaItem> agendaItems) {
         this.agendaItems = agendaItems;
     }
     

@@ -20,14 +20,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.church.programgenerator.model.SacramentProgram;
 import com.church.programgenerator.model.Speaker;
+import com.church.programgenerator.model.WardConfig;
+import com.church.programgenerator.service.AuxiliaryService;
 import com.church.programgenerator.service.ConductorService;
 import com.church.programgenerator.service.FileStorageService;
 import com.church.programgenerator.service.ProgramStorageService;
 import com.church.programgenerator.service.SacramentProgramDocumentService;
 import com.church.programgenerator.service.SacramentProgramPreviewService;
+import com.church.programgenerator.service.WardConfigService;
 
 @Controller
 @RequestMapping("/sacrament")
+
 public class SacramentController {
 
     @Autowired
@@ -42,16 +46,42 @@ public class SacramentController {
     @Autowired
     private ProgramStorageService programStorageService;
 
+
     @Autowired
     private ConductorService conductorService;
 
+    @Autowired
+    private AuxiliaryService auxiliaryService;
+
+    @Autowired
+    private WardConfigService wardConfigService;
+
     @GetMapping
     public String sacramentProgram(Model model) {
+        WardConfig cfg = wardConfigService.getConfig();
+        SacramentProgram program = new SacramentProgram();
+        program.setStakeName(cfg.getStakeName());
+        program.setWardName(cfg.getWardName());
+        program.setDate(wardConfigService.nextSacramentDate());
+        program.setAcknowledgement(cfg.getAcknowledgementTemplate());
+
+        java.util.List<com.church.programgenerator.model.Conductor> conductors =
+                conductorService.getByType("sacrament");
+        com.church.programgenerator.model.Conductor suggested =
+                wardConfigService.getSuggestedConductor(conductors, cfg.getLastSacramentConductorId());
+        if (suggested != null) {
+            program.setConducting(suggested.getName());
+        }
+
         model.addAttribute("pageTitle", "Sacrament Meeting Program");
-        model.addAttribute("sacramentProgram", new SacramentProgram());
-        model.addAttribute("conductors", conductorService.getAll());
+        model.addAttribute("sacramentProgram", program);
+        model.addAttribute("conductors", conductors);
+        model.addAttribute("auxiliaries", auxiliaryService.getAll());
         model.addAttribute("speakerNames", Collections.emptyList());
         model.addAttribute("speakerTitles", Collections.emptyList());
+        model.addAttribute("speakerTypeHint",
+                wardConfigService.getSpeakerTypeLabel(wardConfigService.nextSacramentDate()));
+        model.addAttribute("acknowledgementTemplate", cfg.getAcknowledgementTemplate());
         return "sacrament";
     }
 
@@ -71,7 +101,8 @@ public class SacramentController {
 
         model.addAttribute("pageTitle", "Sacrament Meeting Program");
         model.addAttribute("sacramentProgram", program);
-        model.addAttribute("conductors", conductorService.getAll());
+        model.addAttribute("conductors", conductorService.getByType("sacrament"));
+        model.addAttribute("auxiliaries", auxiliaryService.getAll());
         model.addAttribute("speakerNames", speakerNames != null ? speakerNames : Collections.emptyList());
         model.addAttribute("speakerTitles", speakerTitles != null ? speakerTitles : Collections.emptyList());
         model.addAttribute("speakersAuxiliary", speakersAuxiliary);
@@ -98,6 +129,7 @@ public class SacramentController {
 
         model.addAttribute("previewHtml", previewHtml);
         model.addAttribute("sacramentProgram", program);
+        model.addAttribute("auxiliaries", auxiliaryService.getAll());
         model.addAttribute("speakerNames", speakerNames != null ? speakerNames : Collections.emptyList());
         model.addAttribute("speakerTitles", speakerTitles != null ? speakerTitles : Collections.emptyList());
         model.addAttribute("speakersAuxiliary", speakersAuxiliary);

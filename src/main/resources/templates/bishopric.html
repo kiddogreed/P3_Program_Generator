@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="layout :: head('Bishopric Meeting')">
+<head th:replace="~{layout :: head('Bishopric Meeting')}">
     <style>
         .bishopric-form {
             max-width: 800px;
@@ -137,7 +137,132 @@
             font-size: 16px;
             font-weight: 600;
         }
-        
+
+        /* ── Nested agenda ── */
+        .agenda-card {
+            background: white;
+            border: 1.5px solid #c8d8e8;
+            border-radius: 9px;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+
+        .agenda-card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #eef3fb;
+            padding: 10px 14px;
+            border-bottom: 1px solid #c8d8e8;
+        }
+
+        .agenda-card-num {
+            font-size: 11px;
+            font-weight: 800;
+            color: white;
+            background: #2c5282;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .agenda-title-input {
+            flex: 1;
+            padding: 7px 11px;
+            border: 1.5px solid #c8d8e8;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            background: white;
+            box-sizing: border-box;
+        }
+
+        .agenda-title-input:focus {
+            outline: none;
+            border-color: #3a7ca5;
+            box-shadow: 0 0 0 3px rgba(58,124,165,0.1);
+        }
+
+        .btn-remove-card {
+            background: #fee2e2;
+            color: #b91c1c;
+            border: 1.5px solid #fca5a5;
+            border-radius: 6px;
+            padding: 5px 12px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            flex-shrink: 0;
+            transition: background 0.15s;
+            white-space: nowrap;
+        }
+        .btn-remove-card:hover { background: #fecaca; }
+
+        .btn-add-detail {
+            background: white;
+            color: #2c5282;
+            border: 1.5px solid #c8d8e8;
+            border-radius: 6px;
+            padding: 5px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 4px;
+            transition: background 0.15s;
+        }
+        .btn-add-detail:hover { background: #f0f5fb; }
+
+        .btn-remove-detail {
+            background: none;
+            color: #94a3b8;
+            border: none;
+            cursor: pointer;
+            font-size: 13px;
+            padding: 3px 7px;
+            border-radius: 4px;
+            transition: color 0.15s;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .btn-remove-detail:hover { color: #b91c1c; }
+
+        .agenda-card-body {
+            padding: 12px 14px;
+        }
+
+        .detail-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 7px;
+        }
+
+        .detail-bullet {
+            font-size: 14px;
+            color: #3a7ca5;
+            flex-shrink: 0;
+        }
+
+        .detail-input {
+            flex: 1;
+            padding: 7px 10px;
+            border: 1.5px solid #dde6f0;
+            border-radius: 6px;
+            font-size: 14px;
+            box-sizing: border-box;
+            background: #fafcff;
+        }
+
+        .detail-input:focus {
+            outline: none;
+            border-color: #4a90a4;
+            box-shadow: 0 0 0 2px rgba(74, 144, 164, 0.1);
+        }
+
         .btn-primary {
             background: linear-gradient(135deg, #2c5282 0%, #4a90a4 100%);
             color: white;
@@ -151,12 +276,12 @@
             margin-top: 20px;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
-        
+
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(44, 82, 130, 0.3);
         }
-        
+
         .decorative-border {
             border: 1px solid #4a90a4;
             border-radius: 5px;
@@ -178,7 +303,7 @@
     </style>
 </head>
 <body>
-    <nav th:replace="layout :: navigation('bishopric')"></nav>
+    <nav th:replace="~{layout :: navigation('bishopric')}"></nav>
 
     <main class="main-content">
         <div class="container">
@@ -210,46 +335,63 @@
                     <div class="decorative-border">
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="presiding">Presiding: <small style="color:#718096">(max 150)</small></label>
-                                <input type="text" id="presiding" th:field="*{presiding}" placeholder="Bishop's Name" maxlength="150">
+                                <label for="presiding">Presiding:</label>
+                                <!-- Always the Bishop — locked, not selectable -->
+                                <input type="hidden" th:field="*{presiding}" />
+                                <input type="text" id="presiding" th:value="*{presiding}"
+                                       readonly style="width:100%;padding:10px;border:2px solid #c3dafe;border-radius:6px;font-size:14px;box-sizing:border-box;background:#ebf4ff;color:#2b6cb0;font-weight:600;cursor:not-allowed;" />
                             </div>
                             <div class="form-group">
-                                <label for="conducting">Conducting: <small style="color:#718096">(max 150)</small></label>
-                                <input type="text" id="conducting" th:field="*{conducting}" placeholder="Conducting Authority" maxlength="150">
+                                <label for="conducting">Conducting:</label>
+                                <select id="conducting" th:field="*{conducting}" style="width:100%;padding:10px;border:2px solid #e2e8f0;border-radius:6px;font-size:14px;box-sizing:border-box;">
+                                    <option value="">Select Conductor</option>
+                                    <option th:each="c : ${conductors}"
+                                            th:value="${c.name}"
+                                            th:text="${c.name}"></option>
+                                </select>
                             </div>
                         </div>
                         
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="openingPrayer">Opening Prayer: <small style="color:#718096">(max 150)</small></label>
-                                <input type="text" id="openingPrayer" th:field="*{openingPrayer}" placeholder="Opening Prayer by" maxlength="150">
+                                <label for="openingPrayer">Opening Prayer:</label>
+                                <select id="openingPrayer" th:field="*{openingPrayer}" style="width:100%;padding:10px;border:2px solid #e2e8f0;border-radius:6px;font-size:14px;box-sizing:border-box;">
+                                    <option value="">Select Member</option>
+                                    <option th:each="c : ${conductors}"
+                                            th:value="${c.name}"
+                                            th:text="${c.name}"></option>
+                                </select>
                             </div>
                             <div class="form-group">
-                                <label for="closingPrayer">Closing Prayer: <small style="color:#718096">(max 150)</small></label>
-                                <input type="text" id="closingPrayer" th:field="*{closingPrayer}" placeholder="Closing Prayer by" maxlength="150">
+                                <label for="closingPrayer">Closing Prayer:</label>
+                                <select id="closingPrayer" th:field="*{closingPrayer}" style="width:100%;padding:10px;border:2px solid #e2e8f0;border-radius:6px;font-size:14px;box-sizing:border-box;">
+                                    <option value="">Select Member</option>
+                                    <option th:each="c : ${conductors}"
+                                            th:value="${c.name}"
+                                            th:text="${c.name}"></option>
+                                </select>
                             </div>
                         </div>
                     </div>
                     
                     <div class="agenda-section">
-                        <h3>Handbook Spiritual Thought <small style="color:#718096;font-weight:400">(max 300 chars)</small></h3>
+                        <h3>Handbook Spiritual Thought <small style="color:#718096;font-weight:400">(Presenter)</small></h3>
                         <div class="form-group form-group-full">
-                            <textarea id="handbookSpiritual" th:field="*{handbookSpiritual}" rows="3" maxlength="300" placeholder="Enter handbook spiritual thought or reference..."></textarea>
+                            <select id="handbookSpiritual" th:field="*{handbookSpiritual}" style="width:100%;padding:10px;border:2px solid #e2e8f0;border-radius:6px;font-size:14px;box-sizing:border-box;">
+                                <option value="">Select Member</option>
+                                <option th:each="c : ${conductors}" th:value="${c.name}" th:text="${c.name}"></option>
+                            </select>
                         </div>
                     </div>
                     
                     <div class="agenda-section">
-                        <h3>Agenda Items <small style="color:#718096;font-weight:400">(one per line, max 600 total)</small></h3>
-                        <div class="form-group form-group-full">
-                            <textarea id="agendaItems" name="agendaItemsText" rows="6" maxlength="600" placeholder="Enter agenda items (one per line)..."></textarea>
+                        <h3>Agenda Items</h3>
+                        <div id="agendaContainer"></div>
+                        <div style="margin-top:8px;">
+                            <button type="button" class="btn btn-secondary btn-sm" id="addAgendaBtn" onclick="addAgendaCard()">+ Add Agenda Item</button>
+                            <small id="agendaLimitNote" style="color:#718096;margin-left:8px;"></small>
                         </div>
-                    </div>
-                    
-                    <div class="agenda-section">
-                        <h3>Callings and Releases <small style="color:#718096;font-weight:400">(max 500 chars)</small></h3>
-                        <div class="form-group form-group-full">
-                            <textarea id="callingsAndReleases" th:field="*{callingsAndReleases}" rows="4" maxlength="500" placeholder="Enter callings and releases..."></textarea>
-                        </div>
+                        <input type="hidden" id="agendaItemsJson" name="agendaItemsJson" value="[]">
                     </div>
                     
                     <button type="submit" class="btn-primary">Preview Program</button>
@@ -258,6 +400,170 @@
         </div>
     </main>
 
-    <footer th:replace="layout :: footer"></footer>
+    <footer th:replace="~{layout :: footer}"></footer>
+
+    <script th:inline="javascript">
+        const MAX_AGENDA  = 15;
+        const MAX_DETAILS = 10;
+
+        // Pre-filled agenda (from edit-back flow)
+        const initialAgenda = /*[[${agendaItemsJson}]]*/ '[]';
+
+        // ── Build a nested agenda card ───────────────────────────────────
+        function addAgendaCard(titleVal, detailVals) {
+            const container = document.getElementById('agendaContainer');
+            const count = container.querySelectorAll('.agenda-card').length;
+            if (count >= MAX_AGENDA) return;
+
+            const card = document.createElement('div');
+            card.className = 'agenda-card';
+
+            // ── header: numbered circle + title input + remove button ──
+            const header = document.createElement('div');
+            header.className = 'agenda-card-header';
+
+            const num = document.createElement('span');
+            num.className = 'agenda-card-num';
+            num.textContent = count + 1;
+
+            const titleInput = document.createElement('input');
+            titleInput.type = 'text';
+            titleInput.className = 'agenda-title-input';
+            titleInput.placeholder = 'Agenda item title…';
+            titleInput.maxLength = 250;
+            titleInput.value = titleVal || '';
+
+            const removeCardBtn = document.createElement('button');
+            removeCardBtn.type = 'button';
+            removeCardBtn.className = 'btn-remove-card';
+            removeCardBtn.textContent = '✕ Remove';
+            removeCardBtn.onclick = function () {
+                card.remove();
+                renumberCards();
+                updateAgendaLimit();
+            };
+
+            header.appendChild(num);
+            header.appendChild(titleInput);
+            header.appendChild(removeCardBtn);
+
+            // ── body: details list + add-detail button ──
+            const body = document.createElement('div');
+            body.className = 'agenda-card-body';
+
+            const detailsContainer = document.createElement('div');
+            detailsContainer.className = 'details-container';
+
+            (detailVals || []).forEach(function (dv) { addDetailRow(detailsContainer, dv); });
+
+            const addDetailBtn = document.createElement('button');
+            addDetailBtn.type = 'button';
+            addDetailBtn.className = 'btn-add-detail';
+            addDetailBtn.textContent = '+ Add Detail';
+            addDetailBtn.onclick = function () { addDetailRow(detailsContainer); };
+
+            body.appendChild(detailsContainer);
+            body.appendChild(addDetailBtn);
+
+            card.appendChild(header);
+            card.appendChild(body);
+            container.appendChild(card);
+
+            updateAgendaLimit();
+            if (!titleVal) titleInput.focus();
+        }
+
+        function addDetailRow(detailsContainer, value) {
+            const count = detailsContainer.querySelectorAll('.detail-row').length;
+            if (count >= MAX_DETAILS) return;
+
+            const row = document.createElement('div');
+            row.className = 'detail-row';
+
+            const bullet = document.createElement('span');
+            bullet.className = 'detail-bullet';
+            bullet.textContent = '•';
+
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'detail-input';
+            input.placeholder = 'Detail or sub-item…';
+            input.maxLength = 250;
+            input.value = value || '';
+
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.className = 'btn-remove-detail';
+            removeBtn.textContent = '✕';
+            removeBtn.onclick = function () { row.remove(); };
+
+            row.appendChild(bullet);
+            row.appendChild(input);
+            row.appendChild(removeBtn);
+            detailsContainer.appendChild(row);
+
+            if (!value) input.focus();
+        }
+
+        function renumberCards() {
+            document.querySelectorAll('#agendaContainer .agenda-card').forEach(function (card, i) {
+                const num = card.querySelector('.agenda-card-num');
+                if (num) num.textContent = i + 1;
+            });
+        }
+
+        function updateAgendaLimit() {
+            const count = document.querySelectorAll('#agendaContainer .agenda-card').length;
+            const btn = document.getElementById('addAgendaBtn');
+            const note = document.getElementById('agendaLimitNote');
+            if (count >= MAX_AGENDA) {
+                if (btn) btn.disabled = true;
+                note.textContent = 'Maximum ' + MAX_AGENDA + ' items reached.';
+            } else {
+                if (btn) btn.disabled = false;
+                note.textContent = '';
+            }
+        }
+
+        // ── Serialize before submit ──────────────────────────────────────
+        document.querySelector('form.bishopric-content').addEventListener('submit', function () {
+            const items = [];
+            document.querySelectorAll('#agendaContainer .agenda-card').forEach(function (card) {
+                const title = card.querySelector('.agenda-title-input').value.trim();
+                if (!title) return;
+                const details = [];
+                card.querySelectorAll('.detail-input').forEach(function (inp) {
+                    const v = inp.value.trim();
+                    if (v) details.push(v);
+                });
+                items.push({ title: title, details: details });
+            });
+            document.getElementById('agendaItemsJson').value = JSON.stringify(items);
+        });
+
+        // ── Init: load pre-filled agenda or show empty message if none ───
+        document.addEventListener('DOMContentLoaded', function () {
+            const container = document.getElementById('agendaContainer');
+            try {
+                const parsed = JSON.parse(initialAgenda);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    parsed.forEach(function (item) {
+                        addAgendaCard(item.title || '', item.details || []);
+                    });
+                } else {
+                    // Show a placeholder message if agenda is empty
+                    const msg = document.createElement('div');
+                    msg.className = 'empty-state';
+                    msg.textContent = 'No agenda items found.';
+                    container.appendChild(msg);
+                }
+            } catch (e) {
+                const msg = document.createElement('div');
+                msg.className = 'empty-state';
+                msg.textContent = 'No agenda items found.';
+                container.appendChild(msg);
+            }
+        });
+    </script>
 </body>
 </html>

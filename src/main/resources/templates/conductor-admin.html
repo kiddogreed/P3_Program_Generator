@@ -1,63 +1,265 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="layout :: head('Manage Conductors')"></head>
+<head th:replace="~{layout :: head('Manage')}">
+    <style>
+        .manage-section {
+            max-width: 700px;
+            margin: 30px auto;
+        }
+        .manage-card {
+            background: white;
+            border: 1px solid #c8d8e8;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(44,82,130,0.10);
+            overflow: hidden;
+            margin-bottom: 28px;
+        }
+        .manage-card-header {
+            background: linear-gradient(160deg,#1a3a6b 0%,#2c5282 60%,#3a7ca5 100%);
+            color: white;
+            padding: 18px 26px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .manage-card-header .header-icon { font-size: 22px; }
+        .manage-card-header h2 { margin: 0; font-size: 17px; font-weight: 700; }
+        .manage-card-header p  { margin: 2px 0 0; font-size: 11px; opacity: 0.78; }
+        .manage-card-body { padding: 22px 26px; }
+        /* Add form */
+        .add-form { display: flex; gap: 10px; align-items: flex-end; margin-bottom: 20px; }
+        .add-form .fg { flex: 1; }
+        .add-form label {
+            display: block; font-size: 11px; font-weight: 700; color: #2c5282;
+            margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.6px;
+        }
+        .add-form input[type="text"] {
+            width: 100%; padding: 9px 12px; border: 1.5px solid #c8d8e8;
+            border-radius: 7px; font-size: 14px; box-sizing: border-box; transition: border-color 0.18s;
+        }
+        .add-form input[type="text"]:focus { outline: none; border-color: #3a7ca5; box-shadow: 0 0 0 3px rgba(58,124,165,0.12); }
+        /* Table */
+        .cond-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        .cond-table thead th {
+            background: #f0f5fb; color: #2c5282; font-weight: 700; font-size: 11px;
+            text-transform: uppercase; letter-spacing: 0.8px; padding: 9px 13px;
+            border-bottom: 2px solid #c8d8e8;
+        }
+        .cond-table tbody tr { border-bottom: 1px solid #e8eef5; transition: background 0.1s; }
+        .cond-table tbody tr:last-child { border-bottom: none; }
+        .cond-table tbody tr:hover { background: #f8fafc; }
+        .cond-table td { padding: 10px 13px; vertical-align: middle; color: #1e293b; }
+        .cond-table td.idx { color: #94a3b8; font-size: 12px; width: 30px; }
+        .cond-table td.actions { width: 130px; white-space: nowrap; }
+        .edit-input {
+            width: 100%; padding: 6px 10px; border: 1.5px solid #3a7ca5;
+            border-radius: 6px; font-size: 14px; box-sizing: border-box;
+        }
+        /* Buttons */
+        .btn {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 7px 13px; border-radius: 6px; font-size: 12px; font-weight: 600;
+            cursor: pointer; border: none; text-decoration: none; transition: all 0.15s; white-space: nowrap;
+        }
+        .btn-primary { background: linear-gradient(135deg,#2c5282,#3a7ca5); color: white; }
+        .btn-primary:hover { box-shadow: 0 3px 10px rgba(44,82,130,0.3); }
+        .btn-secondary { background: white; color: #2c5282; border: 1.5px solid #c8d8e8; }
+        .btn-secondary:hover { background: #f0f5fb; }
+        .btn-danger { background: #fee2e2; color: #b91c1c; border: 1.5px solid #fca5a5; }
+        .btn-danger:hover { background: #fecaca; }
+        .btn-success { background: #dcfce7; color: #166534; border: 1.5px solid #86efac; }
+        .btn-success:hover { background: #bbf7d0; }
+        .empty-state { text-align: center; padding: 26px 0; color: #94a3b8; font-size: 13px; }
+        .alert { padding: 10px 16px; border-radius: 7px; margin-bottom: 16px; font-size: 13px; font-weight: 500; }
+        .alert-success { background: #f0fdf4; color: #166534; border: 1px solid #86efac; }
+        .alert-error   { background: #fef2f2; color: #b91c1c; border: 1px solid #fca5a5; }
+    </style>
+</head>
 <body>
-    <nav th:replace="layout :: navigation('sacrament')"></nav>
+    <nav th:replace="layout :: navigation('manage')"></nav>
 
     <main class="main-content">
         <div class="container">
-            <h1>Manage Conductors</h1>
+            <div class="manage-section">
 
-            <div th:if="${successMessage}" class="alert alert-success" role="alert"
-                 th:text="${successMessage}"></div>
-            <div th:if="${errorMessage}" class="alert alert-error" role="alert"
-                 th:text="${errorMessage}"></div>
+                <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+                <div th:if="${errorMessage}"   class="alert alert-error"   th:text="${errorMessage}"></div>
 
-            <!-- Add conductor form -->
-            <div class="program-form" style="margin-bottom:24px;">
-                <form th:action="@{/conductors/add}" method="post" style="display:flex;gap:10px;align-items:flex-end;">
-                    <div class="form-group" style="flex:1;margin:0;">
-                        <label for="conductorName">New Conductor Name:</label>
-                        <input type="text" id="conductorName" name="name"
-                               placeholder="e.g., (2nd Co) Bro. Joenice Gaco"
-                               maxlength="200" required style="width:100%;">
+                <!-- ═══ Sacrament Conductors ═══ -->
+                <div class="manage-card">
+                    <div class="manage-card-header">
+                        <span class="header-icon">🎵</span>
+                        <div>
+                            <h2>Sacrament Meeting Conductors</h2>
+                            <p>Names available in the Sacrament program "Conducted by" dropdown.</p>
+                        </div>
                     </div>
-                    <button type="submit" class="btn btn-primary">Add Conductor</button>
-                    <a href="/sacrament" class="btn btn-secondary">← Back to Form</a>
-                </form>
-            </div>
+                    <div class="manage-card-body">
+                        <form th:action="@{/conductors/add}" method="post" class="add-form">
+                            <input type="hidden" name="type" value="sacrament">
+                            <div class="fg">
+                                <label for="sacName">New Name</label>
+                                <input type="text" id="sacName" name="name"
+                                       placeholder="e.g., (2nd Co) Bro. Joenice Gaco"
+                                       maxlength="200" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">+ Add</button>
+                        </form>
+                        <div th:if="${#lists.isEmpty(sacramentConductors)}" class="empty-state">No conductors yet. Add one above.</div>
+                        <table th:unless="${#lists.isEmpty(sacramentConductors)}" class="cond-table">
+                            <thead><tr><th>#</th><th>Name</th><th>Actions</th></tr></thead>
+                            <tbody>
+                                <tr th:each="c, iter : ${sacramentConductors}" th:id="'row-' + ${c.id}">
+                                    <td class="idx" th:text="${iter.index + 1}"></td>
+                                    <td th:id="'name-' + ${c.id}" th:text="${c.name}"></td>
+                                    <td class="actions">
+                                        <div th:id="'view-' + ${c.id}" style="display:flex;gap:6px;">
+                                            <button type="button" class="btn btn-secondary edit-btn"
+                                                    th:data-id="${c.id}" th:data-name="${c.name}">✎</button>
+                                            <form th:action="@{/conductors/delete/{id}(id=${c.id})}" method="post"
+                                                  onsubmit="return confirm('Delete this conductor?')">
+                                                <button type="submit" class="btn btn-danger">✕</button>
+                                            </form>
+                                        </div>
+                                        <div th:id="'edit-' + ${c.id}" style="display:none;">
+                                            <form th:action="@{/conductors/edit/{id}(id=${c.id})}" method="post"
+                                                  style="display:flex;gap:6px;align-items:center;">
+                                                <input type="text" class="edit-input" th:id="'ei-' + ${c.id}"
+                                                       name="name" maxlength="200" required>
+                                                <button type="submit" class="btn btn-success">✓</button>
+                                                <button type="button" class="btn btn-secondary cancel-btn"
+                                                        th:data-id="${c.id}">✕</button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
 
-            <!-- Conductors list -->
-            <div th:if="${#lists.isEmpty(conductors)}" class="history-empty">
-                <p>No conductors yet. Add one above.</p>
-            </div>
+                <!-- ═══ Bishopric Meeting Conductors ═══ -->
+                <div class="manage-card">
+                    <div class="manage-card-header">
+                        <span class="header-icon">🏛️</span>
+                        <div>
+                            <h2>Bishopric Meeting Members</h2>
+                            <p>Names available in the Bishopric Meeting dropdowns (Presiding, Conducting, Prayers).</p>
+                        </div>
+                    </div>
+                    <div class="manage-card-body">
+                        <form th:action="@{/conductors/add}" method="post" class="add-form">
+                            <input type="hidden" name="type" value="bishopric">
+                            <div class="fg">
+                                <label for="bshpName">New Name</label>
+                                <input type="text" id="bshpName" name="name"
+                                       placeholder="e.g., Bro. John Moroni Mendoza"
+                                       maxlength="200" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">+ Add</button>
+                        </form>
+                        <div th:if="${#lists.isEmpty(bishopricConductors)}" class="empty-state">No conductors yet. Add one above.</div>
+                        <table th:unless="${#lists.isEmpty(bishopricConductors)}" class="cond-table">
+                            <thead><tr><th>#</th><th>Name</th><th>Actions</th></tr></thead>
+                            <tbody>
+                                <tr th:each="c, iter : ${bishopricConductors}" th:id="'row-' + ${c.id}">
+                                    <td class="idx" th:text="${iter.index + 1}"></td>
+                                    <td th:id="'name-' + ${c.id}" th:text="${c.name}"></td>
+                                    <td class="actions">
+                                        <div th:id="'view-' + ${c.id}" style="display:flex;gap:6px;">
+                                            <button type="button" class="btn btn-secondary edit-btn"
+                                                    th:data-id="${c.id}" th:data-name="${c.name}">✎</button>
+                                            <form th:action="@{/conductors/delete/{id}(id=${c.id})}" method="post"
+                                                  onsubmit="return confirm('Delete this member?')">
+                                                <button type="submit" class="btn btn-danger">✕</button>
+                                            </form>
+                                        </div>
+                                        <div th:id="'edit-' + ${c.id}" style="display:none;">
+                                            <form th:action="@{/conductors/edit/{id}(id=${c.id})}" method="post"
+                                                  style="display:flex;gap:6px;align-items:center;">
+                                                <input type="text" class="edit-input" th:id="'ei-' + ${c.id}"
+                                                       name="name" maxlength="200" required>
+                                                <button type="submit" class="btn btn-success">✓</button>
+                                                <button type="button" class="btn btn-secondary cancel-btn"
+                                                        th:data-id="${c.id}">✕</button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
 
-            <div th:unless="${#lists.isEmpty(conductors)}" class="history-table-wrapper">
-                <table class="history-table">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Name</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="c, iter : ${conductors}">
-                            <td th:text="${iter.index + 1}"></td>
-                            <td th:text="${c.name}"></td>
-                            <td class="action-cell">
-                                <form th:action="@{/conductors/delete/{id}(id=${c.id})}" method="post"
-                                      onsubmit="return confirm('Delete this conductor?')">
-                                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-                                </form>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <!-- ═══ Auxiliaries Management ═══ -->
+                <div class="manage-card">
+                    <div class="manage-card-header">
+                        <span class="header-icon">🤝</span>
+                        <div>
+                            <h2>Auxiliary Organizations</h2>
+                            <p>Add, edit, or remove auxiliary organizations (e.g., Bishopric, Relief Society, Elders Quorum, etc.).</p>
+                        </div>
+                    </div>
+                    <div class="manage-card-body">
+                        <form th:action="@{/auxiliaries/add}" method="post" class="add-form">
+                            <div class="fg">
+                                <label for="auxName">Auxiliary Name</label>
+                                <input type="text" id="auxName" name="name" maxlength="200" required />
+                            </div>
+                            <button type="submit" class="btn btn-primary">+ Add</button>
+                        </form>
+                        <div th:if="${#lists.isEmpty(auxiliaries)}" class="empty-state">No auxiliaries found. Add one above.</div>
+                        <table th:unless="${#lists.isEmpty(auxiliaries)}" class="cond-table">
+                            <thead>
+                                <tr><th>#</th><th>Name</th><th>Actions</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="aux,iter : ${auxiliaries}">
+                                    <td th:text="${iter.index + 1}"></td>
+                                    <td th:text="${aux.name}"></td>
+                                    <td class="actions">
+                                        <form th:action="@{/auxiliaries/delete/{id}(id=${aux.id})}" method="post" style="display:inline;">
+                                            <button type="submit" class="btn btn-danger" onclick="return confirm('Delete this auxiliary?')">Delete</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </main>
 
-    <footer th:replace="layout :: footer"></footer>
+    <footer th:replace="~{layout :: footer}"></footer>
+
+    <script>
+        document.addEventListener('click', function (e) {
+            const editBtn = e.target.closest('.edit-btn');
+            if (editBtn) {
+                startEdit(editBtn.getAttribute('data-id'), editBtn.getAttribute('data-name'));
+                return;
+            }
+            const cancelBtn = e.target.closest('.cancel-btn');
+            if (cancelBtn) {
+                cancelEdit(cancelBtn.getAttribute('data-id'));
+            }
+        });
+
+        function startEdit(id, currentName) {
+            document.getElementById('name-' + id).style.display = 'none';
+            document.getElementById('view-' + id).style.display = 'none';
+            const input = document.getElementById('ei-' + id);
+            input.value = currentName;
+            document.getElementById('edit-' + id).style.display = 'block';
+            input.focus();
+            input.select();
+        }
+        function cancelEdit(id) {
+            document.getElementById('name-' + id).style.display = '';
+            document.getElementById('view-' + id).style.display = '';
+            document.getElementById('edit-' + id).style.display = 'none';
+        }
+    </script>
 </body>
 </html>

@@ -1,300 +1,375 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="layout :: head('Bishopric Meeting Preview')">
+<head th:replace="~{layout :: head('Bishopric Meeting Preview')}">
     <style>
+        .preview-wrapper {
+            max-width: 760px;
+            margin: 30px auto;
+        }
+
         .bishopric-preview {
-            max-width: 800px;
-            margin: 20px auto;
             background: white;
-            border: 3px solid #2c5282;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 8px 32px rgba(44, 82, 130, 0.15);
-            position: relative;
-            min-height: 600px;
-        }
-        
-        .bishopric-preview::before {
-            content: '';
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            right: 10px;
-            bottom: 10px;
-            border: 2px solid #4a90a4;
-            border-radius: 15px;
-            pointer-events: none;
-            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Ccircle cx='2' cy='2' r='1' fill='%234a90a4' opacity='0.3'/%3E%3Ccircle cx='18' cy='2' r='1' fill='%234a90a4' opacity='0.3'/%3E%3Ccircle cx='2' cy='18' r='1' fill='%234a90a4' opacity='0.3'/%3E%3Ccircle cx='18' cy='18' r='1' fill='%234a90a4' opacity='0.3'/%3E%3C/svg%3E") repeat;
-            background-size: 20px 20px;
-        }
-        
-        .bishopric-preview::after {
-            content: '';
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            right: 15px;
-            bottom: 15px;
-            border: 1px solid rgba(74, 144, 164, 0.3);
+            border: 1px solid #c8d8e8;
             border-radius: 12px;
-            pointer-events: none;
+            box-shadow: 0 4px 24px rgba(44, 82, 130, 0.12);
+            overflow: hidden;
         }
-        
+
+        /* ── Header band ── */
         .bishopric-header {
+            background: #ede9f5;
             text-align: center;
-            margin-bottom: 30px;
-            position: relative;
-            z-index: 1;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 25px;
-            border-radius: 8px;
+            padding: 28px 24px 24px;
+            border-bottom: 3px solid #1a2e5a;
         }
-        
-        .church-name {
-            color: #2c5282;
-            font-size: 11px;
-            font-weight: 500;
-            letter-spacing: 2px;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-        }
-        
-        .temple-icon {
-            font-size: 28px;
-            margin-bottom: 8px;
-            opacity: 0.8;
-        }
-        
-        .bishopric-title {
-            color: #2c5282;
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 6px;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            line-height: 1.2;
-        }
-        
-        .bishopric-subtitle {
-            color: #4a90a4;
-            font-size: 15px;
-            font-weight: 600;
-            letter-spacing: 1px;
+
+        .header-lds-logo {
+            max-width: 60px;
             margin-bottom: 10px;
         }
-        
-        .meeting-date {
-            color: #2c5282;
-            font-size: 14px;
-            font-weight: 500;
+
+        .church-name {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 2.5px;
             text-transform: uppercase;
+            color: #1a2e5a;
+            margin-bottom: 10px;
+        }
+
+        .bishopric-title {
+            font-size: 22px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            line-height: 1.25;
+            color: #1a2e5a;
+            margin-bottom: 4px;
+        }
+
+        .bishopric-subtitle {
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #1a2e5a;
+            margin-bottom: 14px;
+        }
+
+        .header-divider {
+            width: 60px;
+            height: 2px;
+            background: #1a2e5a;
+            margin: 0 auto 14px;
+            border-radius: 2px;
+        }
+
+        .meeting-date {
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #1a2e5a;
+        }
+
+        /* ── Agenda section ── */
+        .bishopric-content {
+            padding: 28px 32px 32px;
+        }
+
+        .agenda-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px solid #1a2e5a;
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+        }
+
+        .agenda-label {
+            font-size: 13px;
+            font-weight: 700;
+            color: #1a2e5a;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .agenda-date {
+            font-size: 12px;
+            font-weight: 600;
+            color: #1a2e5a;
             letter-spacing: 0.5px;
         }
-        
-        .bishopric-content {
-            position: relative;
-            z-index: 1;
-        }
-        
+
+        /* ── Details table ── */
         .meeting-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
-        
-        .meeting-table th,
-        .meeting-table td {
-            padding: 12px 20px;
-            text-align: left;
-            border: 2px solid #e74c3c;
+
+        .meeting-table tr {
+            border-bottom: 1px solid #e8eef5;
         }
-        
+
+        .meeting-table tr:last-child {
+            border-bottom: none;
+        }
+
         .meeting-table th {
-            background-color: rgba(231, 76, 60, 0.1);
-            color: #2c5282;
-            font-weight: 600;
-            font-size: 14px;
+            padding: 11px 16px 11px 0;
+            text-align: left;
+            color: #1a2e5a;
+            font-weight: 700;
+            font-size: 12px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            width: 40%;
+            letter-spacing: 0.8px;
+            white-space: nowrap;
+            vertical-align: top;
+            width: 1%;
         }
-        
+
         .meeting-table td {
-            color: #374151;
+            padding: 11px 0 11px 20px;
+            color: #1e293b;
             font-size: 14px;
-            font-weight: 500;
-            background-color: rgba(255, 255, 255, 0.9);
+            font-weight: 400;
+            vertical-align: top;
+            line-height: 1.55;
         }
-        
-        .meeting-table tr:hover {
-            background-color: rgba(231, 76, 60, 0.05);
+
+        .meeting-table tr:hover td,
+        .meeting-table tr:hover th {
+            background-color: #f8fafc;
         }
-        
-        .agenda-header {
-            color: #e74c3c;
-            font-size: 18px;
-            font-weight: 600;
-            margin: 20px 0 10px 0;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+
+        .agenda-items-list {
+            margin: 0;
+            padding: 0;
+            list-style: none;
         }
-        
-        .date-header {
-            color: #e74c3c;
-            font-size: 16px;
-            font-weight: 600;
-            float: right;
-            margin: 20px 0 10px 0;
+
+        .agenda-items-list li {
+            padding: 2px 0;
         }
-        
-        .export-buttons {
+
+        .agenda-items-list li::before {
+            content: '•';
+            color: #1a2e5a;
+            font-weight: 700;
+            margin-right: 8px;
+        }
+
+        /* ── Footer logo band ── */
+        .bp-footer-band {
+            background: #f0edf8;
+            border-top: 1px solid #c8c0e0;
+            text-align: center;
+            padding: 12px 24px;
+        }
+
+        .footer-logo {
+            max-width: 70px;
+            opacity: 0.80;
+        }
+
+        /* ── Action buttons (inside card) ── */
+        .action-bar {
             display: flex;
-            gap: 15px;
+            gap: 12px;
             justify-content: center;
-            margin-top: 30px;
+            padding: 20px 32px 28px;
+            border-top: 1px solid #e8eef5;
+            background: #f8fafc;
         }
-        
+
         .btn {
-            padding: 10px 25px;
-            border-radius: 6px;
-            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 10px 24px;
+            border-radius: 7px;
+            font-size: 13px;
             font-weight: 600;
             cursor: pointer;
             text-decoration: none;
             border: none;
-            transition: all 0.2s ease;
+            transition: all 0.18s ease;
+            letter-spacing: 0.3px;
         }
-        
+
         .btn-primary {
-            background: linear-gradient(135deg, #2c5282 0%, #4a90a4 100%);
+            background: linear-gradient(135deg, #1a2e5a 0%, #2c5282 100%);
             color: white;
+            box-shadow: 0 2px 8px rgba(26, 46, 90, 0.3);
         }
-        
+
         .btn-secondary {
-            background: #e2e8f0;
-            color: #4a5568;
+            background: white;
+            color: #2c5282;
+            border: 1.5px solid #c8d8e8;
         }
-        
+
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 6px 16px rgba(44, 82, 130, 0.2);
         }
-        
-        @media (max-width: 768px) {
-            .meeting-table th,
-            .meeting-table td {
-                padding: 8px 12px;
-                font-size: 12px;
+
+        .btn-primary:hover {
+            box-shadow: 0 6px 18px rgba(44, 82, 130, 0.4);
+        }
+
+        @media (max-width: 600px) {
+            .bishopric-content {
+                padding: 20px 18px 24px;
             }
-            
+
             .meeting-table th {
-                width: 35%;
+                font-size: 11px;
+                white-space: normal;
             }
-            
-            .agenda-header {
-                font-size: 16px;
-            }
-            
-            .date-header {
-                font-size: 14px;
-                float: none;
-                text-align: center;
-                margin: 10px 0;
-            }
-            
-            .export-buttons {
+
+            .action-bar {
                 flex-direction: column;
+                padding: 16px 18px 20px;
             }
-            
-            .bishopric-preview {
-                padding: 20px;
-                margin: 10px;
+
+            .btn {
+                justify-content: center;
             }
         }
     </style>
 </head>
 <body>
-    <nav th:replace="layout :: navigation('bishopric')"></nav>
+    <nav th:replace="~{layout :: navigation('bishopric')}"></nav>
 
     <main class="main-content">
         <div class="container">
-            <div class="bishopric-preview">
-                <div class="bishopric-header">
-                    <div class="church-name">THE CHURCH OF JESUS CHRIST OF LATTER-DAY SAINTS</div>
-                    <div class="temple-icon">🏛️</div>
-                    <div class="bishopric-title">
-                        <span th:text="${bishopricProgram.wardName}">PASAY 3RD</span> WARD
+            <div class="preview-wrapper">
+                <div class="bishopric-preview">
+
+                    <!-- Header -->
+                    <div class="bishopric-header">
+                        <img th:src="@{/images/LDS_LOGO_wbg.png}" alt="LDS Logo" class="header-lds-logo"
+                             onerror="this.style.display='none'">
+                        <div class="church-name">The Church of Jesus Christ of Latter-day Saints</div>
+                        <div class="bishopric-title">
+                            <span th:text="${bishopricProgram.wardName}">Pasay 3rd</span> Ward
+                        </div>
+                        <div class="bishopric-subtitle">Bishopric Meeting</div>
+                        <div class="header-divider"></div>
+                        <div class="meeting-date" th:text="${#temporals.format(bishopricProgram.meetingDate, 'EEEE, MMMM dd, yyyy')}">Friday, September 12, 2025</div>
                     </div>
-                    <div class="bishopric-subtitle">BISHOPRIC MEETING</div>
-                    <div class="meeting-date" th:text="${#temporals.format(bishopricProgram.meetingDate, 'EEEE, MMMM dd, yyyy')}">FRIDAY, SEPTEMBER 12, 2025</div>
+
+                    <!-- Agenda body -->
+                    <div class="bishopric-content">
+                        <div class="agenda-bar">
+                            <span class="agenda-label">Agenda</span>
+                            <span class="agenda-date" th:text="${#temporals.format(bishopricProgram.meetingDate, 'MM-dd-yy')}">09-12-25</span>
+                        </div>
+
+                        <table class="meeting-table">
+                            <tr th:if="${bishopricProgram.presiding != null and !bishopricProgram.presiding.isEmpty()}">
+                                <th>Presiding</th>
+                                <td th:text="${bishopricProgram.presiding}">Bishop Name</td>
+                            </tr>
+                            <tr th:if="${bishopricProgram.conducting != null and !bishopricProgram.conducting.isEmpty()}">
+                                <th>Conducting</th>
+                                <td th:text="${bishopricProgram.conducting}">Conducting Authority</td>
+                            </tr>
+                            <tr th:if="${bishopricProgram.openingPrayer != null and !bishopricProgram.openingPrayer.isEmpty()}">
+                                <th>Opening Prayer</th>
+                                <td th:text="${bishopricProgram.openingPrayer}">Opening Prayer by</td>
+                            </tr>
+                            <tr th:if="${bishopricProgram.handbookSpiritual != null and !bishopricProgram.handbookSpiritual.isEmpty()}">
+                                <th>Spiritual Thought</th>
+                                <td th:text="${bishopricProgram.handbookSpiritual}">Handbook spiritual thought</td>
+                            </tr>
+                            <tr th:if="${agendaItemsList != null and !agendaItemsList.isEmpty()}">
+                                <th>Agenda Items</th>
+                                <td>
+                                    <div th:each="item, iStat : ${agendaItemsList}" style="margin-bottom:8px;">
+                                        <div style="font-weight:600;color:#1e293b;">
+                                            <span th:text="${iStat.index + 1} + '. '"></span><span th:text="${item.title}"></span>
+                                        </div>
+                                        <div th:if="${item.details != null and !item.details.isEmpty()}"
+                                             style="padding-left:16px;margin-top:3px;">
+                                            <div th:each="det : ${item.details}"
+                                                 style="font-size:13px;color:#4a5568;line-height:1.5;">
+                                                • <span th:text="${det}"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr th:if="${bishopricProgram.closingPrayer != null and !bishopricProgram.closingPrayer.isEmpty()}">
+                                <th>Closing Prayer</th>
+                                <td th:text="${bishopricProgram.closingPrayer}">Closing Prayer by</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- Footer logo band -->
+                    <div class="bp-footer-band">
+                        <img th:src="@{/images/P3_LOGO.png}" alt="Ward Logo" class="footer-logo"
+                             onerror="this.style.display='none'">
+                    </div>
+
+                    <!-- Action buttons inside the card -->
+                    <div class="action-bar">
+                        <form th:action="@{/bishopric/export/pdf}" method="post" style="display:contents;">
+                            <input type="hidden" name="wardName" th:value="${bishopricProgram.wardName}">
+                            <input type="hidden" name="meetingDate" th:value="${bishopricProgram.meetingDate}">
+                            <input type="hidden" name="presiding" th:value="${bishopricProgram.presiding}">
+                            <input type="hidden" name="conducting" th:value="${bishopricProgram.conducting}">
+                            <input type="hidden" name="openingPrayer" th:value="${bishopricProgram.openingPrayer}">
+                            <input type="hidden" name="closingPrayer" th:value="${bishopricProgram.closingPrayer}">
+                            <input type="hidden" name="handbookSpiritual" th:value="${bishopricProgram.handbookSpiritual}">
+                            <input type="hidden" name="agendaItemsJson" th:value="${agendaItemsJson}">
+                            <button type="submit" class="btn btn-primary">
+                                ⬇ Export to PDF
+                            </button>
+                        </form>
+                        <form th:action="@{/bishopric/edit}" method="post" style="display:contents;">
+                            <input type="hidden" name="wardName" th:value="${bishopricProgram.wardName}">
+                            <input type="hidden" name="meetingDate" th:value="${bishopricProgram.meetingDate}">
+                            <input type="hidden" name="presiding" th:value="${bishopricProgram.presiding}">
+                            <input type="hidden" name="conducting" th:value="${bishopricProgram.conducting}">
+                            <input type="hidden" name="openingPrayer" th:value="${bishopricProgram.openingPrayer}">
+                            <input type="hidden" name="closingPrayer" th:value="${bishopricProgram.closingPrayer}">
+                            <input type="hidden" name="handbookSpiritual" th:value="${bishopricProgram.handbookSpiritual}">
+                            <input type="hidden" name="agendaItemsJson" th:value="${agendaItemsJson}">
+                            <button type="submit" class="btn btn-secondary">✎ Edit Program</button>
+                        </form>
+                    </div>
+
                 </div>
-                
-                <div class="bishopric-content">
-                    <div class="agenda-header">Agenda</div>
-                    <div class="date-header" th:text="${#temporals.format(bishopricProgram.meetingDate, 'MM-dd-yy')}">10-12-25</div>
-                    <div style="clear: both;"></div>
-                    
-                    <table class="meeting-table">
-                        <tr th:if="${bishopricProgram.presiding != null and !bishopricProgram.presiding.isEmpty()}">
-                            <th>Presiding:</th>
-                            <td th:text="${bishopricProgram.presiding}">Bishop Name</td>
-                        </tr>
-                        <tr th:if="${bishopricProgram.conducting != null and !bishopricProgram.conducting.isEmpty()}">
-                            <th>Conducting:</th>
-                            <td th:text="${bishopricProgram.conducting}">Conducting Authority</td>
-                        </tr>
-                        <tr th:if="${bishopricProgram.openingPrayer != null and !bishopricProgram.openingPrayer.isEmpty()}">
-                            <th>Opening Prayer:</th>
-                            <td th:text="${bishopricProgram.openingPrayer}">Opening Prayer by</td>
-                        </tr>
-                        <tr th:if="${bishopricProgram.handbookSpiritual != null and !bishopricProgram.handbookSpiritual.isEmpty()}">
-                            <th>Handbook Spiritual Thought:</th>
-                            <td th:text="${bishopricProgram.handbookSpiritual}">Handbook spiritual thought</td>
-                        </tr>
-                        <tr th:if="${agendaItemsList != null and !agendaItemsList.isEmpty()}">
-                            <th>Agenda Items:</th>
-                            <td>
-                                <span th:each="item, iterStat : ${agendaItemsList}">
-                                    <span th:text="${item}">Agenda item</span>
-                                    <br th:if="${!iterStat.last}" />
-                                </span>
-                            </td>
-                        </tr>
-                        <tr th:if="${bishopricProgram.callingsAndReleases != null and !bishopricProgram.callingsAndReleases.isEmpty()}">
-                            <th>Callings and Releases:</th>
-                            <td th:text="${bishopricProgram.callingsAndReleases}">Callings and releases</td>
-                        </tr>
-                        <tr th:if="${bishopricProgram.closingPrayer != null and !bishopricProgram.closingPrayer.isEmpty()}">
-                            <th>Closing Prayer:</th>
-                            <td th:text="${bishopricProgram.closingPrayer}">Closing Prayer by</td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-            
-            <div class="export-buttons">
-                <form th:action="@{/bishopric/export/pdf}" method="post" style="display: inline;">
-                    <input type="hidden" name="wardName" th:value="${bishopricProgram.wardName}">
-                    <input type="hidden" name="meetingDate" th:value="${bishopricProgram.meetingDate}">
-                    <input type="hidden" name="presiding" th:value="${bishopricProgram.presiding}">
-                    <input type="hidden" name="conducting" th:value="${bishopricProgram.conducting}">
-                    <input type="hidden" name="openingPrayer" th:value="${bishopricProgram.openingPrayer}">
-                    <input type="hidden" name="closingPrayer" th:value="${bishopricProgram.closingPrayer}">
-                    <input type="hidden" name="handbookSpiritual" th:value="${bishopricProgram.handbookSpiritual}">
-                    <input type="hidden" name="agendaItemsText" th:value="${param.agendaItemsText[0]}">
-                    <input type="hidden" name="callingsAndReleases" th:value="${bishopricProgram.callingsAndReleases}">
-                    <button type="submit" class="btn btn-primary">Export to PDF</button>
-                </form>
-                
-                <a th:href="@{/bishopric}" class="btn btn-secondary">Edit Program</a>
             </div>
         </div>
     </main>
 
-    <footer th:replace="layout :: footer"></footer>
+    <footer th:replace="~{layout :: footer}"></footer>
+
+    <script>
+        /* ── 1-page dynamic scaling ─────────────────────────────────────── */
+        (function fitPage() {
+            const preview  = document.querySelector('.bishopric-preview');
+            if (!preview) return;
+
+            const TARGET   = 920;   // target rendered height in px (≈ A4 page feel)
+            const MIN_ZOOM = 0.60;
+            const MAX_ZOOM = 1.40;
+
+            function applyZoom() {
+                preview.style.zoom = '';          // reset first to measure natural height
+                const h = preview.scrollHeight;
+                if (!h) return;
+                const z = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, TARGET / h));
+                preview.style.zoom = z;
+            }
+
+            applyZoom();
+            window.addEventListener('resize', applyZoom);
+        })();
+    </script>
 </body>
 </html>

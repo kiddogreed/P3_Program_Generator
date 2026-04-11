@@ -121,7 +121,7 @@ public class WardCouncilPdfService {
         addTableRow(table, "Opening Prayer:", program.getOpeningPrayer(), boldFont, normalFont, wardColor);
         addTableRow(table, "Handbook reading scriptural thought", program.getHandbookReading(), boldFont, normalFont, wardColor);
         addTableRow(table, "Auxiliary", program.getAuxiliary(), boldFont, normalFont, wardColor);
-        addTableRow(table, "Agenda", program.getAgenda(), boldFont, normalFont, wardColor);
+        addTableRow(table, "Agenda", "", boldFont, normalFont, wardColor);
         addTableRow(table, "Welfare", program.getWelfare(), boldFont, normalFont, wardColor);
         addTableRow(table, "Closing Prayer:", program.getClosingPrayer(), boldFont, normalFont, wardColor);
         

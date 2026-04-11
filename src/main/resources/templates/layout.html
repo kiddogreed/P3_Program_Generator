@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${title}">Church Program Generator</title>
+    <link rel="icon" type="image/x-icon" th:href="@{/images/P3_LOGO_ico.ico}" href="/images/P3_LOGO_ico.ico">
     <link rel="stylesheet" th:href="@{/css/style.css?v=3.0}">
     <script th:src="@{/js/navigation.js}" defer></script>
 </head>
@@ -37,6 +38,14 @@
                    th:class="'nav-tab' + (${activePage} == 'history' ? ' active' : '')">
                    History
                 </a>
+                <a th:href="@{/manage}"
+                   th:class="'nav-tab' + (${activePage} == 'manage' ? ' active' : '')">
+                   Manage
+                </a>
+                <a th:href="@{/rules}"
+                   th:class="'nav-tab' + (${activePage} == 'rules' ? ' active' : '')">
+                   Rules
+                </a>
                 <a href="#" class="nav-tab disabled">
                    Speaker invites
                    <span class="coming-soon">Coming Soon</span>
@@ -46,8 +55,9 @@
     </nav>
 
     <footer th:fragment="footer" class="footer">
-        <div class="footer-container">
-            <p>&copy; 2025 Pasay 3rd | Church Program Generator. All rights reserved. | JRRD</p>
+        <div class="footer-container" style="display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap;">
+            <img th:src="@{/images/P3_LOGO.png}" src="/images/P3_LOGO.png" alt="Pasay 3rd Logo" style="height:32px;width:auto;vertical-align:middle;box-shadow:0 1px 4px rgba(44,82,130,0.10);border-radius:6px;" loading="lazy">
+            <p style="margin:0;">&copy; 2025 Pasay 3rd | Church Program Generator. All rights reserved. | JRRD</p>
         </div>
     </footer>
 </body>

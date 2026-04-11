@@ -22,13 +22,28 @@ public class ConductorService {
         return repository.findAllByOrderByDisplayOrderAscNameAsc();
     }
 
-    public Conductor add(String name) {
+    public List<Conductor> getByType(String programType) {
+        return repository.findByProgramTypeOrderByDisplayOrderAscNameAsc(programType);
+    }
+
+    public Conductor add(String name, String programType) {
         Conductor c = new Conductor(name.trim());
+        c.setProgramType(programType != null ? programType : "sacrament");
         return repository.save(c);
+    }
+
+    public Conductor add(String name) {
+        return add(name, "sacrament");
     }
 
     public void delete(Long id) {
         repository.deleteById(id);
+    }
+
+    public Conductor update(Long id, String name) {
+        Conductor c = repository.findById(id).orElseThrow();
+        c.setName(name.trim());
+        return repository.save(c);
     }
 
     /** Seed default conductors on first start if table is empty. */
@@ -41,6 +56,7 @@ public class ConductorService {
                 "(2nd Co) Bro. Joenice Gaco"
             ).forEach(name -> {
                 Conductor c = new Conductor(name);
+                c.setProgramType("sacrament");
                 repository.save(c);
             });
         }

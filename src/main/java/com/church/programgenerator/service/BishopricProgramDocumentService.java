@@ -14,6 +14,7 @@ import org.apache.poi.xwpf.usermodel.XWPFTableCell;
 import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 import org.springframework.stereotype.Service;
 
+import com.church.programgenerator.model.AgendaItem;
 import com.church.programgenerator.model.BishopricProgram;
 
 @Service
@@ -130,14 +131,20 @@ public class BishopricProgramDocumentService {
             addTableRow(table, "Handbook Spiritual Thought:", program.getHandbookSpiritual());
         }
         
-        // Add agenda items
+        // Add agenda items (nested)
         if (program.getAgendaItems() != null && !program.getAgendaItems().isEmpty()) {
-            String agendaText = String.join("\n", program.getAgendaItems());
-            addTableRow(table, "Agenda Items:", agendaText);
-        }
-        
-        if (program.getCallingsAndReleases() != null && !program.getCallingsAndReleases().trim().isEmpty()) {
-            addTableRow(table, "Callings and Releases:", program.getCallingsAndReleases());
+            int idx = 1;
+            for (AgendaItem item : program.getAgendaItems()) {
+                if (item.getTitle() == null || item.getTitle().isBlank()) continue;
+                addTableRow(table, idx + ".", item.getTitle().trim());
+                if (item.getDetails() != null) {
+                    for (String det : item.getDetails()) {
+                        if (det == null || det.isBlank()) continue;
+                        addTableRow(table, "   •", det.trim());
+                    }
+                }
+                idx++;
+            }
         }
         
         if (program.getClosingPrayer() != null && !program.getClosingPrayer().trim().isEmpty()) {

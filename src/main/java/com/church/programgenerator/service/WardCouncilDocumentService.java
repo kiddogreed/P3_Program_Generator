@@ -108,7 +108,7 @@ public class WardCouncilDocumentService {
         setTableRow(table, 2, "Auxiliary", program.getAuxiliary());
         
         // Row 4: Agenda
-        setTableRow(table, 3, "Agenda", program.getAgenda());
+        setTableRow(table, 3, "Agenda", "");
         
         // Row 5: Welfare
         setTableRow(table, 4, "Welfare", program.getWelfare());

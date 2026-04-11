@@ -8,6 +8,7 @@ import java.time.format.DateTimeFormatter;
 
 import org.springframework.stereotype.Service;
 
+import com.church.programgenerator.model.AgendaItem;
 import com.church.programgenerator.model.BishopricProgram;
 import com.itextpdf.io.font.constants.StandardFonts;
 import com.itextpdf.io.image.ImageDataFactory;
@@ -113,8 +114,7 @@ public class BishopricProgramPdfService {
 
         // ── Agenda ────────────────────────────────────────────────────────
         boolean hasAgendaItems = program.getAgendaItems() != null && !program.getAgendaItems().isEmpty();
-        boolean hasCallings    = notEmpty(program.getCallingsAndReleases());
-        if (hasAgendaItems || hasCallings) {
+        if (hasAgendaItems) {
             document.add(new Paragraph()
                     .add(new Text("• ").setFont(bold).setFontSize(sc(16f, s)).setFontColor(NAVY))
                     .add(new Text("AGENDA").setFont(bold).setFontSize(sc(13f, s)).setFontColor(NAVY))
@@ -123,22 +123,25 @@ public class BishopricProgramPdfService {
                     .setMarginTop(sc(36f, s))
                     .setMarginBottom(sc(14f, s)));
 
-            if (hasAgendaItems) {
-                for (String item : program.getAgendaItems()) {
-                    if (item == null || item.trim().isEmpty()) continue;
-                    document.add(new Paragraph(item.trim())
-                            .setFont(normal).setFontSize(sc(12f, s)).setFontColor(NAVY)
-                            .setCharacterSpacing(1f)
-                            .setTextAlignment(TextAlignment.CENTER)
-                            .setMarginBottom(sc(14f, s)));
-                }
-            }
-            if (hasCallings) {
-                document.add(new Paragraph(program.getCallingsAndReleases())
-                        .setFont(normal).setFontSize(sc(12f, s)).setFontColor(NAVY)
+            int idx = 1;
+            for (AgendaItem item : program.getAgendaItems()) {
+                if (item.getTitle() == null || item.getTitle().isBlank()) continue;
+                document.add(new Paragraph(idx + ". " + item.getTitle().trim())
+                        .setFont(bold).setFontSize(sc(12f, s)).setFontColor(NAVY)
                         .setCharacterSpacing(1f)
                         .setTextAlignment(TextAlignment.CENTER)
-                        .setMarginBottom(sc(14f, s)));
+                        .setMarginBottom(sc(6f, s)));
+                if (item.getDetails() != null) {
+                    for (String det : item.getDetails()) {
+                        if (det == null || det.isBlank()) continue;
+                        document.add(new Paragraph("      \u2022 " + det.trim())
+                                .setFont(normal).setFontSize(sc(11f, s)).setFontColor(NAVY)
+                                .setCharacterSpacing(0.8f)
+                                .setTextAlignment(TextAlignment.CENTER)
+                                .setMarginBottom(sc(5f, s)));
+                    }
+                }
+                idx++;
             }
         }
 
@@ -148,8 +151,23 @@ public class BishopricProgramPdfService {
             document.add(detail("Closing Prayer", program.getClosingPrayer(), bold, normal, detailSize, sc(8f, s)));
         }
 
+        // Add P3_LOGO.png as a small footer logo
+        addFooterLogo(document, s);
         document.close();
         return baos.toByteArray();
+    }
+
+    // Properly defined addFooterLogo method
+    private void addFooterLogo(Document document, float scale) {
+        try (InputStream is = getClass().getResourceAsStream("/static/images/P3_LOGO.png")) {
+            if (is != null) {
+                Image img = new Image(ImageDataFactory.create(is.readAllBytes()))
+                        .setWidth(sc(38f, scale)).setHeight(sc(38f, scale))
+                        .setHorizontalAlignment(HorizontalAlignment.CENTER)
+                        .setMarginTop(sc(30f, scale));
+                document.add(img);
+            }
+        } catch (Exception ignored) {}
     }
 
     public void savePdf(BishopricProgram program, String filePath) throws IOException {
@@ -193,10 +211,14 @@ public class BishopricProgramPdfService {
     private float computeScale(BishopricProgram program) {
         int total = 0;
         if (program.getHandbookSpiritual() != null)  total += program.getHandbookSpiritual().length() * 2;
-        if (program.getCallingsAndReleases() != null) total += program.getCallingsAndReleases().length() * 2;
-        if (program.getAgendaItems() != null)
-            total += program.getAgendaItems().size() * 50
-                   + program.getAgendaItems().stream().mapToInt(String::length).sum();
+        if (program.getAgendaItems() != null) {
+            for (AgendaItem item : program.getAgendaItems()) {
+                total += 50;
+                if (item.getTitle() != null) total += item.getTitle().length();
+                if (item.getDetails() != null)
+                    total += item.getDetails().stream().mapToInt(d -> d == null ? 0 : d.length()).sum();
+            }
+        }
         if (total > 700) return 0.72f;
         if (total > 500) return 0.80f;
         if (total > 300) return 0.88f;

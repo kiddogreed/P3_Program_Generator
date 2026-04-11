@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Scheduling Rules')}">
+    <style>
+        .rules-wrapper { max-width: 860px; margin: 30px auto; }
+
+        /* ── Next Meeting Summary ── */
+        .next-meetings {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 14px; margin-bottom: 28px;
+        }
+        .nm-card {
+            background: white; border-radius: 10px; padding: 16px 18px;
+            border: 1px solid #c8d8e8; box-shadow: 0 2px 10px rgba(44,82,130,0.08);
+        }
+        .nm-label { font-size: 10px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 1.2px; color: #64748b; margin-bottom: 4px; }
+        .nm-date  { font-size: 15px; font-weight: 700; color: #1a2e5a; margin-bottom: 2px; }
+        .nm-sub   { font-size: 12px; color: #5a8aaa; }
+        .nm-conductor { font-size: 12px; color: #d2691e; font-weight: 600; margin-top: 4px; }
+
+        /* ── Settings card ── */
+        .rules-card {
+            background: white; border: 1px solid #c8d8e8; border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(44,82,130,0.08); overflow: hidden; margin-bottom: 22px;
+        }
+        .rules-card-header {
+            background: linear-gradient(160deg,#1a3a6b 0%,#2c5282 60%,#3a7ca5 100%);
+            color: white; padding: 14px 22px; display: flex; align-items: center; gap: 10px;
+        }
+        .rules-card-header .hicon { font-size: 18px; }
+        .rules-card-header h2 { margin: 0; font-size: 15px; font-weight: 700; }
+        .rules-card-body { padding: 20px 22px; }
+
+        /* ── Form elements ── */
+        .field-row { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 14px; }
+        .field-group { flex: 1; min-width: 180px; }
+        .field-group.wide { flex: 2; min-width: 300px; }
+        .field-group label {
+            display: block; font-size: 11px; font-weight: 700; color: #2c5282;
+            text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 5px;
+        }
+        .field-group input[type="text"],
+        .field-group input[type="time"],
+        .field-group select,
+        .field-group textarea {
+            width: 100%; padding: 9px 12px; border: 1.5px solid #c8d8e8;
+            border-radius: 7px; font-size: 13px; box-sizing: border-box;
+            font-family: inherit; transition: border-color 0.18s;
+        }
+        .field-group textarea { min-height: 90px; resize: vertical; }
+        .field-group input:focus, .field-group select:focus, .field-group textarea:focus {
+            outline: none; border-color: #3a7ca5; box-shadow: 0 0 0 3px rgba(58,124,165,0.12);
+        }
+        .field-hint { font-size: 11px; color: #64748b; margin-top: 4px; }
+
+        /* ── Sunday preview table ── */
+        .sunday-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 6px; }
+        .sunday-table th {
+            background: #f0f5fb; color: #2c5282; font-size: 11px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.8px; padding: 8px 12px;
+            border-bottom: 2px solid #c8d8e8; text-align: left;
+        }
+        .sunday-table td { padding: 9px 12px; border-bottom: 1px solid #e8eef5; color: #1e293b; }
+        .sunday-table tr:last-child td { border-bottom: none; }
+        .sunday-table tr:hover td { background: #f8fafc; }
+        .badge {
+            display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px;
+            font-weight: 700; letter-spacing: 0.4px;
+        }
+        .badge-testimony  { background: #fef3c7; color: #92400e; }
+        .badge-stake      { background: #dbeafe; color: #1e40af; }
+        .badge-bishopric  { background: #ede9f5; color: #1a2e5a; }
+        .badge-rs         { background: #fce7f3; color: #9d174d; }
+        .badge-eq         { background: #d1fae5; color: #065f46; }
+        .badge-ss         { background: #e0f2fe; color: #0369a1; }
+        .badge-primary    { background: #fef9c3; color: #713f12; }
+        .badge-youth      { background: #f0fdf4; color: #166534; }
+        .badge-mission    { background: #f3e8ff; color: #6b21a8; }
+
+        /* ── Action bar ── */
+        .save-bar {
+            display: flex; gap: 12px; justify-content: flex-end;
+            padding-top: 8px; margin-top: 8px; border-top: 1px solid #e2e8f0;
+        }
+        .btn { display: inline-flex; align-items: center; gap: 6px; padding: 10px 22px;
+            border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: none;
+            text-decoration: none; transition: transform 0.15s, box-shadow 0.15s; }
+        .btn:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0,0,0,0.15); }
+        .btn-primary { background: linear-gradient(135deg,#1a2e5a,#2c5282); color: white; }
+        .btn-secondary { background: white; color: #2c5282; border: 1.5px solid #c8d8e8; }
+        .btn-secondary:hover { background: #f0f5fb; }
+
+        .alert { padding: 10px 16px; border-radius: 7px; margin-bottom: 16px; font-size: 13px; font-weight: 500; }
+        .alert-success { background: #f0fdf4; color: #166534; border: 1px solid #86efac; }
+
+        @media (max-width: 660px) { .rules-wrapper { margin: 12px 8px; } .field-row { flex-direction: column; } }
+    </style>
+</head>
+<body>
+<nav th:replace="~{layout :: navigation('rules')}"></nav>
+
+<main class="main-content">
+    <div class="container">
+        <div class="rules-wrapper">
+
+            <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+
+            <!-- ── Next Meeting Preview ─────────────────────────────────── -->
+            <div class="next-meetings">
+                <div class="nm-card">
+                    <div class="nm-label">Next Sacrament Meeting</div>
+                    <div class="nm-date" th:text="${#temporals.format(nextSacramentDate, 'EEE, MMM d, yyyy')}"></div>
+                    <div class="nm-sub" th:text="${nextSpeakerType}"></div>
+                    <div class="nm-conductor" th:if="${suggestedSacramentConductor != null}">
+                        Suggested Conductor: <span th:text="${suggestedSacramentConductor.name}"></span>
+                    </div>
+                </div>
+                <div class="nm-card">
+                    <div class="nm-label">Next Bishopric Meeting</div>
+                    <div class="nm-date" th:text="${#temporals.format(nextBishopricDate, 'EEE, MMM d, yyyy')}"></div>
+                    <div class="nm-sub" th:text="${wardConfig.bishopricPreferredDay + ' @ ' + wardConfig.bishopricThursdayTime}"></div>
+                    <div class="nm-conductor" th:if="${suggestedBishopricConductor != null}">
+                        Suggested Conductor: <span th:text="${suggestedBishopricConductor.name}"></span>
+                    </div>
+                </div>
+                <div class="nm-card">
+                    <div class="nm-label">Next Ward Council</div>
+                    <div class="nm-date" th:text="${#temporals.format(nextWardCouncilDate, 'EEE, MMM d, yyyy')}"></div>
+                    <div class="nm-sub" th:text="'@ ' + ${wardConfig.wardCouncilTime}"></div>
+                </div>
+            </div>
+
+            <!-- ── Settings Form ───────────────────────────────────────── -->
+            <form th:action="@{/rules/save}" method="post">
+
+                <!-- Organization Defaults -->
+                <div class="rules-card">
+                    <div class="rules-card-header">
+                        <span class="hicon">🏛</span>
+                        <h2>Organization Defaults</h2>
+                    </div>
+                    <div class="rules-card-body">
+                        <div class="field-row">
+                            <div class="field-group">
+                                <label for="stakeName">Stake Name</label>
+                                <input type="text" id="stakeName" name="stakeName"
+                                       th:value="${wardConfig.stakeName}" placeholder="Pasay Philippine Stake">
+                            </div>
+                            <div class="field-group">
+                                <label for="wardName">Ward Name</label>
+                                <input type="text" id="wardName" name="wardName"
+                                       th:value="${wardConfig.wardName}" placeholder="Pasay 3rd Ward">
+                            </div>
+                        </div>
+                        <div class="field-row">
+                            <div class="field-group wide">
+                                <label for="acknowledgementTemplate">Acknowledgement Template</label>
+                                <textarea id="acknowledgementTemplate" name="acknowledgementTemplate"
+                                          th:text="${wardConfig.acknowledgementTemplate}"
+                                          placeholder="Use {OTHER_CONDUCTORS} and {BISHOPRIC_OTHERS} as placeholders."></textarea>
+                                <div class="field-hint">
+                                    Placeholders: <strong>{OTHER_CONDUCTORS}</strong> — sacrament conductors not conducting/presiding.
+                                    <strong>{BISHOPRIC_OTHERS}</strong> — bishopric members excluding bishop and conducting counselor.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sacrament Meeting -->
+                <div class="rules-card">
+                    <div class="rules-card-header">
+                        <span class="hicon">🎵</span>
+                        <h2>Sacrament Meeting</h2>
+                    </div>
+                    <div class="rules-card-body">
+                        <div class="field-row">
+                            <div class="field-group">
+                                <label for="sacramentTime">Default Meeting Time</label>
+                                <input type="time" id="sacramentTime" name="sacramentTime"
+                                       th:value="${wardConfig.sacramentTime}">
+                            </div>
+                            <div class="field-group">
+                                <label for="speakerCycleBaseMonth">Speaker Cycle Base Month</label>
+                                <input type="text" id="speakerCycleBaseMonth" name="speakerCycleBaseMonth"
+                                       th:value="${wardConfig.speakerCycleBaseMonth}"
+                                       placeholder="2026-01">
+                                <div class="field-hint">Format: YYYY-MM. This month = Cycle 1.</div>
+                            </div>
+                        </div>
+
+                        <!-- Upcoming Sundays Preview -->
+                        <table class="sunday-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Occurrence</th>
+                                    <th>Speaker Assignment</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="s : ${upcomingSundays}">
+                                    <td th:text="${s.formattedDate}"></td>
+                                    <td th:text="${s.occurrenceLabel + ' Sunday'}"></td>
+                                    <td>
+                                        <span th:text="${s.speakerType}"
+                                              th:class="${'badge ' +
+                                                  (s.speakerType == 'Fast &amp; Testimony'        ? 'badge-testimony' :
+                                                   s.speakerType == 'Stake Assignment'             ? 'badge-stake'     :
+                                                   s.speakerType == 'Bishopric Special'            ? 'badge-bishopric' :
+                                                   s.speakerType == 'Relief Society'               ? 'badge-rs'        :
+                                                   s.speakerType == 'Elders Quorum'                ? 'badge-eq'        :
+                                                   s.speakerType == 'Sunday School'                ? 'badge-ss'        :
+                                                   s.speakerType == 'Primary'                      ? 'badge-primary'   :
+                                                   s.speakerType == 'Youth'                        ? 'badge-youth'     :
+                                                   'badge-mission')}">
+                                        </span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Bishopric Meeting -->
+                <div class="rules-card">
+                    <div class="rules-card-header">
+                        <span class="hicon">👔</span>
+                        <h2>Bishopric Meeting</h2>
+                    </div>
+                    <div class="rules-card-body">
+                        <div class="field-row">
+                            <div class="field-group">
+                                <label for="bishopricPreferredDay">Preferred Day (Priority 1)</label>
+                                <select id="bishopricPreferredDay" name="bishopricPreferredDay">
+                                    <option value="Thursday" th:selected="${wardConfig.bishopricPreferredDay == 'Thursday'}">Thursday</option>
+                                    <option value="Sunday"   th:selected="${wardConfig.bishopricPreferredDay == 'Sunday'}">Sunday</option>
+                                </select>
+                            </div>
+                            <div class="field-group">
+                                <label for="bishopricThursdayTime">Thursday Time</label>
+                                <input type="time" id="bishopricThursdayTime" name="bishopricThursdayTime"
+                                       th:value="${wardConfig.bishopricThursdayTime}">
+                            </div>
+                            <div class="field-group">
+                                <label for="bishopricSundayTime">Sunday Fallback Time</label>
+                                <input type="time" id="bishopricSundayTime" name="bishopricSundayTime"
+                                       th:value="${wardConfig.bishopricSundayTime}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ward Council -->
+                <div class="rules-card">
+                    <div class="rules-card-header">
+                        <span class="hicon">📋</span>
+                        <h2>Ward Council Meeting</h2>
+                    </div>
+                    <div class="rules-card-body">
+                        <div class="field-row">
+                            <div class="field-group">
+                                <label for="wardCouncilOccurrences">Sunday Occurrences</label>
+                                <input type="text" id="wardCouncilOccurrences" name="wardCouncilOccurrences"
+                                       th:value="${wardConfig.wardCouncilOccurrences}"
+                                       placeholder="1,3">
+                                <div class="field-hint">Comma-separated (e.g. "1,3" = 1st &amp; 3rd Sundays per month)</div>
+                            </div>
+                            <div class="field-group">
+                                <label for="wardCouncilTime">Meeting Time</label>
+                                <input type="time" id="wardCouncilTime" name="wardCouncilTime"
+                                       th:value="${wardConfig.wardCouncilTime}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Save -->
+                <div class="save-bar">
+                    <a th:href="@{/}" class="btn btn-secondary">&#8592; Back to Home</a>
+                    <button type="submit" class="btn btn-primary">&#10003; Save Rules</button>
+                </div>
+
+            </form>
+
+        </div><!-- .rules-wrapper -->
+    </div>
+</main>
+
+<footer th:replace="~{layout :: footer}"></footer>
+</body>
+</html>

@@ -104,6 +104,19 @@ public class FileStorageService {
         return filePath;
     }
 
+    public String savePngFile(String meetingType, String filename, byte[] pngBytes) throws IOException {
+        String directoryPath = getDirectoryForMeetingType(meetingType);
+        createDirectoryIfNotExists(directoryPath);
+
+        String filePath = directoryPath + "/" + filename;
+
+        try (FileOutputStream fos = new FileOutputStream(filePath)) {
+            fos.write(pngBytes);
+        }
+
+        return filePath;
+    }
+
     public byte[] getDocxBytes(SacramentProgram program) throws IOException {
         return documentService.generateSacramentProgram(program);
     }
@@ -114,34 +127,48 @@ public class FileStorageService {
 
     private byte[] generatePdfDocument(SacramentProgram program) throws IOException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        
         try (PdfWriter writer = new PdfWriter(outputStream);
              PdfDocument pdfDoc = new PdfDocument(writer);
              Document document = new Document(pdfDoc)) {
-            
             // Set tight margins: top, right, bottom, left (in points)
             document.setMargins(24, 40, 24, 40);
-            
+
             // Add church header
             addPdfHeader(document, program);
-            
+
             // Add program details
             addPdfProgramDetails(document, program);
-            
+
             // Add music section
             addPdfMusicSection(document, program);
-            
+
             // Add program flow
             addPdfProgramFlow(document, program);
-            
+
             // Add speakers
             addPdfSpeakers(document, program);
-            
+
             // Add closing
             addPdfClosing(document, program);
+
+            // Add footer logo (P3_LOGO.png)
+            addFooterLogo(document);
         }
-        
         return outputStream.toByteArray();
+    }
+
+    // Add P3_LOGO.png as a small footer logo (centered)
+    private void addFooterLogo(Document document) {
+        try (InputStream is = getClass().getResourceAsStream("/static/images/P3_LOGO.png")) {
+            if (is != null) {
+                Image img = new Image(ImageDataFactory.create(is.readAllBytes()))
+                        .setWidth(38)
+                        .setHeight(38)
+                        .setHorizontalAlignment(HorizontalAlignment.CENTER)
+                        .setMarginTop(30);
+                document.add(img);
+            }
+        } catch (Exception ignored) {}
     }
 
     private void addPdfHeader(Document document, SacramentProgram program) {
