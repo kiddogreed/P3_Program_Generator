@@ -8,7 +8,23 @@ A modern, professional Spring Boot web application for creating and managing chu
 ![License](https://img.shields.io/badge/License-MIT-yellow.svg)
 ![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)
 
-## 🆕 **Latest Updates (April 2026)**
+## 🆕 **Recent Changes (April 2026)**
+
+### Major Features Added
+- **Scheduling Rules & Auto-Population**: Centralized rules for meeting scheduling, speaker cycles, and auto-filled forms for Sacrament, Bishopric, and Ward Council meetings.
+- **Prayer & Handbook Auto-Assignment**: Automated, round-robin assignment of prayers and handbook readings with persistent rotation tracking and no-duplicate logic.
+- **Bishopric Presiding Lock**: Presiding field in Bishopric form is now always the Bishop and read-only.
+- **Cloud Deployment Ready**: Environment variable support for database config; deployable to Railway, Render, Fly.io, and more.
+- **Bishopric Meeting PDF Redesign**: Elegant, single-page PDF with formal layout and auto-scaling typography.
+- **Document Output Overhaul**: DOCX and PDF exports now match HTML preview in style and layout.
+- **Adaptive Font Scaling**: Font size auto-adjusts based on content length to prevent overflow.
+- **Speakers Auxiliary Display Fix**: Speaker auxiliary now bold and inline, consistent across all outputs.
+- **Test Preview Endpoint**: `/sacrament/test-preview` for instant, full-form test data.
+- **PostgreSQL Migration**: Switched from H2 to PostgreSQL 17 for production-grade storage.
+- **Database Integration**: Auto-save on export, history browser, and reload/edit of past programs.
+- **Enhanced Error Handling**: Centralized exception handler, user-friendly error pages, and inline flash alerts.
+- **Performance Optimization**: Caffeine cache, GZIP compression, and production-ready Thymeleaf cache.
+- **Responsive UI**: Hamburger navigation, mobile-optimized forms, and cross-browser support.
 
 ### **� Scheduling Rules & Auto-Population (April 2026)**
 - **Rules Page (`/rules`)**: New settings UI to configure ward name, stake name, meeting times, speaker cycle, acknowledgement template, and occurrence schedules
@@ -895,42 +911,28 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 ## 🚀 Future Roadmap & Enhancement Plans
 
-### 🗄️ **Phase 1: Database Integration (Q1 2026)** ✅ *Completed*
-- **Program History**: Save and retrieve historical meeting programs ✅
-- **PostgreSQL Migration**: Switched from H2 to PostgreSQL 17 ✅
-- **Template Management**: Create and save custom program templates  
-- **Speaker Database**: Maintain speaker information and topic libraries
-- **Search Functionality**: Find previous programs by date, speaker, or topic
 
-### 🔐 **Phase 2: Authentication & Multi-Ward Support (Q2 2026)**
-- **User Role Management**: Bishop, Bishopric, Clerk, and Member access levels
-- **Ward Integration**: Multi-ward support for stake-level administration
-- **LDS Account Integration**: Secure authentication with church systems
-- **Permission Levels**: Role-based access to different meeting types
+## 🚀 Future Improvements & Roadmap
 
-### 📱 **Phase 3: Mobile App & PWA (Q3 2026)**
-- **Progressive Web App**: Install as mobile application
-- **Offline Mode**: Create programs without internet connection
-- **Push Notifications**: Meeting reminders and program updates
-- **Mobile-Optimized Forms**: Touch-friendly input interfaces
+### Short-Term (Next 3–6 Months)
+- [ ] **User Authentication**: Add login system with role-based access (Bishop, Bishopric, Clerk, Member)
+- [ ] **Multi-Ward Support**: Enable management of multiple wards and stake-level admin
+- [ ] **Mobile App & PWA**: Begin Progressive Web App development for installable, offline-capable mobile experience
+- [ ] **Advanced Document Formatting**: More templates, custom branding, and bulk export options
+- [ ] **Extended Browser & Device Testing**: Ensure compatibility across more devices and browsers
 
-### 🌐 **Phase 4: Advanced Features (Q4 2026)**
-- **Calendar Integration**: Sync with LCR (Leader and Clerk Resources)
-- **Email Distribution**: Automatic program distribution to members
-- **Multi-Language Support**: Spanish, Tagalog, and other languages
-- **API Integration**: Connect with external church systems
+### Medium-Term (6–12 Months)
+- [ ] **Multi-Language Support**: Add Spanish, Tagalog, and other language options
+- [ ] **Calendar Integration**: Sync with LCR and external calendars
+- [ ] **API & External Integrations**: REST API for external systems, webhook support
+- [ ] **Advanced Reporting & Analytics**: Usage stats, meeting trends, and participation metrics
 
-### 🎯 **Phase 5: Analytics & Reporting (2027)**
-- **Usage Analytics**: Track program creation and utilization
-- **Meeting Statistics**: Attendance and participation reporting
-- **Trend Analysis**: Historical data visualization and insights
-- **Performance Metrics**: System optimization and user experience improvements
-
-### 💡 **Innovation Features (Future)**
-- **AI-Powered Suggestions**: Smart content recommendations
-- **Voice Input**: Speech-to-text program creation
-- **Real-time Collaboration**: Multiple users editing simultaneously
-- **Advanced Document Templates**: Custom layouts and branding options
+### Long-Term (1+ Years)
+- [ ] **AI-Powered Features**: Smart content suggestions, automated scheduling, and voice input
+- [ ] **Real-Time Collaboration**: Multiple users editing programs simultaneously
+- [ ] **Microservices Architecture**: Modularize for scalability and cloud-native deployment
+- [ ] **Plugin Ecosystem**: Extensible system for custom features and integrations
+- [ ] **Advanced Analytics Dashboard**: Visualize historical data and trends
 
 ---
 
