@@ -223,6 +223,36 @@
                     </div>
                 </div>
 
+                <!-- Music — Chorister & Pianist Reference -->
+                <div class="rules-card">
+                    <div class="rules-card-header">
+                        <span class="hicon">🎵</span>
+                        <h2>Music — Choristers &amp; Pianists</h2>
+                    </div>
+                    <div class="rules-card-body">
+                        <p style="font-size:12px;color:#64748b;margin-bottom:12px;">
+                            These lists are managed in the <a th:href="@{/manage}" style="color:#2c5282;font-weight:600;">Manage</a> tab.
+                            They populate the dropdowns in the Sacrament program form.
+                        </p>
+                        <div class="field-row">
+                            <div class="field-group">
+                                <label>Choristers</label>
+                                <div th:if="${#lists.isEmpty(choristers)}" style="color:#94a3b8;font-size:13px;">No choristers added yet.</div>
+                                <ul th:unless="${#lists.isEmpty(choristers)}" style="margin:0;padding-left:18px;font-size:13px;color:#1e293b;">
+                                    <li th:each="m : ${choristers}" th:text="${m.name}"></li>
+                                </ul>
+                            </div>
+                            <div class="field-group">
+                                <label>Pianists</label>
+                                <div th:if="${#lists.isEmpty(pianists)}" style="color:#94a3b8;font-size:13px;">No pianists added yet.</div>
+                                <ul th:unless="${#lists.isEmpty(pianists)}" style="margin:0;padding-left:18px;font-size:13px;color:#1e293b;">
+                                    <li th:each="m : ${pianists}" th:text="${m.name}"></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Bishopric Meeting -->
                 <div class="rules-card">
                     <div class="rules-card-header">

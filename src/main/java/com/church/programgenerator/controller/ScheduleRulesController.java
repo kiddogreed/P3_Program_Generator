@@ -13,6 +13,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.church.programgenerator.model.Conductor;
 import com.church.programgenerator.model.WardConfig;
 import com.church.programgenerator.service.ConductorService;
+import com.church.programgenerator.service.MusicianService;
 import com.church.programgenerator.service.WardConfigService;
 import com.church.programgenerator.service.WardConfigService.SundayPreview;
 
@@ -22,11 +23,14 @@ public class ScheduleRulesController {
 
     private final WardConfigService wardConfigService;
     private final ConductorService conductorService;
+    private final MusicianService musicianService;
 
     public ScheduleRulesController(WardConfigService wardConfigService,
-                                   ConductorService conductorService) {
+                                   ConductorService conductorService,
+                                   MusicianService musicianService) {
         this.wardConfigService = wardConfigService;
         this.conductorService = conductorService;
+        this.musicianService = musicianService;
     }
 
     @GetMapping
@@ -55,6 +59,9 @@ public class ScheduleRulesController {
                 bishopricConductors, config.getLastBishopricConductorId());
         model.addAttribute("suggestedSacramentConductor", suggestedSacrament);
         model.addAttribute("suggestedBishopricConductor", suggestedBishopric);
+
+        model.addAttribute("choristers", musicianService.getChoristers());
+        model.addAttribute("pianists", musicianService.getPianists());
 
         model.addAttribute("wardConfig", config);
         model.addAttribute("pageTitle", "Scheduling Rules");

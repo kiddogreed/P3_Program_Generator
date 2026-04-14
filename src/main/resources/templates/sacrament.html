@@ -66,11 +66,23 @@
                         <h3>Music</h3>
                         <div class="form-group">
                             <label for="chorister">Chorister:</label>
-                            <input type="text" id="chorister" th:field="*{chorister}" placeholder="Chorister Name">
+                            <select id="chorister" th:field="*{chorister}" style="width:100%;">
+                                <option value="">Select Chorister</option>
+                                <option th:each="m : ${choristers}"
+                                        th:value="${m.name}"
+                                        th:text="${m.name}">
+                                </option>
+                            </select>
                         </div>
                         <div class="form-group">
                             <label for="pianist">Pianist:</label>
-                            <input type="text" id="pianist" th:field="*{pianist}" placeholder="Pianist Name">
+                            <select id="pianist" th:field="*{pianist}" style="width:100%;">
+                                <option value="">Select Pianist</option>
+                                <option th:each="m : ${pianists}"
+                                        th:value="${m.name}"
+                                        th:text="${m.name}">
+                                </option>
+                            </select>
                         </div>
                         <div class="form-group">
                             <label for="openingHymn">Opening Hymn:</label>
@@ -142,7 +154,6 @@
                     <div class="form-actions">
                         <button type="submit" class="btn btn-primary">Preview Program</button>
                         <button type="reset" class="btn btn-secondary">Clear Form</button>
-                        <a href="/sacrament/test-preview" class="btn btn-secondary" style="text-decoration:none;">🧪 Test Full Preview</a>
                     </div>
                 </form>
             </div>

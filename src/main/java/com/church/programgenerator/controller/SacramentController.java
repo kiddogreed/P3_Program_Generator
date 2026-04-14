@@ -24,6 +24,7 @@ import com.church.programgenerator.model.WardConfig;
 import com.church.programgenerator.service.AuxiliaryService;
 import com.church.programgenerator.service.ConductorService;
 import com.church.programgenerator.service.FileStorageService;
+import com.church.programgenerator.service.MusicianService;
 import com.church.programgenerator.service.ProgramStorageService;
 import com.church.programgenerator.service.SacramentProgramDocumentService;
 import com.church.programgenerator.service.SacramentProgramPreviewService;
@@ -56,6 +57,9 @@ public class SacramentController {
     @Autowired
     private WardConfigService wardConfigService;
 
+    @Autowired
+    private MusicianService musicianService;
+
     @GetMapping
     public String sacramentProgram(Model model) {
         WardConfig cfg = wardConfigService.getConfig();
@@ -77,6 +81,8 @@ public class SacramentController {
         model.addAttribute("sacramentProgram", program);
         model.addAttribute("conductors", conductors);
         model.addAttribute("auxiliaries", auxiliaryService.getAll());
+        model.addAttribute("choristers", musicianService.getChoristers());
+        model.addAttribute("pianists", musicianService.getPianists());
         model.addAttribute("speakerNames", Collections.emptyList());
         model.addAttribute("speakerTitles", Collections.emptyList());
         model.addAttribute("speakerTypeHint",
@@ -103,6 +109,8 @@ public class SacramentController {
         model.addAttribute("sacramentProgram", program);
         model.addAttribute("conductors", conductorService.getByType("sacrament"));
         model.addAttribute("auxiliaries", auxiliaryService.getAll());
+        model.addAttribute("choristers", musicianService.getChoristers());
+        model.addAttribute("pianists", musicianService.getPianists());
         model.addAttribute("speakerNames", speakerNames != null ? speakerNames : Collections.emptyList());
         model.addAttribute("speakerTitles", speakerTitles != null ? speakerTitles : Collections.emptyList());
         model.addAttribute("speakersAuxiliary", speakersAuxiliary);
@@ -130,6 +138,8 @@ public class SacramentController {
         model.addAttribute("previewHtml", previewHtml);
         model.addAttribute("sacramentProgram", program);
         model.addAttribute("auxiliaries", auxiliaryService.getAll());
+        model.addAttribute("choristers", musicianService.getChoristers());
+        model.addAttribute("pianists", musicianService.getPianists());
         model.addAttribute("speakerNames", speakerNames != null ? speakerNames : Collections.emptyList());
         model.addAttribute("speakerTitles", speakerTitles != null ? speakerTitles : Collections.emptyList());
         model.addAttribute("speakersAuxiliary", speakersAuxiliary);
@@ -138,43 +148,10 @@ public class SacramentController {
         return "sacrament-preview";
     }
 
+    /** Legacy test-preview endpoint — redirects to the sacrament form. */
     @GetMapping("/test-preview")
-    public String testPreview(Model model) {
-        SacramentProgram program = new SacramentProgram();
-        program.setStakeName("Pasay Philippine Stake");
-        program.setWardName("Pasay 3rd Ward");
-        program.setDate(LocalDate.of(2026, 4, 12));
-        program.setPresiding("Bishop Sherwin Tan");
-        program.setConducting("(2nd Co) Bro. Joenice Gaco");
-        program.setAcknowledgement("(2nd Co) Bro. Jonathan Ordillas, Bro. Adrian Matro (Wrd Clrk), Johanne Perlas (Asst. Clrk. rec). Bro. Norman Oliva (Asst. Clrk. fin), John Russelle Domingo, Genesis Ferareza, To all Visitors and Stake Leaders (Welcome).");
-        program.setChorister("Sis. Kyle Domingo");
-        program.setPianist("Bro. Oscar Driz");
-        program.setOpeningHymn("#26 \"Joseph Smith's First Prayer\"");
-        program.setSacramentHymn("#181 \"Jesus of Nazareth, Savior and King\"");
-        program.setClosingHymn("#270 \"I'll Go Where You Want Me to Go\"");
-        program.setInvocation("Sis. Izabel Ann Mamaril Oliva");
-        program.setWardBusiness("n/a");
-        program.setStakeBusiness("Bro. Gajultos JR");
-        program.setBenediction("Sis. Zharich Villalobos Ebro");
-        program.setSpeakersAuxiliary("Relief Society");
-
-        String announcementsText = "Ongoing Sports (Invite to participate or watch and support our teams)\nApril 5 Easter Sunday";
-        processAnnouncements(program, announcementsText);
-
-        List<String> speakerNames = List.of("Lyka Villanueva", "Myrna Driz", "Meraluna Docabo");
-        List<String> speakerTitles = List.of("Sis.", "Sis.", "Sis.");
-        addSpeakersToProgram(program, speakerNames, speakerTitles);
-
-        String previewHtml = previewService.generateHtmlPreview(program);
-
-        model.addAttribute("previewHtml", previewHtml);
-        model.addAttribute("sacramentProgram", program);
-        model.addAttribute("speakerNames", speakerNames);
-        model.addAttribute("speakerTitles", speakerTitles);
-        model.addAttribute("speakersAuxiliary", "Relief Society");
-        model.addAttribute("announcementsText", announcementsText);
-
-        return "sacrament-preview";
+    public String testPreview() {
+        return "redirect:/sacrament";
     }
 
     @PostMapping("/export/docx")

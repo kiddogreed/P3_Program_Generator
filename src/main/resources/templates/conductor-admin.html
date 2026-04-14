@@ -191,6 +191,112 @@
                     </div>
                 </div>
 
+                <!-- ═══ Choristers ═══ -->
+                <div class="manage-card">
+                    <div class="manage-card-header">
+                        <span class="header-icon">🎵</span>
+                        <div>
+                            <h2>Choristers</h2>
+                            <p>Names available in the Sacrament program "Chorister" dropdown.</p>
+                        </div>
+                    </div>
+                    <div class="manage-card-body">
+                        <form th:action="@{/musicians/add}" method="post" class="add-form">
+                            <input type="hidden" name="musicianType" value="chorister">
+                            <div class="fg">
+                                <label for="chorName">New Name</label>
+                                <input type="text" id="chorName" name="name"
+                                       placeholder="e.g., Sis. Kyle Domingo"
+                                       maxlength="200" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">+ Add</button>
+                        </form>
+                        <div th:if="${#lists.isEmpty(choristers)}" class="empty-state">No choristers yet. Add one above.</div>
+                        <table th:unless="${#lists.isEmpty(choristers)}" class="cond-table">
+                            <thead><tr><th>#</th><th>Name</th><th>Actions</th></tr></thead>
+                            <tbody>
+                                <tr th:each="m, iter : ${choristers}" th:id="'mrow-' + ${m.id}">
+                                    <td class="idx" th:text="${iter.index + 1}"></td>
+                                    <td th:id="'mname-' + ${m.id}" th:text="${m.name}"></td>
+                                    <td class="actions">
+                                        <div th:id="'mview-' + ${m.id}" style="display:flex;gap:6px;">
+                                            <button type="button" class="btn btn-secondary musician-edit-btn"
+                                                    th:data-id="${m.id}" th:data-name="${m.name}">✎</button>
+                                            <form th:action="@{/musicians/delete/{id}(id=${m.id})}" method="post"
+                                                  onsubmit="return confirm('Delete this chorister?')">
+                                                <button type="submit" class="btn btn-danger">✕</button>
+                                            </form>
+                                        </div>
+                                        <div th:id="'medit-' + ${m.id}" style="display:none;">
+                                            <form th:action="@{/musicians/edit/{id}(id=${m.id})}" method="post"
+                                                  style="display:flex;gap:6px;align-items:center;">
+                                                <input type="text" class="edit-input" th:id="'mei-' + ${m.id}"
+                                                       name="name" maxlength="200" required>
+                                                <button type="submit" class="btn btn-success">✓</button>
+                                                <button type="button" class="btn btn-secondary musician-cancel-btn"
+                                                        th:data-id="${m.id}">✕</button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ═══ Pianists ═══ -->
+                <div class="manage-card">
+                    <div class="manage-card-header">
+                        <span class="header-icon">🎹</span>
+                        <div>
+                            <h2>Pianists</h2>
+                            <p>Names available in the Sacrament program "Pianist" dropdown.</p>
+                        </div>
+                    </div>
+                    <div class="manage-card-body">
+                        <form th:action="@{/musicians/add}" method="post" class="add-form">
+                            <input type="hidden" name="musicianType" value="pianist">
+                            <div class="fg">
+                                <label for="pianName">New Name</label>
+                                <input type="text" id="pianName" name="name"
+                                       placeholder="e.g., Bro. Oscar Driz"
+                                       maxlength="200" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">+ Add</button>
+                        </form>
+                        <div th:if="${#lists.isEmpty(pianists)}" class="empty-state">No pianists yet. Add one above.</div>
+                        <table th:unless="${#lists.isEmpty(pianists)}" class="cond-table">
+                            <thead><tr><th>#</th><th>Name</th><th>Actions</th></tr></thead>
+                            <tbody>
+                                <tr th:each="m, iter : ${pianists}" th:id="'mrow-' + ${m.id}">
+                                    <td class="idx" th:text="${iter.index + 1}"></td>
+                                    <td th:id="'mname-' + ${m.id}" th:text="${m.name}"></td>
+                                    <td class="actions">
+                                        <div th:id="'mview-' + ${m.id}" style="display:flex;gap:6px;">
+                                            <button type="button" class="btn btn-secondary musician-edit-btn"
+                                                    th:data-id="${m.id}" th:data-name="${m.name}">✎</button>
+                                            <form th:action="@{/musicians/delete/{id}(id=${m.id})}" method="post"
+                                                  onsubmit="return confirm('Delete this pianist?')">
+                                                <button type="submit" class="btn btn-danger">✕</button>
+                                            </form>
+                                        </div>
+                                        <div th:id="'medit-' + ${m.id}" style="display:none;">
+                                            <form th:action="@{/musicians/edit/{id}(id=${m.id})}" method="post"
+                                                  style="display:flex;gap:6px;align-items:center;">
+                                                <input type="text" class="edit-input" th:id="'mei-' + ${m.id}"
+                                                       name="name" maxlength="200" required>
+                                                <button type="submit" class="btn btn-success">✓</button>
+                                                <button type="button" class="btn btn-secondary musician-cancel-btn"
+                                                        th:data-id="${m.id}">✕</button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
                 <!-- ═══ Auxiliaries Management ═══ -->
                 <div class="manage-card">
                     <div class="manage-card-header">
@@ -243,6 +349,16 @@
             const cancelBtn = e.target.closest('.cancel-btn');
             if (cancelBtn) {
                 cancelEdit(cancelBtn.getAttribute('data-id'));
+                return;
+            }
+            const mEditBtn = e.target.closest('.musician-edit-btn');
+            if (mEditBtn) {
+                startMusicianEdit(mEditBtn.getAttribute('data-id'), mEditBtn.getAttribute('data-name'));
+                return;
+            }
+            const mCancelBtn = e.target.closest('.musician-cancel-btn');
+            if (mCancelBtn) {
+                cancelMusicianEdit(mCancelBtn.getAttribute('data-id'));
             }
         });
 
@@ -259,6 +375,21 @@
             document.getElementById('name-' + id).style.display = '';
             document.getElementById('view-' + id).style.display = '';
             document.getElementById('edit-' + id).style.display = 'none';
+        }
+
+        function startMusicianEdit(id, currentName) {
+            document.getElementById('mname-' + id).style.display = 'none';
+            document.getElementById('mview-' + id).style.display = 'none';
+            const input = document.getElementById('mei-' + id);
+            input.value = currentName;
+            document.getElementById('medit-' + id).style.display = 'block';
+            input.focus();
+            input.select();
+        }
+        function cancelMusicianEdit(id) {
+            document.getElementById('mname-' + id).style.display = '';
+            document.getElementById('mview-' + id).style.display = '';
+            document.getElementById('medit-' + id).style.display = 'none';
         }
     </script>
 </body>

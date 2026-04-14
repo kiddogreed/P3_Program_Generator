@@ -22,7 +22,9 @@ import com.church.programgenerator.model.Speaker;
 import com.church.programgenerator.model.WardCouncilProgram;
 import com.church.programgenerator.service.AuxiliaryService;
 import com.church.programgenerator.service.ConductorService;
+import com.church.programgenerator.service.MusicianService;
 import com.church.programgenerator.service.ProgramStorageService;
+import com.church.programgenerator.service.WardConfigService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Controller
@@ -34,12 +36,17 @@ public class HistoryController {
     private final ProgramStorageService storageService;
     private final ConductorService conductorService;
     private final AuxiliaryService auxiliaryService;
+    private final MusicianService musicianService;
+    private final WardConfigService wardConfigService;
 
     public HistoryController(ProgramStorageService storageService, ConductorService conductorService,
-                             AuxiliaryService auxiliaryService) {
+                             AuxiliaryService auxiliaryService, MusicianService musicianService,
+                             WardConfigService wardConfigService) {
         this.storageService = storageService;
         this.conductorService = conductorService;
         this.auxiliaryService = auxiliaryService;
+        this.musicianService = musicianService;
+        this.wardConfigService = wardConfigService;
     }
 
     @GetMapping
@@ -91,10 +98,15 @@ public class HistoryController {
 
         model.addAttribute("pageTitle", "Sacrament Meeting Program");
         model.addAttribute("sacramentProgram", program);
-        model.addAttribute("conductors", conductorService.getAll());
+        model.addAttribute("conductors", conductorService.getByType("sacrament"));
+        model.addAttribute("auxiliaries", auxiliaryService.getAll());
+        model.addAttribute("choristers", musicianService.getChoristers());
+        model.addAttribute("pianists", musicianService.getPianists());
         model.addAttribute("speakerNames", speakerNames);
         model.addAttribute("speakerTitles", speakerTitles);
         model.addAttribute("announcementsText", announcementsText);
+        model.addAttribute("speakerTypeHint",
+                wardConfigService.getSpeakerTypeLabel(program.getDate()));
         model.addAttribute("successMessage", "Program loaded from history.");
         return "sacrament";
     }
@@ -104,6 +116,7 @@ public class HistoryController {
         BishopricProgram program = storageService.loadBishopricProgram(id);
         model.addAttribute("pageTitle", "Bishopric Meeting");
         model.addAttribute("bishopricProgram", program);
+        model.addAttribute("conductors", conductorService.getByType("bishopric"));
         model.addAttribute("successMessage", "Program loaded from history.");
         // Serialize agendaItems to JSON for the UI
         try {

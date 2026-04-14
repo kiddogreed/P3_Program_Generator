@@ -1,6 +1,6 @@
 # 🏛️ Pasay 3rd Ward Program Generator
 
-A modern, professional Spring Boot web application for creating and managing church meeting programs with elegant document generation capabilities and MSN-style navigation interface.
+A modern, professional Spring Boot web application for creating and managing church meeting programs with elegant document generation and responsive UI.
 
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.1.5-brightgreen.svg)
 ![Java](https://img.shields.io/badge/Java-17+-orange.svg)
@@ -8,55 +8,103 @@ A modern, professional Spring Boot web application for creating and managing chu
 ![License](https://img.shields.io/badge/License-MIT-yellow.svg)
 ![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)
 
-## 🆕 **Recent Changes (April 2026)**
+---
 
-### Major Features Added
-- **Scheduling Rules & Auto-Population**: Centralized rules for meeting scheduling, speaker cycles, and auto-filled forms for Sacrament, Bishopric, and Ward Council meetings.
-- **Prayer & Handbook Auto-Assignment**: Automated, round-robin assignment of prayers and handbook readings with persistent rotation tracking and no-duplicate logic.
-- **Bishopric Presiding Lock**: Presiding field in Bishopric form is now always the Bishop and read-only.
+## 🚀 What's New (April 2026)
+
+### Major Features & Fixes
+
+- **Scheduling Rules & Auto-Population**: Centralized rules for meeting scheduling, speaker cycles, and auto-filled forms for Sacrament, Bishopric, and Ward Council meetings. All forms open pre-filled with correct dates, presiding officer, and suggested conductor.
+- **Prayer & Handbook Auto-Assignment**: Automated, round-robin assignment of prayers and handbook readings with persistent rotation tracking and no-duplicate logic. Assignments always go to three different people.
+- **Bishopric Presiding Lock**: Presiding field in Bishopric form is always the Bishop and read-only (locked display, blue border).
 - **Cloud Deployment Ready**: Environment variable support for database config; deployable to Railway, Render, Fly.io, and more.
-- **Bishopric Meeting PDF Redesign**: Elegant, single-page PDF with formal layout and auto-scaling typography.
-- **Document Output Overhaul**: DOCX and PDF exports now match HTML preview in style and layout.
-- **Adaptive Font Scaling**: Font size auto-adjusts based on content length to prevent overflow.
-- **Speakers Auxiliary Display Fix**: Speaker auxiliary now bold and inline, consistent across all outputs.
-- **Test Preview Endpoint**: `/sacrament/test-preview` for instant, full-form test data.
-- **PostgreSQL Migration**: Switched from H2 to PostgreSQL 17 for production-grade storage.
+- **PostgreSQL Migration**: Switched from H2 to PostgreSQL 17 for production-grade storage. Update your DB config accordingly.
 - **Database Integration**: Auto-save on export, history browser, and reload/edit of past programs.
-- **Enhanced Error Handling**: Centralized exception handler, user-friendly error pages, and inline flash alerts.
+- **Document Output Overhaul**: DOCX and PDF exports now match HTML preview in style and layout. Bishopric Meeting PDF redesigned for formal, single-page output with auto-scaling typography.
 - **Performance Optimization**: Caffeine cache, GZIP compression, and production-ready Thymeleaf cache.
-- **Responsive UI**: Hamburger navigation, mobile-optimized forms, and cross-browser support.
+- **Enhanced Error Handling**: Centralized exception handler, user-friendly error pages, and inline flash alerts.
+- **Responsive UI**: Hamburger navigation, mobile-optimized forms, and cross-browser support. Speaker auxiliary display is now bold and inline everywhere.
+- **Test Preview Endpoint**: `/sacrament/test-preview` for instant, full-form test data.
 
-### **� Scheduling Rules & Auto-Population (April 2026)**
-- **Rules Page (`/rules`)**: New settings UI to configure ward name, stake name, meeting times, speaker cycle, acknowledgement template, and occurrence schedules
-- **WardConfig Singleton**: Single database row (`ward_config`) stores all scheduling rules and rotation state — zero manual re-entry per meeting
-- **Auto-Populate All Forms**: Every new Sacrament, Bishopric, and Ward Council form opens pre-filled with the correct date, presiding officer, and suggested conductor based on rules
-- **Date Auto-Calculation**:
-  - Sacrament → nearest upcoming Sunday
-  - Bishopric → next Thursday (or Sunday if configured)
-  - Ward Council → next 1st or 3rd Sunday (configurable occurrence rule)
-- **Conductor Round-Robin**: Conducting assignment cycles through members after each saved program; last-used conductor ID stored in `ward_config`
-- **Speaker Cycle Badge**: Sacrament form displays the current speaker type hint (e.g. "Relief Society Month", "Fast & Testimony") based on a 3-month rotating cycle
+### UI & Usability Improvements
 
-### **🙏 Prayer & Handbook Auto-Assignment (April 2026)**
-- **Ward Council — Round-Robin from Auxiliaries**: Opening Prayer, Handbook Reading, and Closing Prayer are automatically assigned from the auxiliaries list on each new form load
-- **Bishopric — Round-Robin from Conductors**: Same auto-assignment for Opening Prayer, Closing Prayer, and Handbook Spiritual Thought presenter — pulled from the bishopric conductors list
-- **No Duplicates Rule**: The three assignments (opening/handbook/closing) always go to 3 **consecutive different** people — no two fields get the same name in the same meeting
-- **Persistent Index Tracking**: Six rotation index fields in `ward_config` (`wc_opening_prayer_idx`, `wc_closing_prayer_idx`, `wc_handbook_idx`, `bp_*`) advance on every form load and persist to the database
-- **Ward Council date fix**: `@DateTimeFormat(iso = DATE)` added to `WardCouncilProgram.meetingDate` so the date field pre-fills in `<input type="date">` correctly
+- **Hamburger Navigation**: Collapses on screens ≤768px; tap to expand/collapse. Menu auto-closes on link tap or outside click.
+- **Responsive Forms**: Single-column layout with full-width buttons on mobile; all form rows stack vertically.
+- **Speaker Rows Stack**: Dynamically added speaker rows wrap and stack on screens ≤520px.
+- **iOS Auto-Zoom Fix**: All form inputs/textareas/selects set to `font-size: 16px` on ≤480px screens to prevent iOS Safari zooming.
+- **History Table**: Low-priority columns hidden on small screens; action buttons stack vertically.
+- **Preview & Export**: Single-column layout for preview containers and export button groups on mobile.
+- **Bishopric Forms**: Reduced padding/margin; form rows forced to single-column grid on mobile.
+- **Cross-Browser Tested**: Chrome Mobile, Safari iOS, Samsung Internet, Firefox Mobile.
 
-### **🔒 Bishopric Presiding Lock (April 2026)**
-- **Always the Bishop**: Presiding field in the Bishopric Meeting form is now a **read-only display** (blue-tinted, locked) — the value is always the first entry in the bishopric conductors list (the Bishop) and cannot be changed by the user
-- **Hidden field binding**: A hidden input carries the value on form submit; the visible field shows it as locked text with a blue border to communicate it is fixed by rule
+---
 
+## ⚡ Quick Start
 
-- **Hamburger Navigation**: Navigation bar collapses into a hamburger menu (☰) on screens ≤768px — tap to expand/collapse; menu auto-closes on link tap or outside click
-- **Responsive Forms**: Single-column layout with full-width buttons on mobile; all form rows stack vertically
-- **Speaker Rows Stack**: Dynamically added speaker rows wrap and stack on screens ≤520px
-- **iOS Auto-Zoom Fix**: All form inputs/textareas/selects set to `font-size: 16px` on ≤480px screens — prevents iOS Safari from zooming in on focus
-- **History Table**: Low-priority columns hidden on small screens; action buttons stack vertically
-- **Preview & Export**: Single-column layout for preview containers and export button groups on mobile
-- **Bishopric Forms**: Reduced padding/margin; form rows forced to single-column grid on mobile
-- **Cross-Browser Tested**: Chrome Mobile, Safari iOS, Samsung Internet, Firefox Mobile
+### Prerequisites
+
+- **Java 17+** (Required for Spring Boot 3.x)
+- **Maven 3.6+** (Build tool)
+- **Git** (Version control)
+- **PostgreSQL 17+** (Production database)
+
+### Installation & Setup
+
+1. **Clone the Repository**
+  ```bash
+  git clone https://github.com/kiddogreed/P3_Program_Generator.git
+  cd P3_Program_Generator
+  ```
+
+2. **Configure Database**
+  - Set your PostgreSQL connection in `src/main/resources/application.properties` or via environment variables:
+    - `SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/yourdb`
+    - `SPRING_DATASOURCE_USERNAME=youruser`
+    - `SPRING_DATASOURCE_PASSWORD=yourpass`
+
+3. **Build the Application**
+  ```bash
+  mvn clean compile
+  ```
+
+4. **Run the Application**
+  ```bash
+  # Option 1: Using Maven (Recommended for development)
+  mvn spring-boot:run
+
+  # Option 2: Using custom port
+  mvn spring-boot:run -Dspring-boot.run.arguments=--server.port=8081
+
+  # Option 3: Build and run JAR
+  mvn clean package
+  java -jar target/program-generator-0.0.1-SNAPSHOT.jar
+  ```
+
+5. **Access the App**
+  - Open your browser to [http://localhost:8080](http://localhost:8080)
+
+---
+
+## 📝 Documentation
+
+- **Scheduling Rules**: See `/rules` page in the app for configuration of ward name, stake name, meeting times, speaker cycle, acknowledgement template, and occurrence schedules.
+- **Database**: Uses a single `ward_config` row for all scheduling rules and rotation state. All rotation indices persist to the database.
+- **Export/Preview**: DOCX and PDF exports match the HTML preview. Test preview available at `/sacrament/test-preview`.
+- **Error Handling**: Friendly error pages and inline alerts for all major actions.
+
+---
+
+## 🐞 Troubleshooting
+
+- If you see database errors, check your PostgreSQL connection and credentials.
+- For PDF/DOCX export issues, ensure `LDS_LOGO.png` is present in `src/main/resources/static/images/`.
+- For UI bugs, clear browser cache and ensure you are not running an old version.
+
+---
+
+## 📄 License
+
+MIT License. See [LICENSE](LICENSE) for details.
 
 ### **☁️ Cloud Deployment Ready (April 2026)**
 - **Environment Variable Support**: `DATABASE_URL`, `DATABASE_USERNAME`, `DATABASE_PASSWORD` now override `application.properties` — no code change needed for cloud deployment

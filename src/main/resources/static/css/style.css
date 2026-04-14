@@ -372,7 +372,8 @@ h1 {
 }
 
 .form-group input,
-.form-group textarea {
+.form-group textarea,
+.form-group select {
     width: 100%;
     padding: 0.75rem;
     border: 1px solid var(--border-color);
@@ -382,7 +383,8 @@ h1 {
 }
 
 .form-group input:focus,
-.form-group textarea:focus {
+.form-group textarea:focus,
+.form-group select:focus {
     outline: none;
     border-color: var(--accent-color);
     box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
@@ -609,6 +611,31 @@ h1 {
     .conductor-table th {
         padding: 0.5rem 0.6rem;
         font-size: 0.85rem;
+    }
+
+    /* Manage page */
+    .manage-section {
+        margin: 16px 0 !important;
+    }
+
+    /* History action cell — stack Load/Delete on mobile */
+    .action-cell {
+        flex-direction: column;
+        gap: 0.35rem;
+        align-items: flex-start;
+    }
+    .action-cell .btn,
+    .action-cell form {
+        width: 100%;
+    }
+    .action-cell form button {
+        width: 100%;
+    }
+
+    /* Prevent horizontal overflow on small screens */
+    .history-table-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
     }
 }
 
@@ -1047,3 +1074,91 @@ h1 {
 }
 
 /* Responsive history table — handled in main responsive block above */
+
+/* ── Mobile general improvements ───────────────────────────────────────── */
+
+/* Touch-friendly tap targets */
+@media (max-width: 768px) {
+    .btn {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Form section headings */
+    .form-section h3 {
+        font-size: 1.1rem;
+    }
+
+    /* Tighten form spacing on mobile */
+    .meeting-form {
+        gap: 1.25rem;
+    }
+
+    .form-group {
+        margin-bottom: 0.75rem;
+    }
+
+    /* Manage page cards */
+    .manage-card-body {
+        padding: 14px 16px !important;
+    }
+
+    .manage-card-header {
+        padding: 14px 16px !important;
+    }
+
+    /* Add-form stacks on mobile */
+    .add-form {
+        flex-direction: column !important;
+        align-items: stretch !important;
+    }
+
+    .add-form .fg {
+        width: 100%;
+    }
+
+    .add-form button {
+        width: 100%;
+    }
+
+    /* Manage table action col */
+    .cond-table td.actions {
+        width: auto;
+    }
+
+    /* Rules page cards */
+    .rules-card-body {
+        padding: 14px 16px !important;
+    }
+
+    .rules-card-header {
+        padding: 10px 16px !important;
+    }
+
+    .field-row {
+        flex-direction: column !important;
+    }
+
+    /* next-meetings grid — single column */
+    .next-meetings {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Preview export section */
+    .preview-section,
+    .export-section,
+    .edit-section {
+        padding: 1rem;
+    }
+}
+
+/* Prevent double-tap zoom on iOS buttons */
+@media (hover: none) and (pointer: coarse) {
+    .btn,
+    button,
+    a {
+        touch-action: manipulation;
+    }
+}

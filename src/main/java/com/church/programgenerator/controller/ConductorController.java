@@ -10,16 +10,20 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.church.programgenerator.service.AuxiliaryService;
 import com.church.programgenerator.service.ConductorService;
+import com.church.programgenerator.service.MusicianService;
 
 @Controller
 
 public class ConductorController {
     private final ConductorService conductorService;
     private final AuxiliaryService auxiliaryService;
+    private final MusicianService musicianService;
 
-    public ConductorController(ConductorService conductorService, AuxiliaryService auxiliaryService) {
+    public ConductorController(ConductorService conductorService, AuxiliaryService auxiliaryService,
+                                MusicianService musicianService) {
         this.conductorService = conductorService;
         this.auxiliaryService = auxiliaryService;
+        this.musicianService = musicianService;
     }
 
     @GetMapping({"/conductors", "/manage"})
@@ -27,6 +31,8 @@ public class ConductorController {
         model.addAttribute("sacramentConductors", conductorService.getByType("sacrament"));
         model.addAttribute("bishopricConductors", conductorService.getByType("bishopric"));
         model.addAttribute("auxiliaries", auxiliaryService.getAll());
+        model.addAttribute("choristers", musicianService.getChoristers());
+        model.addAttribute("pianists", musicianService.getPianists());
         return "conductor-admin";
     }
 
