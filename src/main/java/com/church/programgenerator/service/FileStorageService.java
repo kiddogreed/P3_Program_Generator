@@ -388,10 +388,12 @@ public class FileStorageService {
     }
 
     private String generateFilename(SacramentProgram program, String extension) {
-        String dateStr = program.getDate() != null ? 
-            program.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) : 
-            LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        return "sacramentProgram" + dateStr + extension;
+        // Format: Sacrament-Program-APR-20-2025.docx
+        LocalDate date = program.getDate() != null ? program.getDate() : LocalDate.now();
+        String formattedDate = date.format(DateTimeFormatter.ofPattern("MMM-dd-yyyy")).toUpperCase();
+        // Replace hyphen with nothing in month, then add hyphens between words
+        // e.g., APR-20-2025
+        return "Sacrament-Program-" + formattedDate + extension;
     }
     
     // Generate filename for other meeting types

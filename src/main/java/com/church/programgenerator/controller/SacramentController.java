@@ -237,11 +237,10 @@ public class SacramentController {
     }
 
     private String generateFilename(SacramentProgram program, String extension) {
-        return "sacrament" +
-                (program.getDate() != null
-                        ? program.getDate().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
-                        : LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))) +
-                extension;
+        // Format: Sacrament-Program-APR-20-2025.docx
+        LocalDate date = program.getDate() != null ? program.getDate() : LocalDate.now();
+        String formattedDate = date.format(DateTimeFormatter.ofPattern("MMM-dd-yyyy")).toUpperCase();
+        return "Sacrament-Program-" + formattedDate + extension;
     }
 
     private void processAnnouncements(SacramentProgram program, String announcements) {
