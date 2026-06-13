@@ -1709,3 +1709,27 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 **Built with ❤️ for church program management and organization**
+
+
+## Turn off 8080 running port if already in usage
+# 1. Check which process is using port 8080
+
+```powershell
+netstat -ano | findstr :8080
+```
+
+
+# 2. Identify the program (optional)
+```powershell
+tasklist /FI "PID eq 23468"
+```
+
+
+
+# 3. Kill the process
+```powershell
+taskkill /PID 23468 /F
+```
+
+
+# 4. Re-run the springboot application
